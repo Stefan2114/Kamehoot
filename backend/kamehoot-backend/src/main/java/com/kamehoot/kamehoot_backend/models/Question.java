@@ -4,10 +4,14 @@ import java.util.Date;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
+@ToString
 public class Question {
 
     private Long id;
@@ -23,5 +27,14 @@ public class Question {
     private List<String> wrongAnswers;
 
     private Integer difficulty;
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Question)) {
+            return false;
+        }
+
+        return this.id == ((Question) other).id;
+    }
 
 }
