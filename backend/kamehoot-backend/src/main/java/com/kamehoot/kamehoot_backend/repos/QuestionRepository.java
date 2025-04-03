@@ -98,6 +98,19 @@ public class QuestionRepository implements IQuestionRepository {
                 return this.questions;
         }
 
+        @Override
+        public Question findById(Long id) {
+                for (int i = 0; i < this.questions.size(); i++) {
+
+                        Question question = this.questions.get(i);
+                        if (question.getId() == id) {
+                                return question;
+                        }
+                }
+
+                throw new RuntimeException("Id not found");
+        }
+
         private void populateQuestions() {
                 Date currentDate = new Date();
 

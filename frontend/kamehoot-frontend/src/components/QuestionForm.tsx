@@ -22,6 +22,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       .catch((error) => console.error("Error fetching messages:", error));
   }, []);
 
+  console.log(initialQuestion?.category || categories[0]);
   const [formData, setFormData] = useState({
     questionText: initialQuestion?.questionText || "",
     category: initialQuestion?.category || categories[0],
@@ -91,7 +92,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     }
 
     const submittedQuestion: Question = {
-      id: initialQuestion?.id || 0,
+      id: initialQuestion?.id || 0, // set the id to 0
       questionText: formData.questionText.trim(),
       category: formData.category,
       correctAnswer: formData.correctAnswer.trim(),
@@ -117,6 +118,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                       type="radio"
                       id={`category-${cat}`}
                       value={cat}
+                      name="category"
                       checked={formData.category === cat}
                       onChange={handleInputChange}
                     />
@@ -135,6 +137,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                       type="radio"
                       id={`difficulty-${diff}`}
                       value={diff}
+                      name="difficulty"
                       checked={formData.difficulty === diff}
                       onChange={handleInputChange}
                     />

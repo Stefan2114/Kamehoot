@@ -58,4 +58,9 @@ public class QuestionService implements IQuestionService {
                 }
         }
 
+        @Override
+        public Question getQuestion(Long id) {
+                return this.questionRepository.findById(id);
+        }
+
 }

@@ -9,7 +9,7 @@ const AddQuestionPage: React.FC = () => {
 
   const addQuestion = async (question: Question) => {
     try {
-      const response = await fetch("http://localhost:8081/questions/add", {
+      const response = await fetch("http://localhost:8081/questions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(question),
@@ -28,12 +28,12 @@ const AddQuestionPage: React.FC = () => {
   };
 
   const handleAddQuestion = (newQuestion: Question) => {
-    if (newQuestion.questionText.trim()) {
+    if (!newQuestion.questionText.trim()) {
       alert("Question text is required!");
       return;
     }
 
-    if (newQuestion.correctAnswer.trim()) {
+    if (!newQuestion.correctAnswer.trim()) {
       alert("Correct answer is required!");
       return;
     }
@@ -45,7 +45,7 @@ const AddQuestionPage: React.FC = () => {
       alert("2 wrong answers are required for multiple-choice questions");
       return;
     }
-
+    console.log(newQuestion);
     addQuestion(newQuestion);
   };
 

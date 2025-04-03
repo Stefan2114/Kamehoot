@@ -21,14 +21,14 @@ const QuestionsPage = () => {
     fetch("http://localhost:8081/questions")
       .then((response) => response.json())
       .then((data: Question[]) => setQuestions(data))
-      .catch((error) => console.error("Error fetching messages:", error));
+      .catch((error) => console.error("Error fetching questions:", error));
   }, []);
 
   useEffect(() => {
     fetch("http://localhost:8081/categories")
       .then((response) => response.json())
       .then((data: string[]) => setCategories(data))
-      .catch((error) => console.error("Error fetching messages:", error));
+      .catch((error) => console.error("Error fetching categories:", error));
   }, []);
 
   const filteredQuestions = useMemo(() => {

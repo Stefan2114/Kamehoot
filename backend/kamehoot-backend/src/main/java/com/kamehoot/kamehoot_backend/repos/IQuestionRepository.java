@@ -14,4 +14,6 @@ public interface IQuestionRepository {
 
     public List<Question> findAll();
 
+    public Question findById(Long id);
+
 }

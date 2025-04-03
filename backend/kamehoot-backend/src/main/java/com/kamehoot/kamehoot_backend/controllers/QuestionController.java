@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kamehoot.kamehoot_backend.DTOs.QuestionDTO;
 import com.kamehoot.kamehoot_backend.models.Question;
 import com.kamehoot.kamehoot_backend.services.IQuestionService;
 
@@ -38,13 +37,10 @@ public class QuestionController implements IQuestionController {
 
     @Override
     @PostMapping
-    public ResponseEntity<Void> addQuestion(@RequestBody QuestionDTO questionDTO) {
+    public ResponseEntity<Void> addQuestion(@RequestBody Question question) {
 
-        System.out.println(questionDTO);
+        System.out.println(question);
 
-        Question question = new Question(0L, questionDTO.getCreationDate(), questionDTO.getQuestionText(),
-                questionDTO.getCategory(), questionDTO.getCorrectAnswer(), questionDTO.getWrongAnswers(),
-                questionDTO.getDifficulty());
         this.questionService.addQuestion(question);
         return ResponseEntity.noContent().build();
     }
@@ -60,7 +56,14 @@ public class QuestionController implements IQuestionController {
     @PutMapping
     public ResponseEntity<Void> updateQuestion(@RequestBody Question question) {
 
+        System.out.println(question);
         this.questionService.updateQuestion(question);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    @GetMapping("/{id}")
+    public ResponseEntity<Question> getQuestion(@PathVariable Long id) {
+        return ResponseEntity.ok(this.questionService.getQuestion(id));
     }
 }

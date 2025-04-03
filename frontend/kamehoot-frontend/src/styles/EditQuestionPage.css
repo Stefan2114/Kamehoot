@@ -1,0 +1,6 @@
+.edit-question-page-container{
+    height: 97vh;
+    width: 99vw;
+    display: flex;
+    background-color: white;
+}

@@ -14,4 +14,6 @@ public interface IQuestionService {
 
     void deleteQuestionById(Long questionId);
 
+    Question getQuestion(Long id);
+
 }
