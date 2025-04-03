@@ -11,6 +11,7 @@ const QuestionsPage = () => {
   const [categories, setCategories] = useState<string[]>([]);
 
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [difficultyFilter, setDifficultyFilter] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [orderBy, setOrderBy] = useState("difficulty");
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,13 +37,17 @@ const QuestionsPage = () => {
         categoryFilter.length === 0 ||
         categoryFilter.includes(question.category);
 
+      const difficultyMatch =
+        difficultyFilter.length === 0 ||
+        difficultyFilter.includes(question.difficulty);
+
       const searchMatch = question.questionText
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
-      return categoryMatch && searchMatch;
+      return categoryMatch && difficultyMatch && searchMatch;
     });
-  }, [questions, categoryFilter, searchTerm]);
+  }, [questions, categoryFilter, difficultyFilter, searchTerm]);
 
   const sortedQuestions = useMemo(() => {
     return [...filteredQuestions].sort((a, b) => {
@@ -130,6 +135,15 @@ const QuestionsPage = () => {
     setCurrentPage(1);
   };
 
+  const handleDifficultyFilterChange = (difficulty: number) => {
+    setDifficultyFilter((prev) =>
+      prev.includes(difficulty)
+        ? prev.filter((c) => c !== difficulty)
+        : [...prev, difficulty]
+    );
+    setCurrentPage(1);
+  };
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
@@ -162,6 +176,27 @@ const QuestionsPage = () => {
                 onChange={() => handleCategoryFilterChange(category)}
               />
               <label>{category}</label>
+            </div>
+          ))}
+        </div>
+
+        <div className="filter-section">
+          <h3>Difficulties</h3>
+          {[1, 2, 3].map((difficulty) => (
+            <div key={difficulty} className="filter-checkbox">
+              <input
+                type="checkbox"
+                id={`difficulty-${difficulty}`}
+                checked={difficultyFilter.includes(difficulty)}
+                onChange={() => handleDifficultyFilterChange(difficulty)}
+              />
+              <label>
+                {difficulty === 1
+                  ? "Easy"
+                  : difficulty === 2
+                  ? "Medium"
+                  : "Hard"}
+              </label>
             </div>
           ))}
         </div>

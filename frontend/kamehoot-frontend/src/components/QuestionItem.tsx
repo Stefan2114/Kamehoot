@@ -26,7 +26,13 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
             </span>
             <span className="detail-item">
               <span className="detail-label">Difficulty:</span>
-              <span className="detail-value">{question.difficulty}</span>
+              <span className="detail-value">
+                {question.difficulty === 1
+                  ? "Easy"
+                  : question.difficulty === 2
+                  ? "Medium"
+                  : "Hard"}
+              </span>
             </span>
           </div>
           <button className="see-more-btn" onClick={handleSeeMoreClick}>

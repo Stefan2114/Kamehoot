@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Question } from "../types/question";
+import "../styles/QuestionForm.css";
 
 interface QuestionFormProps {
   initialQuestion?: Question;
@@ -20,10 +21,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       .then((data: string[]) => setCategories(data))
       .catch((error) => console.error("Error fetching messages:", error));
   }, []);
-
-  if (categories.length == 0) {
-    return <div>Sorry no categories available to create a question</div>;
-  }
 
   const [formData, setFormData] = useState({
     questionText: initialQuestion?.questionText || "",
@@ -46,6 +43,10 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       });
     }
   }, [initialQuestion]);
+
+  if (categories.length == 0) {
+    return <div>Sorry no categories available to create a question</div>;
+  }
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -109,13 +110,12 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           <div className="form-sidebar">
             <div className="category-section">
               <h3>Category</h3>
-              <div className="category-options">
+              <div className="options">
                 {categories.map((cat) => (
-                  <div key={cat} className="category-option">
+                  <div key={cat} className="option">
                     <input
                       type="radio"
                       id={`category-${cat}`}
-                      name="category"
                       value={cat}
                       checked={formData.category === cat}
                       onChange={handleInputChange}
@@ -128,13 +128,12 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
             <div className="difficulty-section">
               <h3>Difficulty</h3>
-              <div className="difficulty-options">
+              <div className="options">
                 {[1, 2, 3].map((diff) => (
-                  <div key={diff} className="difficulty-option">
+                  <div key={diff} className="option">
                     <input
                       type="radio"
                       id={`difficulty-${diff}`}
-                      name="difficulty"
                       value={diff}
                       checked={formData.difficulty === diff}
                       onChange={handleInputChange}
@@ -150,7 +149,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
 
           <div className="form-main-content">
             <div className="question-section">
-              <label>Question:</label>
+              <h3>Question:</h3>
               <textarea
                 name="questionText"
                 placeholder="type..."
@@ -160,7 +159,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
               />
             </div>
 
-            <div className="answer-section">
+            <div className="question-section">
               <label>Correct answer:</label>
               <textarea
                 name="correctAnswer"
@@ -172,7 +171,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
             </div>
 
             {[0, 1].map((index) => (
-              <div className="answer-section">
+              <div className="question-section">
                 <label>Wrong answer:</label>
                 <textarea
                   placeholder="type..."
