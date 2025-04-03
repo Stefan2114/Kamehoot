@@ -1,0 +1,20 @@
+# Build files
+target/
+.mvn/
+out/
+
+# Logs
+*.log
+
+# Configuration files (Sensitive data)
+application.properties
+application.yml
+application-local.properties
+application-prod.properties
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+dependency-reduced-pom.xml
+release.properties
+~/.m2/repository/

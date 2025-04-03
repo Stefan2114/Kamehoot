@@ -1,0 +1,21 @@
+# Global ignores
+.DS_Store
+Thumbs.db
+._* # macOS resource forks
+
+# IDE / Editors
+.vscode/
+.idea/
+*.iml
+
+# OS-specific files
+*.swp
+*.swo
+
+# Logs & temp files
+*.log
+*.lock
+*.tmp
+*.bak
+*.cache
+*.pid
