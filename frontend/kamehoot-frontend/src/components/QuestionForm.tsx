@@ -98,7 +98,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       correctAnswer: formData.correctAnswer.trim(),
       wrongAnswers: formData.wrongAnswers.map((answer) => answer.trim()),
       difficulty: Number(formData.difficulty),
-      date: new Date(),
+      creationDate: new Date(),
     };
 
     onSubmit(submittedQuestion);

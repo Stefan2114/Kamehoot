@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Question, QuestionFromBackend } from "../types/question";
+import { Question } from "../types/question";
 import QuestionItem from "../components/QuestionItem";
 import "../styles/QuestionsPage.css";
 
@@ -17,8 +17,16 @@ const QuestionsPage = () => {
   const [orderBy, setOrderBy] = useState("difficulty");
   const [orderDirection, setOrderDirection] = useState("asc");
 
+  // Pagination (kept in frontend)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const questionsPerPage = 5;
+
+  // Fetch filtered questions from backend
   const fetchQuestions = () => {
     setLoading(true);
+
+    setTimeout(() => {}, 10000);
 
     // Build query parameters
     const params = new URLSearchParams();
@@ -38,88 +46,129 @@ const QuestionsPage = () => {
     params.append("orderBy", orderBy);
     params.append("orderDirection", orderDirection);
 
+    // Add pagination parameters
+    params.append("page", currentPage.toString());
+    params.append("limit", questionsPerPage.toString());
+
     // Make API request
     fetch(`http://localhost:8081/questions?${params.toString()}`)
       .then((response) => response.json())
-      .then((data: QuestionFromBackend[]) => {
-        const parsed = data.map((q) => ({
-          ...q,
-          creationDate: new Date(q.creationDate.split(".")[0]), // ✅ this works now
-        }));
-        setQuestions(parsed);
+      .then((data) => {
+        setQuestions(data.questions);
+        setTotalQuestions(data.total);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching questions:", error);
-      })
-      .finally(() => {
         setLoading(false);
       });
   };
 
+  // Fetch categories
   useEffect(() => {
     fetch("http://localhost:8081/categories")
       .then((response) => response.json())
       .then((data: string[]) => setCategories(data))
-      .catch((error) => console.error("Error fetching messages:", error));
+      .catch((error) => console.error("Error fetching categories:", error));
   }, []);
 
+  // Fetch questions whenever filters change
   useEffect(() => {
     fetchQuestions();
-  }, [categoryFilter, difficultyFilter, searchTerm, orderBy, orderDirection]);
+  }, [
+    categoryFilter,
+    difficultyFilter,
+    searchTerm,
+    orderBy,
+    orderDirection,
+    currentPage,
+  ]);
 
-  const filteredQuestions = useMemo(() => {
-    return questions.filter((question) => {
-      const categoryMatch =
-        categoryFilter.length === 0 ||
-        categoryFilter.includes(question.category);
+  const totalPages = Math.ceil(totalQuestions / questionsPerPage);
 
-      const difficultyMatch =
-        difficultyFilter.length === 0 ||
-        difficultyFilter.includes(question.difficulty);
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
-      const searchMatch = question.questionText
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+  const renderPagination = () => {
+    const pages: React.ReactNode[] = [];
+    const maxPagesToShow = 5;
 
-      return categoryMatch && difficultyMatch && searchMatch;
-    });
-  }, [questions, categoryFilter, difficultyFilter, searchTerm]);
+    const addPageButton = (pageNumber: number) => {
+      pages.push(
+        <button
+          key={pageNumber}
+          onClick={() => handlePageChange(pageNumber)}
+          className={currentPage === pageNumber ? "active-page" : ""}
+        >
+          {pageNumber}
+        </button>
+      );
+    };
 
-  const sortedQuestions = useMemo(() => {
-    return [...filteredQuestions].sort((a, b) => {
-      switch (orderBy) {
-        case "difficulty":
-          return a.difficulty - b.difficulty;
-        case "date":
-          return (
-            new Date(a.creationDate).getDate() -
-            new Date(b.creationDate).getDate()
-          );
-        default:
-          return a.id - b.id;
+    const addEllipsis = (key: string) => {
+      pages.push(
+        <span key={key} className="pagination-ellipsis">
+          ...
+        </span>
+      );
+    };
+
+    if (totalPages <= maxPagesToShow) {
+      for (let i = 1; i <= totalPages; i++) {
+        addPageButton(i);
       }
-    });
-  }, [filteredQuestions, orderBy]);
+    } else {
+      addPageButton(1);
 
-  const handleCategoryFilterChange = (category: string) =>
+      let startPage = Math.max(2, currentPage - 1);
+      let endPage = Math.min(totalPages - 1, currentPage + 1);
+
+      if (currentPage > 3) {
+        addEllipsis("start-ellipsis");
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        addPageButton(i);
+      }
+
+      if (currentPage < totalPages - 2) {
+        addEllipsis("end-ellipsis");
+      }
+
+      addPageButton(totalPages);
+    }
+
+    return pages;
+  };
+
+  const handleCategoryFilterChange = (category: string) => {
     setCategoryFilter((prev) =>
       prev.includes(category)
         ? prev.filter((c) => c !== category)
         : [...prev, category]
     );
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
 
-  const handleDifficultyFilterChange = (difficulty: number) =>
+  const handleDifficultyFilterChange = (difficulty: number) => {
     setDifficultyFilter((prev) =>
       prev.includes(difficulty)
         ? prev.filter((c) => c !== difficulty)
         : [...prev, difficulty]
     );
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page when search changes
+  };
 
-  const handleOrderByChange = (e: React.ChangeEvent<HTMLSelectElement>) =>
+  const handleOrderByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setOrderBy(e.target.value);
+    setCurrentPage(1); // Reset to first page when sort changes
+  };
 
   const handleAddQuestion = () => {
     navigate("/questions/add");
@@ -188,14 +237,25 @@ const QuestionsPage = () => {
             <option value="date">Sort by Date</option>
           </select>
         </div>
+
         {loading ? (
           <div className="loading">Loading questions...</div>
         ) : (
           <div className="questions-list">
-            {questions.map((question) => (
-              <QuestionItem key={question.id} question={question} />
-            ))}
+            {questions.length > 0 ? (
+              questions.map((question) => (
+                <QuestionItem key={question.id} question={question} />
+              ))
+            ) : (
+              <div className="no-questions">
+                No questions found matching your criteria.
+              </div>
+            )}
           </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="pagination">{renderPagination()}</div>
         )}
       </div>
     </div>

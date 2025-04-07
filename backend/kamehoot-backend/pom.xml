@@ -47,20 +47,67 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+		   <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>5.10.0</version>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- Mockito for mocking dependencies -->
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>5.11.0</version>
+        <scope>test</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
 	</dependencies>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+        <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.7</version> <!-- Ensure you're using a supported version -->
+            <executions>
+                <!-- Prepare JaCoCo for the test phase -->
+                <execution>
+                    <id>prepare-agent</id>
+                    <goals>
+                        <goal>prepare-agent</goal>
+                    </goals>
+                </execution>
+                <!-- Generate the code coverage report after tests have run -->
+                <execution>
+                    <id>generate-report</id>
+                    <goals>
+                        <goal>report</goal>
+                    </goals>
+                    <phase>verify</phase> <!-- Ensures that the report goal is triggered after tests -->
+                </execution>
+                <!-- Optional: generate a report in additional formats -->
+                <execution>
+                    <id>generate-site-report</id>
+                    <goals>
+                        <goal>report-aggregate</goal> <!-- Use report-aggregate for aggregate reports -->
+                    </goals>
+                    <phase>site</phase> <!-- This will generate a report as part of the site generation -->
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+
+
 
 </project>

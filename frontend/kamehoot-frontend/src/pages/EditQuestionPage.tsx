@@ -6,6 +6,8 @@ import QuestionForm from "../components/QuestionForm";
 const EditQuestionPage = () => {
   const { id } = useParams<{ id: string }>();
 
+  console.log(id);
+
   const navigate = useNavigate();
 
   const [question, setQuestion] = useState<Question>();

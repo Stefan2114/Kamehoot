@@ -1,5 +1,6 @@
 package com.kamehoot.kamehoot_backend.repos;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,10 +31,12 @@ public class QuestionRepository implements IQuestionRepository {
 
         private int getQuestionPosition(Question question) {
 
-                int pos = 0;
+                int pos = -1;
                 for (int i = 0; i < this.questions.size(); i++) {
+                        System.out.println(i);
                         if (question.equals(this.questions.get(i))) {
                                 pos = i;
+                                System.out.println("YESSS");
                                 break;
                         }
                 }
@@ -47,7 +50,7 @@ public class QuestionRepository implements IQuestionRepository {
                 int pos = getQuestionPosition(question);
                 System.out.println(pos);
 
-                if (pos != 0) {
+                if (pos != -1) {
                         System.out.println("exception question id already exists");
                         throw new RuntimeException("There already exists that question id");
                 }
@@ -65,7 +68,7 @@ public class QuestionRepository implements IQuestionRepository {
                 int pos = getQuestionPosition(question);
                 System.out.println(pos);
 
-                if (pos == 0) {
+                if (pos == -1) {
                         System.out.println("will through exception for id not found");
                         throw new RuntimeException("Question with id: " + question.getId() + " not found");
 
@@ -112,7 +115,7 @@ public class QuestionRepository implements IQuestionRepository {
         }
 
         private void populateQuestions() {
-                Date currentDate = new Date();
+                LocalDateTime currentDate = LocalDateTime.now();
 
                 this.questions.add(
                                 new Question(getNewId(), currentDate, "What is the derivative of x^2?", "Math", "2x",
@@ -129,7 +132,7 @@ public class QuestionRepository implements IQuestionRepository {
                                                 "Which club has won the most UEFA Champions League titles?",
                                                 "Football", "Real Madrid", List.of("Barcelona", "Manchester United"),
                                                 3));
-                currentDate = new Date();
+                currentDate = currentDate.plus(1, java.time.temporal.ChronoUnit.SECONDS);
                 this.questions.add(
                                 new Question(getNewId(), currentDate, "What is the integral of 3x^2?", "Math", "x^3",
                                                 List.of("3x", "x^2"), 2));
@@ -145,7 +148,7 @@ public class QuestionRepository implements IQuestionRepository {
                                 new Question(getNewId(), currentDate, "Which country has won the most FIFA World Cups?",
                                                 "Football",
                                                 "Brazil", List.of("Germany", "Argentina"), 1));
-                currentDate = new Date();
+                currentDate = currentDate.plus(1, java.time.temporal.ChronoUnit.SECONDS);
                 this.questions.add(
                                 new Question(getNewId(), currentDate, "If f(x) = x^3, what is f'(x)?", "Math", "3x^2",
                                                 List.of("x^2", "x^3"), 2));
@@ -161,7 +164,8 @@ public class QuestionRepository implements IQuestionRepository {
                                 .add(new Question(getNewId(), currentDate,
                                                 "Who holds the record for most goals in a single World Cup?",
                                                 "Football", "Just Fontaine", List.of("Pele", "Miroslav Klose"), 3));
-                currentDate = new Date();
+                currentDate = currentDate.plus(1, java.time.temporal.ChronoUnit.SECONDS);
+
                 this.questions
                                 .add(new Question(getNewId(), currentDate, "Solve for x: 3x - 5 = 10", "Math", "5",
                                                 List.of("3", "7"),
@@ -181,7 +185,8 @@ public class QuestionRepository implements IQuestionRepository {
                                                 "Which team won the UEFA Champions League in 2020?",
                                                 "Football",
                                                 "Bayern Munich", List.of("Liverpool", "Paris Saint-Germain"), 1));
-                currentDate = new Date();
+                currentDate = currentDate.plus(1, java.time.temporal.ChronoUnit.SECONDS);
+
                 this.questions.add(new Question(getNewId(), currentDate, "What is 9! (9 factorial)?", "Math", "362880",
                                 List.of("40320", "362800"), 1));
                 this.questions
@@ -198,7 +203,8 @@ public class QuestionRepository implements IQuestionRepository {
                 this.questions.add(new Question(getNewId(), currentDate, "If sin(30°) = 0.5, what is cos(60°)?", "Math",
                                 "0.5",
                                 List.of("0.866", "1"), 2));
-                currentDate = new Date();
+                currentDate = currentDate.plus(1, java.time.temporal.ChronoUnit.SECONDS);
+
                 this.questions
                                 .add(new Question(getNewId(), currentDate, "Who won the 2014 FIFA World Cup?",
                                                 "Football", "Germany",
@@ -212,7 +218,8 @@ public class QuestionRepository implements IQuestionRepository {
                                 .add(new Question(getNewId(), currentDate,
                                                 "Which country hosted the 2006 FIFA World Cup?", "Football",
                                                 "Germany", List.of("France", "South Africa"), 3));
-                currentDate = new Date();
+                currentDate = currentDate.plus(1, java.time.temporal.ChronoUnit.SECONDS);
+
                 this.questions
                                 .add(new Question(getNewId(), currentDate,
                                                 "What is the formula for the area of a circle?", "Math",

@@ -1,6 +1,5 @@
 package com.kamehoot.kamehoot_backend.models;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -8,7 +7,7 @@ public class Question {
 
     private Long id;
 
-    private LocalDateTime creationDate;
+    private Date creationDate;
 
     private String questionText;
 
@@ -20,7 +19,7 @@ public class Question {
 
     private Integer difficulty;
 
-    public Question(Long id, LocalDateTime creationDate, String questionText, String category, String correctAnswer,
+    public Question(Long id, Date creationDate, String questionText, String category, String correctAnswer,
             List<String> wrongAnswers, Integer difficulty) {
         this.id = id;
         this.creationDate = creationDate;
@@ -33,13 +32,9 @@ public class Question {
 
     @Override
     public boolean equals(Object other) {
-
-        System.out.println(questionText);
         if (!(other instanceof Question)) {
             return false;
         }
-
-        System.out.println("I passed");
 
         return this.id == ((Question) other).id;
     }
@@ -52,11 +47,11 @@ public class Question {
         this.id = id;
     }
 
-    public LocalDateTime getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(LocalDateTime creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -98,19 +93,6 @@ public class Question {
 
     public void setDifficulty(Integer difficulty) {
         this.difficulty = difficulty;
-    }
-
-    @Override
-    public String toString() {
-        return "Question{" +
-                "id=" + id +
-                ", creationDate=" + creationDate +
-                ", questionText='" + questionText + '\'' +
-                ", category='" + category + '\'' +
-                ", correctAnswer='" + correctAnswer + '\'' +
-                ", wrongAnswers=" + wrongAnswers +
-                ", difficulty=" + difficulty +
-                '}';
     }
 
 }

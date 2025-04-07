@@ -34,6 +34,12 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
                   : "Hard"}
               </span>
             </span>
+            <span className="detail-item">
+              <span className="detail-label">Date:</span>
+              <span className="detail-value">
+                {question.creationDate.toLocaleString()}
+              </span>
+            </span>
           </div>
           <button className="see-more-btn" onClick={handleSeeMoreClick}>
             See more info
