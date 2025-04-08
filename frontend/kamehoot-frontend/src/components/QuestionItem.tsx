@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Question } from "../types/question";
-import "../styles/QuestionItem.css";
+import styles from "../styles/QuestionItem.module.css";
 
 interface QuestionItemProps {
   question: Question;
@@ -15,18 +15,20 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
   };
 
   return (
-    <div className="question-item">
-      <div className="question-content">
-        <div className="question-text">{question.questionText}</div>
-        <div className="question-footer">
-          <div className="question-details">
-            <span className="detail-item">
-              <span className="detail-label">Category:</span>
-              <span className="detail-value">{question.category}</span>
+    <div className={styles["question-item"]}>
+      <div className={styles["question-content"]}>
+        <div className={styles["question-text"]}>{question.questionText}</div>
+        <div className={styles["question-footer"]}>
+          <div className={styles["question-details"]}>
+            <span className={styles["detail-item"]}>
+              <span className={styles["detail-label"]}>Category:</span>
+              <span className={styles["detail-value"]}>
+                {question.category}
+              </span>
             </span>
-            <span className="detail-item">
-              <span className="detail-label">Difficulty:</span>
-              <span className="detail-value">
+            <span className={styles["detail-item"]}>
+              <span className={styles["detail-label"]}>Difficulty:</span>
+              <span className={styles["detail-value"]}>
                 {question.difficulty === 1
                   ? "Easy"
                   : question.difficulty === 2
@@ -34,14 +36,17 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
                   : "Hard"}
               </span>
             </span>
-            <span className="detail-item">
-              <span className="detail-label">Date:</span>
-              <span className="detail-value">
+            <span className={styles["detail-item"]}>
+              <span className={styles["detail-label"]}>Date:</span>
+              <span className={styles["detail-value"]}>
                 {question.creationDate.toLocaleString()}
               </span>
             </span>
           </div>
-          <button className="see-more-btn" onClick={handleSeeMoreClick}>
+          <button
+            className={styles["see-more-btn"]}
+            onClick={handleSeeMoreClick}
+          >
             See more info
           </button>
         </div>

@@ -1,10 +1,15 @@
+// 2. Update the QuestionService implementation
 package com.kamehoot.kamehoot_backend.services;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaTypeFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import com.kamehoot.kamehoot_backend.models.Question;
@@ -73,6 +78,36 @@ public class QuestionService implements IQuestionService {
         }
 
         @Override
+        public List<Question> getQuestionsPaginated(
+                        List<String> categories,
+                        List<Integer> difficulties,
+                        String searchTerm,
+                        String orderBy,
+                        String orderDirection,
+                        int page,
+                        int pageSize) {
+
+                // Get filtered and sorted questions using existing method
+                List<Question> filteredQuestions = getQuestions(
+                                categories,
+                                difficulties,
+                                searchTerm,
+                                orderBy,
+                                orderDirection);
+
+                // Apply pagination
+                int startIndex = (page - 1) * pageSize;
+                int endIndex = Math.min(startIndex + pageSize, filteredQuestions.size());
+
+                // Make sure startIndex is valid
+                if (startIndex >= filteredQuestions.size()) {
+                        return List.of(); // Return empty list if page is beyond available data
+                }
+
+                return filteredQuestions.subList(startIndex, endIndex);
+        }
+
+        @Override
         public void addQuestion(Question question) {
                 try {
                         this.questionRepository.add(question);
@@ -108,4 +143,10 @@ public class QuestionService implements IQuestionService {
                 return this.questionRepository.findById(id);
         }
 
+        @Override
+        public FileSystemResource getIntroVideo() {
+                FileSystemResource video = new FileSystemResource("./src/main/resources/What is Kahoot!_.mp4");
+                return video;
+
+        }
 }

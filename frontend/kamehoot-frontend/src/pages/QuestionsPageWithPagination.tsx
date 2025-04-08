@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Question } from "../types/question";
 import QuestionItem from "../components/QuestionItem";
-import "../styles/QuestionsPage.css";
+import styles from "../styles/QuestionsPage.module.css";
 
 const QuestionsPage = () => {
   const navigate = useNavigate();
@@ -175,16 +175,16 @@ const QuestionsPage = () => {
   };
 
   return (
-    <div className="questions-container">
-      <div className="sidebar">
-        <button className="add-button" onClick={handleAddQuestion}>
+    <div className={styles["questions-container"]}>
+      <div className={styles["sidebar"]}>
+        <button className={styles["add-button"]} onClick={handleAddQuestion}>
           Add Question
         </button>
 
-        <div className="filter-section">
+        <div className={styles["filter-section"]}>
           <h3>Categories</h3>
           {categories.map((category) => (
-            <div key={category} className="filter-checkbox">
+            <div key={category} className={styles["filter-checkbox"]}>
               <input
                 type="checkbox"
                 id={`category-${category}`}
@@ -196,10 +196,10 @@ const QuestionsPage = () => {
           ))}
         </div>
 
-        <div className="filter-section">
+        <div className={styles["filter-section"]}>
           <h3>Difficulties</h3>
           {[1, 2, 3].map((difficulty) => (
-            <div key={difficulty} className="filter-checkbox">
+            <div key={difficulty} className={styles["filter-checkbox"]}>
               <input
                 type="checkbox"
                 id={`difficulty-${difficulty}`}
@@ -218,9 +218,9 @@ const QuestionsPage = () => {
         </div>
       </div>
 
-      <div className="main-content">
-        <div className="search-and-sort">
-          <div className="search-container">
+      <div className={styles["main-content"]}>
+        <div className={styles["search-and-sort"]}>
+          <div className={styles["search-container"]}>
             <input
               type="text"
               placeholder="Search questions..."
@@ -229,7 +229,7 @@ const QuestionsPage = () => {
             />
           </div>
           <select
-            className="order-by-select"
+            className={styles["order-by-select"]}
             value={orderBy}
             onChange={handleOrderByChange}
           >
@@ -239,15 +239,15 @@ const QuestionsPage = () => {
         </div>
 
         {loading ? (
-          <div className="loading">Loading questions...</div>
+          <div className={styles["loading"]}>Loading questions...</div>
         ) : (
-          <div className="questions-list">
+          <div className={styles["questions-list"]}>
             {questions.length > 0 ? (
               questions.map((question) => (
                 <QuestionItem key={question.id} question={question} />
               ))
             ) : (
-              <div className="no-questions">
+              <div className={styles["no-questions"]}>
                 No questions found matching your criteria.
               </div>
             )}
@@ -255,7 +255,7 @@ const QuestionsPage = () => {
         )}
 
         {totalPages > 1 && (
-          <div className="pagination">{renderPagination()}</div>
+          <div className={styles["pagination"]}>{renderPagination()}</div>
         )}
       </div>
     </div>

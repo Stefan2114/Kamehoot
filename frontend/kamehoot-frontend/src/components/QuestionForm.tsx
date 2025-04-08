@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Question } from "../types/question";
-import "../styles/QuestionForm.css";
+import styles from "../styles/QuestionForm.module.css";
 
 interface QuestionFormProps {
   initialQuestion?: Question;
@@ -105,15 +105,15 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   };
 
   return (
-    <div className="question-form-container">
-      <form onSubmit={handleSubmit} className="question-form">
-        <div className="form-content">
-          <div className="form-sidebar">
-            <div className="category-section">
+    <div className={styles["question-form-container"]}>
+      <form onSubmit={handleSubmit} className={styles["question-form"]}>
+        <div className={styles["form-content"]}>
+          <div className={styles["form-sidebar"]}>
+            <div className={styles["category-section"]}>
               <h3>Category</h3>
-              <div className="options">
+              <div className={styles["options"]}>
                 {categories.map((cat) => (
-                  <div key={cat} className="option">
+                  <div key={cat} className={styles["option"]}>
                     <input
                       type="radio"
                       id={`category-${cat}`}
@@ -128,11 +128,11 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
               </div>
             </div>
 
-            <div className="difficulty-section">
+            <div className={styles["difficulty-section"]}>
               <h3>Difficulty</h3>
-              <div className="options">
+              <div className={styles["options"]}>
                 {[1, 2, 3].map((diff) => (
-                  <div key={diff} className="option">
+                  <div key={diff} className={styles["option"]}>
                     <input
                       type="radio"
                       id={`difficulty-${diff}`}
@@ -150,31 +150,31 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
             </div>
           </div>
 
-          <div className="form-main-content">
-            <div className="question-section">
+          <div className={styles["form-main-content"]}>
+            <div className={styles["question-section"]}>
               <h3>Question:</h3>
               <textarea
                 name="questionText"
                 placeholder="type..."
                 value={formData.questionText}
                 onChange={handleInputChange}
-                className="question-text-input"
+                className={styles["question-text-input"]}
               />
             </div>
 
-            <div className="question-section">
+            <div className={styles["question-section"]}>
               <label>Correct answer:</label>
               <textarea
                 name="correctAnswer"
                 placeholder="type..."
                 value={formData.correctAnswer}
                 onChange={handleInputChange}
-                className="answer-input"
+                className={styles["answer-input"]}
               />
             </div>
 
             {[0, 1].map((index) => (
-              <div className="question-section">
+              <div className={styles["question-section"]}>
                 <label>Wrong answer:</label>
                 <textarea
                   placeholder="type..."
@@ -182,12 +182,12 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                   onChange={(e) =>
                     handleWrongAnswerChange(index, e.target.value)
                   }
-                  className="answer-input"
+                  className={styles["answer-input"]}
                 />
               </div>
             ))}
 
-            <button type="submit" className="submit-button">
+            <button type="submit" className={styles["submit-button"]}>
               {mode === "add" ? "Add Question" : "Update Question"}
             </button>
           </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Question } from "../types/question";
-import "../styles/QuestionPage.css";
+import styles from "../styles/QuestionPage.module.css";
 
 const QuestionPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -47,42 +47,54 @@ const QuestionPage = () => {
   };
 
   return (
-    <div className="question-detail-container">
-      <div className="question-content">
-        <div className="question-section">
+    <div className={styles["question-detail-container"]}>
+      <div className={styles["question-content"]}>
+        <div className={styles["question-section"]}>
           <h3>Question:</h3>
-          <label className="question-text">{question.questionText}</label>
+          <label className={styles["question-text"]}>
+            {question.questionText}
+          </label>
         </div>
-        <div className="question-details">
-          <div className="detail-section">
-            <label className="detail-type">Category:</label>
-            <label className="detail-text">{question.category}</label>
+        <div className={styles["question-details"]}>
+          <div className={styles["detail-section"]}>
+            <label className={styles["detail-type"]}>Category:</label>
+            <label className={styles["detail-text"]}>{question.category}</label>
           </div>
-          <div className="detail-section">
-            <label className="detail-type">Difficulty:</label>
-            <label className="detail-text">{question.difficulty}</label>
+          <div className={styles["detail-section"]}>
+            <label className={styles["detail-type"]}>Difficulty:</label>
+            <label className={styles["detail-text"]}>
+              {question.difficulty}
+            </label>
           </div>
         </div>
-        <div className="question-section">
-          <label className="answer-type">Correct answer:</label>
-          <label className="answer-text">{question.correctAnswer}</label>
+        <div className={styles["question-section"]}>
+          <label className={styles["answer-type"]}>Correct answer:</label>
+          <label className={styles["answer-text"]}>
+            {question.correctAnswer}
+          </label>
         </div>
 
         {question.wrongAnswers.map((wrongAnswer) => (
-          <div className="question-section">
-            <label className="answer-type">Wrong answer:</label>
-            <label className="answer-text">{wrongAnswer}</label>
+          <div className={styles["question-section"]}>
+            <label className={styles["answer-type"]}>Wrong answer:</label>
+            <label className={styles["answer-text"]}>{wrongAnswer}</label>
           </div>
         ))}
 
-        <div className="question-actions">
-          <Link to={`/questions/edit/${question.id}`} className="edit-button">
+        <div className={styles["question-actions"]}>
+          <Link
+            to={`/questions/edit/${question.id}`}
+            className={styles["edit-button"]}
+          >
             Edit Question
           </Link>
-          <button onClick={handleDeleteQuestion} className="delete-button">
+          <button
+            onClick={handleDeleteQuestion}
+            className={styles["delete-button"]}
+          >
             Delete Question
           </button>
-          <Link to="/questions" className="back-button">
+          <Link to="/questions" className={styles["back-button"]}>
             Back to Questions
           </Link>
         </div>

@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Question } from "../types/question";
 import QuestionForm from "../components/QuestionForm";
-import "../styles/AddQuestionPage.css";
+import styles from "../styles/AddQuestionPage.module.css";
 
 const AddQuestionPage: React.FC = () => {
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ const AddQuestionPage: React.FC = () => {
   };
 
   return (
-    <div className="add-question-page-container">
+    <div className={styles["add-question-page-container"]}>
       <QuestionForm onSubmit={handleAddQuestion} mode="add" />
     </div>
   );

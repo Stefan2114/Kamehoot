@@ -5,6 +5,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -51,7 +53,7 @@ public class QuestionControllerTest {
 
                 questions.add(new Question(
                                 1L,
-                                new Date(),
+                                LocalDateTime.now(),
                                 "What is the capital of France?",
                                 "Geography",
                                 "Paris",
@@ -60,7 +62,7 @@ public class QuestionControllerTest {
 
                 questions.add(new Question(
                                 2L,
-                                new Date(),
+                                LocalDateTime.now(),
                                 "What is 2+2?",
                                 "Math",
                                 "4",
@@ -101,7 +103,7 @@ public class QuestionControllerTest {
                         // Arrange
                         Question newQuestion = new Question(
                                         null,
-                                        new Date(),
+                                        null,
                                         "New question?",
                                         "Test",
                                         "Answer",
@@ -128,7 +130,7 @@ public class QuestionControllerTest {
                         // Arrange
                         Question question = new Question(
                                         1L,
-                                        new Date(),
+                                        null,
                                         "Updated question?",
                                         "Test",
                                         "Answer",

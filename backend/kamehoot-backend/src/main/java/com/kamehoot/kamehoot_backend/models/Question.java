@@ -1,7 +1,6 @@
 package com.kamehoot.kamehoot_backend.models;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 public class Question {
@@ -29,6 +28,10 @@ public class Question {
         this.correctAnswer = correctAnswer;
         this.wrongAnswers = wrongAnswers;
         this.difficulty = difficulty;
+    }
+
+    public Question() {
+
     }
 
     @Override

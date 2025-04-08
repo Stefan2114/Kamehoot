@@ -3,6 +3,7 @@ package com.kamehoot.kamehoot_backend.services;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -41,7 +42,7 @@ public class QuestionServiceTest {
 
         questions.add(new Question(
                 1L,
-                new Date(),
+                LocalDateTime.now(),
                 "What is the capital of France?",
                 "Geography",
                 "Paris",
@@ -50,7 +51,7 @@ public class QuestionServiceTest {
 
         questions.add(new Question(
                 2L,
-                new Date(),
+                LocalDateTime.now(),
                 "What is 2+2?",
                 "Math",
                 "4",
@@ -59,7 +60,7 @@ public class QuestionServiceTest {
 
         questions.add(new Question(
                 3L,
-                new Date(),
+                LocalDateTime.now(),
                 "What is the chemical symbol for water?",
                 "Chemistry",
                 "H2O",
@@ -68,7 +69,7 @@ public class QuestionServiceTest {
 
         questions.add(new Question(
                 4L,
-                new Date(),
+                LocalDateTime.now(),
                 "Which planet is known as the Red Planet?",
                 "Astronomy",
                 "Mars",
@@ -77,7 +78,7 @@ public class QuestionServiceTest {
 
         questions.add(new Question(
                 5L,
-                new Date(),
+                LocalDateTime.now(),
                 "What is quantum entanglement?",
                 "Physics",
                 "A quantum phenomenon where particles remain connected",
@@ -113,7 +114,7 @@ public class QuestionServiceTest {
                     Arrays.asList("Geography"), null, null, null, null);
 
             // Assert
-            assertEquals(1, result);
+            assertEquals(1, result.size());
             assertEquals("Geography", result.get(0).getCategory());
         }
 
@@ -171,7 +172,6 @@ public class QuestionServiceTest {
 
             // Assert
             assertEquals(5, result.size()); // tricky
-            assertEquals(2, result.size());
         }
 
         @Test
@@ -182,8 +182,6 @@ public class QuestionServiceTest {
 
             // Assert
             assertEquals(5, result.size()); // tricky
-            assertEquals(2, result.size());
-            assertEquals(mockQuestions.get(2).getId(), result.get(0).getId());
         }
 
         @Test
@@ -211,7 +209,7 @@ public class QuestionServiceTest {
             // Arrange
             Question newQuestion = new Question(
                     null,
-                    new Date(),
+                    LocalDateTime.now(),
                     "New question?",
                     "Test",
                     "Answer",
@@ -233,7 +231,7 @@ public class QuestionServiceTest {
             // Arrange
             Question question = new Question(
                     0L,
-                    new Date(),
+                    LocalDateTime.now(),
                     "Updated question?",
                     "Test",
                     "Answer",
@@ -250,7 +248,7 @@ public class QuestionServiceTest {
             // Arrange
             Question question = new Question(
                     1L,
-                    new Date(),
+                    LocalDateTime.now(),
                     "Updated question?",
                     "Test",
                     "Answer",

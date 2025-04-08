@@ -2,6 +2,7 @@ package com.kamehoot.kamehoot_backend.repos;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class QuestionRepositoryTest {
             // Arrange
             Question nonExistent = new Question(
                     999L,
-                    new Date(),
+                    LocalDateTime.now(),
                     "Ghost question",
                     "Test",
                     "Ghost",

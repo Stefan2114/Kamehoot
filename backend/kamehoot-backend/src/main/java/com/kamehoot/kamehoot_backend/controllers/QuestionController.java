@@ -1,7 +1,13 @@
+// 3. Update the QuestionController
 package com.kamehoot.kamehoot_backend.controllers;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,7 +40,12 @@ public class QuestionController implements IQuestionController {
             @RequestParam(required = false) List<Integer> difficulties,
             @RequestParam(required = false) String searchTerm,
             @RequestParam(required = false, defaultValue = "id") String orderBy,
-            @RequestParam(required = false, defaultValue = "asc") String orderDirection) {
+            @RequestParam(required = false, defaultValue = "asc") String orderDirection,
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer pageSize) {
+
+        // Check if pagination parameters are provided
+        boolean hasPagination = page != null && pageSize != null;
 
         // Check if any filter parameters are provided
         boolean hasFilters = (categories != null && !categories.isEmpty()) ||
@@ -43,8 +54,19 @@ public class QuestionController implements IQuestionController {
                 !orderBy.equals("id") ||
                 !orderDirection.equals("asc");
 
-        if (hasFilters) {
-            // If filters are provided, use the new paginated endpoint
+        if (hasPagination) {
+            // If pagination is requested, use the paginated endpoint
+            return ResponseEntity.ok(
+                    this.questionService.getQuestionsPaginated(
+                            categories,
+                            difficulties,
+                            searchTerm,
+                            orderBy,
+                            orderDirection,
+                            page,
+                            pageSize));
+        } else if (hasFilters) {
+            // If only filters are provided but no pagination, use the filtered endpoint
             return ResponseEntity.ok(
                     this.questionService.getQuestions(
                             categories,
@@ -87,4 +109,15 @@ public class QuestionController implements IQuestionController {
         return ResponseEntity.ok(this.questionService.getQuestion(id));
     }
 
+    @Override
+    @GetMapping("/intro-video")
+    public ResponseEntity<Resource> getIntroVideo() {
+
+        FileSystemResource video = this.questionService.getIntroVideo();
+        System.out.println(video.getFilename());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=video.mp4")
+                .contentType(MediaTypeFactory.getMediaType(video).orElse(MediaType.APPLICATION_OCTET_STREAM))
+                .body(video);
+    }
 }

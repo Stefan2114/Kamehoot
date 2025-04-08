@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Question } from "../types/question";
 import QuestionForm from "../components/QuestionForm";
+import styles from "../styles/EditQuestionPage.module.css";
 
 const EditQuestionPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -61,7 +62,7 @@ const EditQuestionPage = () => {
   };
 
   return (
-    <div className="edit-question-page-container">
+    <div className={styles["edit-question-page-container"]}>
       <QuestionForm
         initialQuestion={question}
         onSubmit={handleUpdateQuestion}

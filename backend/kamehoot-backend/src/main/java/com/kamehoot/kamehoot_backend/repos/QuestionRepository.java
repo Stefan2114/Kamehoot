@@ -1,12 +1,14 @@
 package com.kamehoot.kamehoot_backend.repos;
 
-import java.time.LocalDateTime;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.kamehoot.kamehoot_backend.models.Question;
 
 @Repository
@@ -24,9 +26,26 @@ public class QuestionRepository implements IQuestionRepository {
 
         public QuestionRepository() {
                 this.questions = new ArrayList<>();
-                LAST_ID_USED = 0L;
-                populateQuestions();
+                loadQuestionsFromJson();
+                if (questions.isEmpty()) {
+                        LAST_ID_USED = 0L;
+                } else {
+                        LAST_ID_USED = this.questions.get(this.questions.size() - 1).getId();
+                }
 
+        }
+
+        private void loadQuestionsFromJson() {
+                try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        mapper.registerModule(new JavaTimeModule());
+                        InputStream inputStream = getClass().getResourceAsStream("/questions.json");
+                        this.questions = mapper.readValue(inputStream, new TypeReference<List<Question>>() {
+                        });
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new RuntimeException(e.getMessage());
+                }
         }
 
         private int getQuestionPosition(Question question) {
@@ -112,119 +131,6 @@ public class QuestionRepository implements IQuestionRepository {
                 }
 
                 throw new RuntimeException("Id not found");
-        }
-
-        private void populateQuestions() {
-                LocalDateTime currentDate = LocalDateTime.now();
-
-                this.questions.add(
-                                new Question(getNewId(), currentDate, "What is the derivative of x^2?", "Math", "2x",
-                                                List.of("x^2", "x"), 1));
-                this.questions
-                                .add(new Question(getNewId(), currentDate, "Who won the FIFA World Cup in 2018?",
-                                                "Football", "France",
-                                                List.of("Brazil", "Germany"), 3));
-                this.questions.add(
-                                new Question(getNewId(), currentDate, "Solve for x: 2x + 3 = 7", "Math", "2",
-                                                List.of("3", "4"), 3));
-                this.questions
-                                .add(new Question(getNewId(), currentDate,
-                                                "Which club has won the most UEFA Champions League titles?",
-                                                "Football", "Real Madrid", List.of("Barcelona", "Manchester United"),
-                                                3));
-                currentDate = currentDate.plus(1, java.time.temporal.ChronoUnit.SECONDS);
-                this.questions.add(
-                                new Question(getNewId(), currentDate, "What is the integral of 3x^2?", "Math", "x^3",
-                                                List.of("3x", "x^2"), 2));
-                this.questions.add(
-                                new Question(getNewId(), currentDate,
-                                                "Who is the all-time top scorer in the UEFA Champions League?",
-                                                "Football", "Cristiano Ronaldo",
-                                                List.of("Lionel Messi", "Robert Lewandowski"), 3));
-                this.questions.add(
-                                new Question(getNewId(), currentDate, "What is the square root of 144?", "Math", "12",
-                                                List.of("14", "10"), 2));
-                this.questions.add(
-                                new Question(getNewId(), currentDate, "Which country has won the most FIFA World Cups?",
-                                                "Football",
-                                                "Brazil", List.of("Germany", "Argentina"), 1));
-                currentDate = currentDate.plus(1, java.time.temporal.ChronoUnit.SECONDS);
-                this.questions.add(
-                                new Question(getNewId(), currentDate, "If f(x) = x^3, what is f'(x)?", "Math", "3x^2",
-                                                List.of("x^2", "x^3"), 2));
-                this.questions
-                                .add(new Question(getNewId(), currentDate, "Who won the Ballon d'Or in 2021?",
-                                                "Football",
-                                                "Lionel Messi",
-                                                List.of("Robert Lewandowski", "Karim Benzema"), 3));
-                this.questions.add(new Question(getNewId(), currentDate, "What is the sum of the angles in a triangle?",
-                                "Math",
-                                "180 degrees", List.of("90 degrees", "270 degrees"), 3));
-                this.questions
-                                .add(new Question(getNewId(), currentDate,
-                                                "Who holds the record for most goals in a single World Cup?",
-                                                "Football", "Just Fontaine", List.of("Pele", "Miroslav Klose"), 3));
-                currentDate = currentDate.plus(1, java.time.temporal.ChronoUnit.SECONDS);
-
-                this.questions
-                                .add(new Question(getNewId(), currentDate, "Solve for x: 3x - 5 = 10", "Math", "5",
-                                                List.of("3", "7"),
-                                                3));
-                this.questions
-                                .add(new Question(getNewId(), currentDate,
-                                                "Which player has won the most Ballon d'Or awards?",
-                                                "Football",
-                                                "Lionel Messi", List.of("Cristiano Ronaldo", "Johan Cruyff"), 1));
-                this.questions
-                                .add(new Question(getNewId(), currentDate,
-                                                "What is the value of pi (rounded to 3 decimal places)?",
-                                                "Math",
-                                                "3.142", List.of("3.141", "3.143"), 1));
-                this.questions
-                                .add(new Question(getNewId(), currentDate,
-                                                "Which team won the UEFA Champions League in 2020?",
-                                                "Football",
-                                                "Bayern Munich", List.of("Liverpool", "Paris Saint-Germain"), 1));
-                currentDate = currentDate.plus(1, java.time.temporal.ChronoUnit.SECONDS);
-
-                this.questions.add(new Question(getNewId(), currentDate, "What is 9! (9 factorial)?", "Math", "362880",
-                                List.of("40320", "362800"), 1));
-                this.questions
-                                .add(new Question(getNewId(), currentDate, "Who scored the famous 'Hand of God' goal?",
-                                                "Football",
-                                                "Diego Maradona", List.of("Pelé", "Zinedine Zidane"), 2));
-                this.questions.add(new Question(getNewId(), currentDate, "What is the logarithm base 10 of 1000?",
-                                "Math", "3",
-                                List.of("2", "4"), 3));
-                this.questions
-                                .add(new Question(getNewId(), currentDate,
-                                                "Which club has the most Premier League titles?", "Football",
-                                                "Manchester United", List.of("Chelsea", "Liverpool"), 2));
-                this.questions.add(new Question(getNewId(), currentDate, "If sin(30°) = 0.5, what is cos(60°)?", "Math",
-                                "0.5",
-                                List.of("0.866", "1"), 2));
-                currentDate = currentDate.plus(1, java.time.temporal.ChronoUnit.SECONDS);
-
-                this.questions
-                                .add(new Question(getNewId(), currentDate, "Who won the 2014 FIFA World Cup?",
-                                                "Football", "Germany",
-                                                List.of("Argentina", "Brazil"), 2));
-                this.questions
-                                .add(new Question(getNewId(), currentDate,
-                                                "What is the determinant of the matrix [[1,2],[3,4]]?",
-                                                "Math",
-                                                "-2", List.of("2", "0"), 1));
-                this.questions
-                                .add(new Question(getNewId(), currentDate,
-                                                "Which country hosted the 2006 FIFA World Cup?", "Football",
-                                                "Germany", List.of("France", "South Africa"), 3));
-                currentDate = currentDate.plus(1, java.time.temporal.ChronoUnit.SECONDS);
-
-                this.questions
-                                .add(new Question(getNewId(), currentDate,
-                                                "What is the formula for the area of a circle?", "Math",
-                                                "πr²",
-                                                List.of("2πr", "πd"), 3));
         }
 
 }
