@@ -1,196 +1,198 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Question } from "../types/question";
+import { Question, QuestionFromBackend } from "../types/question";
 import QuestionItem from "../components/QuestionItem";
-import "../styles/QuestionsPage.css";
+import styles from "../styles/QuestionsPage.module.css";
 
 const QuestionsPage = () => {
   const navigate = useNavigate();
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loaderRef = useRef(null);
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [difficultyFilter, setDifficultyFilter] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [orderBy, setOrderBy] = useState("difficulty");
-  const [currentPage, setCurrentPage] = useState(1);
-  const questionsPerPage = 5;
+  const [orderDirection, setOrderDirection] = useState("asc");
 
+  const PAGE_SIZE = 10; // Number of questions to fetch per page
+
+  const fetchQuestions = useCallback(
+    (pageNumber: number, reset: boolean = false) => {
+      setLoading(true);
+
+      // Build query parameters
+      const params = new URLSearchParams();
+
+      if (categoryFilter.length > 0) {
+        params.append("categories", categoryFilter.join(","));
+      }
+
+      if (difficultyFilter.length > 0) {
+        params.append("difficulties", difficultyFilter.join(","));
+      }
+
+      if (searchTerm) {
+        params.append("searchTerm", searchTerm);
+      }
+
+      params.append("orderBy", orderBy);
+      params.append("orderDirection", orderDirection);
+      params.append("page", pageNumber.toString());
+      params.append("pageSize", PAGE_SIZE.toString());
+
+      // Make API request
+      fetch(`http://localhost:8081/questions?${params.toString()}`)
+        .then((response) => response.json())
+        .then((data: QuestionFromBackend[]) => {
+          const parsed = data.map((q) => ({
+            ...q,
+            creationDate: new Date(q.creationDate.split(".")[0]),
+          }));
+
+          // If there are fewer items than the page size, we've reached the end
+          if (parsed.length < PAGE_SIZE) {
+            setHasMore(false);
+          } else {
+            setHasMore(true);
+          }
+
+          if (reset) {
+            setQuestions(parsed);
+          } else {
+            setQuestions((prevQuestions) => [...prevQuestions, ...parsed]);
+          }
+
+          setInitialLoad(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching questions:", error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    },
+    [categoryFilter, difficultyFilter, searchTerm, orderBy, orderDirection]
+  );
+
+  // Observer callback for infinite scrolling
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting && hasMore && !loading) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    },
+    [hasMore, loading]
+  );
+
+  // Set up the intersection observer
   useEffect(() => {
-    fetch("http://localhost:8081/questions")
-      .then((response) => response.json())
-      .then((data: Question[]) => setQuestions(data))
-      .catch((error) => console.error("Error fetching messages:", error));
-  }, []);
+    const option = {
+      root: null,
+      rootMargin: "20px",
+      threshold: 0,
+    };
 
+    observerRef.current = new IntersectionObserver(handleObserver, option);
+
+    if (loaderRef.current) {
+      observerRef.current.observe(loaderRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [handleObserver]);
+
+  // Fetch categories once
   useEffect(() => {
     fetch("http://localhost:8081/categories")
       .then((response) => response.json())
       .then((data: string[]) => setCategories(data))
-      .catch((error) => console.error("Error fetching messages:", error));
+      .catch((error) => console.error("Error fetching categories:", error));
   }, []);
 
-  const filteredQuestions = useMemo(() => {
-    return questions.filter((question) => {
-      const categoryMatch =
-        categoryFilter.length === 0 ||
-        categoryFilter.includes(question.category);
+  // Reset and fetch questions when filters change
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    fetchQuestions(1, true);
+  }, [categoryFilter, difficultyFilter, searchTerm, orderBy, orderDirection]);
 
-      const difficultyMatch =
-        difficultyFilter.length === 0 ||
-        difficultyFilter.includes(question.difficulty);
-
-      const searchMatch = question.questionText
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-
-      return categoryMatch && difficultyMatch && searchMatch;
-    });
-  }, [questions, categoryFilter, difficultyFilter, searchTerm]);
-
-  const sortedQuestions = useMemo(() => {
-    return [...filteredQuestions].sort((a, b) => {
-      switch (orderBy) {
-        case "difficulty":
-          return a.difficulty - b.difficulty;
-        case "date":
-          return new Date(a.date).getDate() - new Date(b.date).getDate();
-        default:
-          return a.id - b.id;
-      }
-    });
-  }, [filteredQuestions, orderBy]);
-
-  const paginatedQuestions = useMemo(() => {
-    const startIndex = (currentPage - 1) * questionsPerPage;
-    return sortedQuestions.slice(startIndex, startIndex + questionsPerPage);
-  }, [sortedQuestions, currentPage, questionsPerPage]);
-
-  const totalPages = Math.ceil(sortedQuestions.length / questionsPerPage);
-
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const renderPagination = () => {
-    const pages: React.ReactNode[] = [];
-    ``;
-    const maxPagesToShow = 5;
-
-    const addPageButton = (pageNumber: number) => {
-      pages.push(
-        <button
-          key={pageNumber}
-          onClick={() => handlePageChange(pageNumber)}
-          className={currentPage === pageNumber ? "active-page" : ""}
-        >
-          {pageNumber}
-        </button>
-      );
-    };
-
-    const addEllipsis = (key: string) => {
-      pages.push(
-        <span key={key} className="pagination-ellipsis">
-          ...
-        </span>
-      );
-    };
-
-    if (totalPages <= maxPagesToShow) {
-      for (let i = 1; i <= totalPages; i++) {
-        addPageButton(i);
-      }
-    } else {
-      addPageButton(1);
-
-      let startPage = Math.max(2, currentPage - 1);
-      let endPage = Math.min(totalPages - 1, currentPage + 1);
-
-      if (currentPage > 3) {
-        addEllipsis("start-ellipsis");
-      }
-
-      for (let i = startPage; i <= endPage; i++) {
-        addPageButton(i);
-      }
-
-      if (currentPage < totalPages - 2) {
-        addEllipsis("end-ellipsis");
-      }
-
-      addPageButton(totalPages);
+  // Fetch additional pages when page number changes
+  useEffect(() => {
+    if (!initialLoad && page > 1) {
+      fetchQuestions(page, false);
     }
+  }, [page, initialLoad, fetchQuestions]);
 
-    return pages;
-  };
-
-  const handleCategoryFilterChange = (category: string) => {
+  const handleCategoryFilterChange = (category: string) =>
     setCategoryFilter((prev) =>
       prev.includes(category)
         ? prev.filter((c) => c !== category)
         : [...prev, category]
     );
-    setCurrentPage(1);
-  };
 
-  const handleDifficultyFilterChange = (difficulty: number) => {
+  const handleDifficultyFilterChange = (difficulty: number) =>
     setDifficultyFilter((prev) =>
       prev.includes(difficulty)
         ? prev.filter((c) => c !== difficulty)
         : [...prev, difficulty]
     );
-    setCurrentPage(1);
-  };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
 
-  const handleOrderByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleOrderByChange = (e: React.ChangeEvent<HTMLSelectElement>) =>
     setOrderBy(e.target.value);
-    setCurrentPage(1);
-  };
 
   const handleAddQuestion = () => {
     navigate("/questions/add");
   };
 
   return (
-    <div className="questions-container">
-      <div className="sidebar">
-        <button className="add-button" onClick={handleAddQuestion}>
+    <div className={styles["questions-container"]}>
+      <div className={styles["sidebar"]}>
+        <button className={styles["add-button"]} onClick={handleAddQuestion}>
           Add Question
         </button>
 
-        <div className="filter-section">
+        <div className={styles["filter-section"]}>
           <h3>Categories</h3>
           {categories.map((category) => (
-            <div key={category} className="filter-checkbox">
+            <div key={category} className={styles["filter-checkbox"]}>
               <input
                 type="checkbox"
                 id={`category-${category}`}
                 checked={categoryFilter.includes(category)}
                 onChange={() => handleCategoryFilterChange(category)}
               />
-              <label>{category}</label>
+              <label htmlFor={`category-${category}`}>{category}</label>
             </div>
           ))}
         </div>
 
-        <div className="filter-section">
+        <div className={styles["filter-section"]}>
           <h3>Difficulties</h3>
           {[1, 2, 3].map((difficulty) => (
-            <div key={difficulty} className="filter-checkbox">
+            <div key={difficulty} className={styles["filter-checkbox"]}>
               <input
                 type="checkbox"
                 id={`difficulty-${difficulty}`}
                 checked={difficultyFilter.includes(difficulty)}
                 onChange={() => handleDifficultyFilterChange(difficulty)}
               />
-              <label>
+              <label htmlFor={`difficulty-${difficulty}`}>
                 {difficulty === 1
                   ? "Easy"
                   : difficulty === 2
@@ -200,11 +202,19 @@ const QuestionsPage = () => {
             </div>
           ))}
         </div>
+
+        <video className={styles["intro-video"]} controls>
+          <source
+            src="http://localhost:8081/questions/intro-video"
+            type="video/mp4"
+          />
+          Your browser does not support the video tag.
+        </video>
       </div>
 
-      <div className="main-content">
-        <div className="search-and-sort">
-          <div className="search-container">
+      <div className={styles["main-content"]}>
+        <div className={styles["search-and-sort"]}>
+          <div className={styles["search-container"]}>
             <input
               type="text"
               placeholder="Search questions..."
@@ -213,7 +223,7 @@ const QuestionsPage = () => {
             />
           </div>
           <select
-            className="order-by-select"
+            className={styles["order-by-select"]}
             value={orderBy}
             onChange={handleOrderByChange}
           >
@@ -221,14 +231,34 @@ const QuestionsPage = () => {
             <option value="date">Sort by Date</option>
           </select>
         </div>
-        <div className="questions-list">
-          {paginatedQuestions.map((question) => (
-            <QuestionItem key={question.id} question={question} />
-          ))}
-        </div>
 
-        {totalPages > 1 && (
-          <div className="pagination">{renderPagination()}</div>
+        {initialLoad && loading ? (
+          <div className={styles["loading"]}>Loading questions...</div>
+        ) : (
+          <>
+            <div className={styles["questions-list"]}>
+              {questions.length > 0 ? (
+                questions.map((question) => (
+                  <QuestionItem key={question.id} question={question} />
+                ))
+              ) : (
+                <div className={styles["no-questions"]}>No questions found</div>
+              )}
+            </div>
+
+            {/* Loader element that will trigger the next page load when it comes into view */}
+            {hasMore && (
+              <div ref={loaderRef} className={styles["loader"]}>
+                {loading && <div>Loading more questions...</div>}
+              </div>
+            )}
+
+            {!hasMore && questions.length > 0 && (
+              <div className={styles["end-message"]}>
+                No more questions to load
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
