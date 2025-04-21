@@ -1,27 +1,41 @@
 // 2. Update the QuestionService implementation
 package com.kamehoot.kamehoot_backend.services;
 
+import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaTypeFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.kamehoot.kamehoot_backend.DTOs.QuestionDTO;
+import com.kamehoot.kamehoot_backend.models.Category;
 import com.kamehoot.kamehoot_backend.models.Question;
+import com.kamehoot.kamehoot_backend.models.WrongAnswer;
+import com.kamehoot.kamehoot_backend.repos.ICategoryRepository;
 import com.kamehoot.kamehoot_backend.repos.IQuestionRepository;
+import com.kamehoot.kamehoot_backend.repos.IWrongAnswerRepository;
 
 @Service
 public class QuestionService implements IQuestionService {
         private final IQuestionRepository questionRepository;
+        private final ICategoryRepository categoryRepository;
+        private final IWrongAnswerRepository wrongAnswerRepository;
 
         @Autowired
-        public QuestionService(IQuestionRepository questionRepository) {
+        public QuestionService(IQuestionRepository questionRepository, ICategoryRepository categoryRepository,
+                        IWrongAnswerRepository wrongAnswerRepository) {
                 this.questionRepository = questionRepository;
+                this.categoryRepository = categoryRepository;
+                this.wrongAnswerRepository = wrongAnswerRepository;
+                // saveJsonQuestions();
         }
 
         @Override
@@ -43,7 +57,7 @@ public class QuestionService implements IQuestionService {
                 // Apply filters
                 List<Question> filteredQuestions = allQuestions.stream()
                                 .filter(q -> categories == null || categories.isEmpty()
-                                                || categories.contains(q.getCategory()))
+                                                || categories.contains(q.getCategory().getName()))
                                 .filter(q -> difficulties == null || difficulties.isEmpty()
                                                 || difficulties.contains(q.getDifficulty()))
                                 .filter(q -> searchTerm == null || searchTerm.isEmpty() ||
@@ -78,39 +92,9 @@ public class QuestionService implements IQuestionService {
         }
 
         @Override
-        public List<Question> getQuestionsPaginated(
-                        List<String> categories,
-                        List<Integer> difficulties,
-                        String searchTerm,
-                        String orderBy,
-                        String orderDirection,
-                        int page,
-                        int pageSize) {
-
-                // Get filtered and sorted questions using existing method
-                List<Question> filteredQuestions = getQuestions(
-                                categories,
-                                difficulties,
-                                searchTerm,
-                                orderBy,
-                                orderDirection);
-
-                // Apply pagination
-                int startIndex = (page - 1) * pageSize;
-                int endIndex = Math.min(startIndex + pageSize, filteredQuestions.size());
-
-                // Make sure startIndex is valid
-                if (startIndex >= filteredQuestions.size()) {
-                        return List.of(); // Return empty list if page is beyond available data
-                }
-
-                return filteredQuestions.subList(startIndex, endIndex);
-        }
-
-        @Override
         public void addQuestion(Question question) {
                 try {
-                        this.questionRepository.add(question);
+                        this.questionRepository.save(question);
                 } catch (RuntimeException e) {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
                 }
@@ -118,19 +102,16 @@ public class QuestionService implements IQuestionService {
 
         @Override
         public void updateQuestion(Question question) {
-                if (question.getId() == 0L) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                                        "For update the id should not be null");
-                }
+
                 try {
-                        this.questionRepository.update(question);
+                        this.questionRepository.save(question);
                 } catch (RuntimeException e) {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
                 }
         }
 
         @Override
-        public void deleteQuestionById(Long questionId) {
+        public void deleteQuestionById(UUID questionId) {
                 try {
                         this.questionRepository.deleteById(questionId);
                 } catch (RuntimeException e) {
@@ -139,8 +120,11 @@ public class QuestionService implements IQuestionService {
         }
 
         @Override
-        public Question getQuestion(Long id) {
-                return this.questionRepository.findById(id);
+        public Question getQuestion(UUID id) {
+                return this.questionRepository.findById(id).orElseThrow(() -> {
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Question not found");
+                });
+
         }
 
         @Override
@@ -148,5 +132,52 @@ public class QuestionService implements IQuestionService {
                 FileSystemResource video = new FileSystemResource("./src/main/resources/What is Kahoot!_.mp4");
                 return video;
 
+        }
+
+        private List<QuestionDTO> loadQuestionsFromJson() {
+                try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        mapper.registerModule(new JavaTimeModule());
+                        InputStream inputStream = getClass().getResourceAsStream("/questions.json");
+                        return mapper.readValue(inputStream,
+                                        new TypeReference<List<QuestionDTO>>() {
+                                        });
+
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new RuntimeException(e.getMessage());
+                }
+        }
+
+        private void saveJsonQuestions() {
+
+                Category category1 = new Category();
+                category1.setName("Math");
+                Category category2 = new Category();
+                category2.setName("Football");
+
+                this.categoryRepository.save(category1);
+                this.categoryRepository.save(category2);
+                System.out.println("Categories saved");
+
+                List<QuestionDTO> jsonQuestions = loadQuestionsFromJson();
+                System.out.println("JSON Questions got");
+                for (QuestionDTO question : jsonQuestions) {
+                        Category category = this.categoryRepository.findByName(question.getCategory());
+                        Question newQuestion = new Question();
+                        newQuestion.setCreationDate(question.getCreationDate());
+                        newQuestion.setCategory(category);
+                        newQuestion.setCorrectAnswer(question.getCorrectAnswer());
+                        newQuestion.setDifficulty(question.getDifficulty());
+                        newQuestion.setQuestionText(question.getQuestionText());
+
+                        Question savedQuestion = this.questionRepository.save(newQuestion);
+                        for (String wrongAnswer : question.getWrongAnswers()) {
+                                WrongAnswer newWrongAnswer = new WrongAnswer();
+                                newWrongAnswer.setAnswerText(wrongAnswer);
+                                newWrongAnswer.setQuestion(savedQuestion);
+                                this.wrongAnswerRepository.save(newWrongAnswer);
+                        }
+                }
         }
 }

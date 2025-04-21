@@ -1,16 +1,11 @@
-// src/pages/QuestionsPage.tsx
-
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Question, QuestionFromBackend } from "../types/question";
 import QuestionItem from "../components/QuestionItem";
 import styles from "../styles/QuestionsPage.module.css";
-import { useOffline } from "../contexts/OfflineContext";
-import { ConnectionState, offlineService } from "../services/OfflineService";
 
 const QuestionsPage = () => {
   const navigate = useNavigate();
-  const { connectionState } = useOffline();
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loaderRef = useRef(null);
 
@@ -30,7 +25,7 @@ const QuestionsPage = () => {
   const PAGE_SIZE = 10; // Number of questions to fetch per page
 
   const fetchQuestions = useCallback(
-    async (pageNumber: number, reset: boolean = false) => {
+    (pageNumber: number, reset: boolean = false) => {
       setLoading(true);
 
       // Build query parameters
@@ -53,42 +48,36 @@ const QuestionsPage = () => {
       params.append("page", pageNumber.toString());
       params.append("pageSize", PAGE_SIZE.toString());
 
-      try {
-        // Use offlineService to fetch questions
-        const data = await offlineService.fetchQuestions(params);
+      // Make API request
+      fetch(`http://localhost:8081/questions?${params.toString()}`)
+        .then((response) => response.json())
+        .then((data: QuestionFromBackend[]) => {
+          const parsed = data.map((q) => ({
+            ...q,
+            creationDate: new Date(q.creationDate.split(".")[0]),
+          }));
 
-        // Parse dates if needed
-        const parsed = data.map((q: any) => ({
-          ...q,
-          creationDate:
-            q.creationDate instanceof Date
-              ? q.creationDate
-              : new Date(
-                  typeof q.creationDate === "string"
-                    ? q.creationDate.split(".")[0]
-                    : q.creationDate
-                ),
-        }));
+          // If there are fewer items than the page size, we've reached the end
+          if (parsed.length < PAGE_SIZE) {
+            setHasMore(false);
+          } else {
+            setHasMore(true);
+          }
 
-        // If there are fewer items than the page size, we've reached the end
-        if (parsed.length < PAGE_SIZE) {
-          setHasMore(false);
-        } else {
-          setHasMore(true);
-        }
+          if (reset) {
+            setQuestions(parsed);
+          } else {
+            setQuestions((prevQuestions) => [...prevQuestions, ...parsed]);
+          }
 
-        if (reset) {
-          setQuestions(parsed);
-        } else {
-          setQuestions((prevQuestions) => [...prevQuestions, ...parsed]);
-        }
-
-        setInitialLoad(false);
-      } catch (error) {
-        console.error("Error fetching questions:", error);
-      } finally {
-        setLoading(false);
-      }
+          setInitialLoad(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching questions:", error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     },
     [categoryFilter, difficultyFilter, searchTerm, orderBy, orderDirection]
   );
@@ -127,16 +116,10 @@ const QuestionsPage = () => {
 
   // Fetch categories once
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await offlineService.fetchCategories();
-        setCategories(data);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-
-    fetchCategories();
+    fetch("http://localhost:8081/categories")
+      .then((response) => response.json())
+      .then((data: string[]) => setCategories(data))
+      .catch((error) => console.error("Error fetching categories:", error));
   }, []);
 
   // Reset and fetch questions when filters change
@@ -163,8 +146,7 @@ const QuestionsPage = () => {
   const handleDifficultyFilterChange = (difficulty: number) =>
     setDifficultyFilter((prev) =>
       prev.includes(difficulty)
-        ? // src/pages/QuestionsPage.tsx (continued)
-          prev.filter((c) => c !== difficulty)
+        ? prev.filter((c) => c !== difficulty)
         : [...prev, difficulty]
     );
 
@@ -221,21 +203,13 @@ const QuestionsPage = () => {
           ))}
         </div>
 
-        {connectionState === ConnectionState.ONLINE && (
-          <video className={styles["intro-video"]} controls>
-            <source
-              src="http://localhost:8081/questions/intro-video"
-              type="video/mp4"
-            />
-            Your browser does not support the video tag.
-          </video>
-        )}
-
-        {connectionState !== ConnectionState.ONLINE && (
-          <div className={styles["offline-message"]}>
-            Video not available in offline mode
-          </div>
-        )}
+        <video className={styles["intro-video"]} controls>
+          <source
+            src="http://localhost:8081/questions/intro-video"
+            type="video/mp4"
+          />
+          Your browser does not support the video tag.
+        </video>
       </div>
 
       <div className={styles["main-content"]}>

@@ -1,19 +1,12 @@
 package com.kamehoot.kamehoot_backend.repos;
 
-import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.kamehoot.kamehoot_backend.models.Question;
 
-public interface IQuestionRepository {
-
-    public Question add(Question question);
-
-    public Question update(Question question);
-
-    public void deleteById(Long questionId);
-
-    public List<Question> findAll();
-
-    public Question findById(Long id);
-
+@Repository
+public interface IQuestionRepository extends JpaRepository<Question, UUID> {
 }

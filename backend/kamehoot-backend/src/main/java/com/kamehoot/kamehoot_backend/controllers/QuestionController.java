@@ -2,6 +2,8 @@
 package com.kamehoot.kamehoot_backend.controllers;
 
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -9,7 +11,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kamehoot.kamehoot_backend.models.Question;
 import com.kamehoot.kamehoot_backend.services.IQuestionService;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/questions")
 public class QuestionController implements IQuestionController {
@@ -40,12 +40,7 @@ public class QuestionController implements IQuestionController {
             @RequestParam(required = false) List<Integer> difficulties,
             @RequestParam(required = false) String searchTerm,
             @RequestParam(required = false, defaultValue = "id") String orderBy,
-            @RequestParam(required = false, defaultValue = "asc") String orderDirection,
-            @RequestParam(required = false, defaultValue = "1") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer pageSize) {
-
-        // Check if pagination parameters are provided
-        boolean hasPagination = page != null && pageSize != null;
+            @RequestParam(required = false, defaultValue = "asc") String orderDirection) {
 
         // Check if any filter parameters are provided
         boolean hasFilters = (categories != null && !categories.isEmpty()) ||
@@ -54,18 +49,7 @@ public class QuestionController implements IQuestionController {
                 !orderBy.equals("id") ||
                 !orderDirection.equals("asc");
 
-        if (hasPagination) {
-            // If pagination is requested, use the paginated endpoint
-            return ResponseEntity.ok(
-                    this.questionService.getQuestionsPaginated(
-                            categories,
-                            difficulties,
-                            searchTerm,
-                            orderBy,
-                            orderDirection,
-                            page,
-                            pageSize));
-        } else if (hasFilters) {
+        if (hasFilters) {
             // If only filters are provided but no pagination, use the filtered endpoint
             return ResponseEntity.ok(
                     this.questionService.getQuestions(
@@ -90,7 +74,8 @@ public class QuestionController implements IQuestionController {
 
     @Override
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteQuestion(@PathVariable("id") Long questionId) {
+    public ResponseEntity<Void> deleteQuestion(@PathVariable("id") UUID questionId) {
+        System.out.println("I deleted the question with id: " + questionId);
         this.questionService.deleteQuestionById(questionId);
         return ResponseEntity.noContent().build();
     }
@@ -105,7 +90,9 @@ public class QuestionController implements IQuestionController {
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<Question> getQuestion(@PathVariable Long id) {
+    public ResponseEntity<Question> getQuestion(@PathVariable UUID id) {
+        System.out.println(id);
+        System.out.println("I got here to get a question by id");
         return ResponseEntity.ok(this.questionService.getQuestion(id));
     }
 

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kamehoot.kamehoot_backend.models.Category;
 import com.kamehoot.kamehoot_backend.repos.ICategoryRepository;
 
 @Service
@@ -18,8 +19,8 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public List<String> getCategories() {
-        return this.categoryRepository.getCategories();
+    public List<Category> getCategories() {
+        return this.categoryRepository.findAll();
     }
 
 }

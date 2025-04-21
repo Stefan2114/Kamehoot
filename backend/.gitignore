@@ -7,7 +7,6 @@ out/
 *.log
 
 # Configuration files (Sensitive data)
-application.properties
 application.yml
 application-local.properties
 application-prod.properties
