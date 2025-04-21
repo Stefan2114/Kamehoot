@@ -2,6 +2,8 @@
 package com.kamehoot.kamehoot_backend.controllers;
 
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.http.ResponseEntity;
 import com.kamehoot.kamehoot_backend.models.Question;
 import org.springframework.core.io.Resource;
@@ -13,17 +15,15 @@ public interface IQuestionController {
             List<Integer> difficulties,
             String searchTerm,
             String orderBy,
-            String orderDirection,
-            Integer page,
-            Integer pageSize);
+            String orderDirection);
 
     ResponseEntity<Void> addQuestion(Question question);
 
-    ResponseEntity<Void> deleteQuestion(Long questionId);
+    ResponseEntity<Void> deleteQuestion(UUID questionId);
 
     ResponseEntity<Void> updateQuestion(Question question);
 
-    ResponseEntity<Question> getQuestion(Long id);
+    ResponseEntity<Question> getQuestion(UUID id);
 
     ResponseEntity<Resource> getIntroVideo();
 }

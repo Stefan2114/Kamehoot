@@ -5,10 +5,8 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.kamehoot.kamehoot_backend.models.Category;
+import com.kamehoot.kamehoot_backend.models.WrongAnswer;
 
 @Repository
-public interface ICategoryRepository extends JpaRepository<Category, UUID> {
-
-    Category findByName(String category);
+public interface IWrongAnswerRepository extends JpaRepository<WrongAnswer, UUID> {
 }

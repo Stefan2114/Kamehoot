@@ -2,118 +2,62 @@ package com.kamehoot.kamehoot_backend.models;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Entity
+@Table(name = "questions")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class Question {
 
-    private Long id;
+    @Id
+    @GeneratedValue
+    private UUID id;
 
+    @Column(nullable = false)
     private LocalDateTime creationDate;
 
+    @Column(length = 256, nullable = false)
     private String questionText;
 
-    private String category;
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
+    @Column(length = 128, nullable = false)
     private String correctAnswer;
 
-    private List<String> wrongAnswers;
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    private List<WrongAnswer> wrongAnswers;
 
+    @Column(nullable = false)
     private Integer difficulty;
-
-    public Question(Long id, LocalDateTime creationDate, String questionText, String category, String correctAnswer,
-            List<String> wrongAnswers, Integer difficulty) {
-        this.id = id;
-        this.creationDate = creationDate;
-        this.questionText = questionText;
-        this.category = category;
-        this.correctAnswer = correctAnswer;
-        this.wrongAnswers = wrongAnswers;
-        this.difficulty = difficulty;
-    }
-
-    public Question() {
-
-    }
 
     @Override
     public boolean equals(Object other) {
 
-        System.out.println(questionText);
         if (!(other instanceof Question)) {
             return false;
         }
 
-        System.out.println("I passed");
-
         return this.id == ((Question) other).id;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public String getQuestionText() {
-        return questionText;
-    }
-
-    public void setQuestionText(String questionText) {
-        this.questionText = questionText;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getCorrectAnswer() {
-        return correctAnswer;
-    }
-
-    public void setCorrectAnswer(String correctAnswer) {
-        this.correctAnswer = correctAnswer;
-    }
-
-    public List<String> getWrongAnswers() {
-        return wrongAnswers;
-    }
-
-    public void setWrongAnswers(List<String> wrongAnswers) {
-        this.wrongAnswers = wrongAnswers;
-    }
-
-    public Integer getDifficulty() {
-        return difficulty;
-    }
-
-    public void setDifficulty(Integer difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    @Override
-    public String toString() {
-        return "Question{" +
-                "id=" + id +
-                ", creationDate=" + creationDate +
-                ", questionText='" + questionText + '\'' +
-                ", category='" + category + '\'' +
-                ", correctAnswer='" + correctAnswer + '\'' +
-                ", wrongAnswers=" + wrongAnswers +
-                ", difficulty=" + difficulty +
-                '}';
-    }
-
 }
