@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,6 +66,7 @@ public class QuestionController implements IQuestionController {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Void> addQuestion(@RequestBody Question question) {
         System.out.println(question);
@@ -73,6 +75,7 @@ public class QuestionController implements IQuestionController {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteQuestion(@PathVariable("id") UUID questionId) {
         System.out.println("I deleted the question with id: " + questionId);
@@ -81,6 +84,7 @@ public class QuestionController implements IQuestionController {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<Void> updateQuestion(@RequestBody Question question) {
         System.out.println(question);
@@ -89,6 +93,7 @@ public class QuestionController implements IQuestionController {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<Question> getQuestion(@PathVariable UUID id) {
         System.out.println(id);
@@ -97,6 +102,7 @@ public class QuestionController implements IQuestionController {
     }
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/intro-video")
     public ResponseEntity<Resource> getIntroVideo() {
 
