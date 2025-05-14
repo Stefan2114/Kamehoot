@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -16,11 +17,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.kamehoot.kamehoot_backend.DTOs.QuestionDTO;
+import com.kamehoot.kamehoot_backend.models.AppUser;
 import com.kamehoot.kamehoot_backend.models.Category;
 import com.kamehoot.kamehoot_backend.models.Question;
 import com.kamehoot.kamehoot_backend.models.WrongAnswer;
 import com.kamehoot.kamehoot_backend.repos.ICategoryRepository;
 import com.kamehoot.kamehoot_backend.repos.IQuestionRepository;
+import com.kamehoot.kamehoot_backend.repos.IUserRepository;
 import com.kamehoot.kamehoot_backend.repos.IWrongAnswerRepository;
 
 @Service
@@ -28,13 +31,19 @@ public class QuestionService implements IQuestionService {
         private final IQuestionRepository questionRepository;
         private final ICategoryRepository categoryRepository;
         private final IWrongAnswerRepository wrongAnswerRepository;
+        private final PasswordEncoder passwordEncoder;
+        private final IUserRepository userRepository;
 
         @Autowired
         public QuestionService(IQuestionRepository questionRepository, ICategoryRepository categoryRepository,
-                        IWrongAnswerRepository wrongAnswerRepository) {
+                        IWrongAnswerRepository wrongAnswerRepository, PasswordEncoder passwordEncoder,
+                        IUserRepository userRepository) {
                 this.questionRepository = questionRepository;
                 this.categoryRepository = categoryRepository;
                 this.wrongAnswerRepository = wrongAnswerRepository;
+                this.passwordEncoder = passwordEncoder;
+                this.userRepository = userRepository;
+
                 // saveJsonQuestions();
         }
 
@@ -156,6 +165,18 @@ public class QuestionService implements IQuestionService {
                 Category category2 = new Category();
                 category2.setName("Football");
 
+                AppUser user = new AppUser();
+                user.setUsername("stef1");
+                user.setPassword(passwordEncoder.encode("stef1"));
+                user.setRole("ADMIN");
+                userRepository.save(user);
+
+                AppUser user2 = new AppUser();
+                user2.setUsername("stef2");
+                user2.setPassword(passwordEncoder.encode("stef2"));
+                user2.setRole("USER");
+                userRepository.save(user2);
+
                 this.categoryRepository.save(category1);
                 this.categoryRepository.save(category2);
                 System.out.println("Categories saved");
@@ -163,16 +184,16 @@ public class QuestionService implements IQuestionService {
                 List<QuestionDTO> jsonQuestions = loadQuestionsFromJson();
                 System.out.println("JSON Questions got");
                 for (QuestionDTO question : jsonQuestions) {
-                        Category category = this.categoryRepository.findByName(question.getCategory());
+                        Category category = this.categoryRepository.findByName(question.category());
                         Question newQuestion = new Question();
-                        newQuestion.setCreationDate(question.getCreationDate());
+                        newQuestion.setCreationDate(question.creationDate());
                         newQuestion.setCategory(category);
-                        newQuestion.setCorrectAnswer(question.getCorrectAnswer());
-                        newQuestion.setDifficulty(question.getDifficulty());
-                        newQuestion.setQuestionText(question.getQuestionText());
+                        newQuestion.setCorrectAnswer(question.correctAnswer());
+                        newQuestion.setDifficulty(question.difficulty());
+                        newQuestion.setQuestionText(question.questionText());
 
                         Question savedQuestion = this.questionRepository.save(newQuestion);
-                        for (String wrongAnswer : question.getWrongAnswers()) {
+                        for (String wrongAnswer : question.wrongAnswers()) {
                                 WrongAnswer newWrongAnswer = new WrongAnswer();
                                 newWrongAnswer.setAnswerText(wrongAnswer);
                                 newWrongAnswer.setQuestion(savedQuestion);
