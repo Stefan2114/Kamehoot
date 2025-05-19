@@ -1,6 +1,7 @@
 package com.kamehoot.kamehoot_backend.services;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,7 @@ public class UserService implements IUserService {
         AppUser user = new AppUser();
         user.setUsername(request.username());
         user.setPassword(passwordEncoder.encode(request.password()));
-        user.setRole("USER");
+        user.setRoles(Set.of("USER"));
         userRepository.save(user);
     }
 
@@ -48,6 +49,19 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "");
                 });
+    }
+
+    @Override
+    public AppUser getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "");
+                });
+    }
+
+    @Override
+    public Boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
 
     @Override
