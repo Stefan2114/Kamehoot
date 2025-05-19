@@ -4,6 +4,7 @@ package com.kamehoot.kamehoot_backend.services;
 import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,13 +169,13 @@ public class QuestionService implements IQuestionService {
                 AppUser user = new AppUser();
                 user.setUsername("stef1");
                 user.setPassword(passwordEncoder.encode("stef1"));
-                user.setRole("ADMIN");
+                user.setRoles(Set.of("ADMIN"));
                 userRepository.save(user);
 
                 AppUser user2 = new AppUser();
                 user2.setUsername("stef2");
                 user2.setPassword(passwordEncoder.encode("stef2"));
-                user2.setRole("USER");
+                user2.setRoles(Set.of("USER"));
                 userRepository.save(user2);
 
                 this.categoryRepository.save(category1);

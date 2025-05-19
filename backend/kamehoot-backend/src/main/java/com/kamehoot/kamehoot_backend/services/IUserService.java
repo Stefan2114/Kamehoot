@@ -13,6 +13,10 @@ public interface IUserService {
 
     AppUser getUserById(UUID userId);
 
+    AppUser getUserByUsername(String username);
+
+    Boolean existsByUsername(String username);
+
     List<AppUser> getAllUsers();
 
     void deleteUser(UUID userId);
