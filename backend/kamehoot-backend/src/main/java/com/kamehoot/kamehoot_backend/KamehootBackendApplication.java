@@ -13,5 +13,4 @@ public class KamehootBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(KamehootBackendApplication.class, args);
 	}
-
 }
