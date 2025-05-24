@@ -21,8 +21,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.kamehoot.kamehoot_backend.security.JwtAuthenticationFilter;
+import com.kamehoot.kamehoot_backend.security.JwtService;
 import com.kamehoot.kamehoot_backend.services.CustomUserDetailsService;
-import com.kamehoot.kamehoot_backend.services.JwtService;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -68,7 +68,7 @@ public class JWTConfig {
 
                                                 .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
 
-                                                .requestMatchers("/auth/login", "/users/**", "/questions").permitAll()
+                                                .requestMatchers("/auth/**", "/questions").permitAll()
 
                                                 .anyRequest().authenticated())
 
