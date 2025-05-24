@@ -167,14 +167,14 @@ public class QuestionService implements IQuestionService {
                 category2.setName("Football");
 
                 AppUser user = new AppUser();
-                user.setUsername("stef1");
-                user.setPassword(passwordEncoder.encode("stef1"));
+                user.setUsername("admin");
+                user.setPassword(passwordEncoder.encode("admin"));
                 user.setRoles(Set.of("ADMIN"));
-                userRepository.save(user);
+                AppUser admin = userRepository.save(user);
 
                 AppUser user2 = new AppUser();
-                user2.setUsername("stef2");
-                user2.setPassword(passwordEncoder.encode("stef2"));
+                user2.setUsername("stef");
+                user2.setPassword(passwordEncoder.encode("stef"));
                 user2.setRoles(Set.of("USER"));
                 userRepository.save(user2);
 
@@ -187,6 +187,7 @@ public class QuestionService implements IQuestionService {
                 for (QuestionDTO question : jsonQuestions) {
                         Category category = this.categoryRepository.findByName(question.category());
                         Question newQuestion = new Question();
+                        newQuestion.setCreator(admin);
                         newQuestion.setCreationDate(question.creationDate());
                         newQuestion.setCategory(category);
                         newQuestion.setCorrectAnswer(question.correctAnswer());

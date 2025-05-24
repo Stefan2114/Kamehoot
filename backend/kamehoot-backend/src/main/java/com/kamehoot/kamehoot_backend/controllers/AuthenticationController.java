@@ -19,7 +19,7 @@ import com.kamehoot.kamehoot_backend.services.IUserService;
 
 @RequestMapping("/auth")
 @RestController
-public class AuthenticationController {
+public class AuthenticationController implements IAuthenticationController {
 
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -43,6 +43,7 @@ public class AuthenticationController {
     // return this.tokenService.generateToken(authentication);
     // }
 
+    @Override
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody AuthenticateRequest userLogin) {
 
@@ -56,6 +57,7 @@ public class AuthenticationController {
                 HttpStatus.OK);
     }
 
+    @Override
     @PostMapping("/register")
     public ResponseEntity<TokenResponse> register(@RequestBody AuthenticateRequest userRegister) {
 
