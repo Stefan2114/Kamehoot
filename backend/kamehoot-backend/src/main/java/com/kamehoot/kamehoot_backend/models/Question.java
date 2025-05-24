@@ -35,6 +35,10 @@ public class Question {
     @GeneratedValue
     private UUID id;
 
+    @ManyToOne
+    @JoinColumn(name = "creator_id", nullable = false)
+    private AppUser creator;
+
     @Column(nullable = false)
     private LocalDateTime creationDate;
 

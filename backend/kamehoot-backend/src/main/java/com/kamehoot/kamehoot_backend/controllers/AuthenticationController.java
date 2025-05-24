@@ -14,12 +14,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.kamehoot.kamehoot_backend.DTOs.AuthenticateRequest;
 import com.kamehoot.kamehoot_backend.DTOs.TokenResponse;
+import com.kamehoot.kamehoot_backend.security.JwtService;
 import com.kamehoot.kamehoot_backend.services.IUserService;
-import com.kamehoot.kamehoot_backend.services.JwtService;
 
 @RequestMapping("/auth")
 @RestController
-public class AuthenticationController {
+public class AuthenticationController implements IAuthenticationController {
 
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -43,6 +43,7 @@ public class AuthenticationController {
     // return this.tokenService.generateToken(authentication);
     // }
 
+    @Override
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody AuthenticateRequest userLogin) {
 
@@ -56,6 +57,7 @@ public class AuthenticationController {
                 HttpStatus.OK);
     }
 
+    @Override
     @PostMapping("/register")
     public ResponseEntity<TokenResponse> register(@RequestBody AuthenticateRequest userRegister) {
 

@@ -12,16 +12,18 @@ import com.kamehoot.kamehoot_backend.models.Question;
 
 public interface IUserController {
 
-    ResponseEntity<Void> registerUser(AuthenticateRequest request);
-
     ResponseEntity<List<AppUser>> getAllUsers();
 
-    ResponseEntity<Void> deleteUserById(UUID id);
+    // ResponseEntity<Void> deleteUserById(UUID id); // i need to see how i can do
+    // that using the info from token
 
-    ResponseEntity<Void> updateUserPassword(UUID id, AuthenticateRequest request);
+    // ResponseEntity<Void> updateUserPassword(UUID id, AuthenticateRequest
+    // request); i need to see how can i return back a new token
 
-    ResponseEntity<List<Question>> getUserQuestionList(UUID id);
+    // ResponseEntity<List<Question>> getUserQuestionList(UUID id); i think i will
+    // create a quiz entity
 
-    ResponseEntity<Void> addUserQuestion(UUID id, QuestionIdDTO questionId);
+    // ResponseEntity<Void> addUserQuestion(UUID id, QuestionIdDTO questionId); //
+    // the same here
 
 }

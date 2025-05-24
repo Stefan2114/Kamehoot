@@ -1,4 +1,4 @@
-package com.kamehoot.kamehoot_backend.services;
+package com.kamehoot.kamehoot_backend.security;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
