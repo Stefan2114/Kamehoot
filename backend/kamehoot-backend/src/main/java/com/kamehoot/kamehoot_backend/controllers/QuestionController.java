@@ -5,11 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,29 +59,30 @@ public class QuestionController implements IQuestionController {
         }
     }
 
-    @Override
-    @PostMapping
-    public ResponseEntity<Void> addQuestion(@RequestBody Question question) {
-        System.out.println(question);
-        this.questionService.addQuestion(question);
-        return ResponseEntity.noContent().build();
-    }
+    // @Override
+    // @PostMapping
+    // public ResponseEntity<Void> addQuestion(@RequestBody Question question) {
+    // System.out.println(question);
+    // this.questionService.addQuestion(question);
+    // return ResponseEntity.noContent().build();
+    // }
 
-    @Override
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteQuestion(@PathVariable("id") UUID questionId) {
-        System.out.println("I deleted the question with id: " + questionId);
-        this.questionService.deleteQuestionById(questionId);
-        return ResponseEntity.noContent().build();
-    }
+    // @Override
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<Void> deleteQuestion(@PathVariable("id") UUID
+    // questionId) {
+    // System.out.println("I deleted the question with id: " + questionId);
+    // this.questionService.deleteQuestionById(questionId);
+    // return ResponseEntity.noContent().build();
+    // }
 
-    @Override
-    @PutMapping
-    public ResponseEntity<Void> updateQuestion(@RequestBody Question question) {
-        System.out.println(question);
-        this.questionService.updateQuestion(question);
-        return ResponseEntity.noContent().build();
-    }
+    // @Override
+    // @PutMapping
+    // public ResponseEntity<Void> updateQuestion(@RequestBody Question question) {
+    // System.out.println(question);
+    // this.questionService.updateQuestion(question);
+    // return ResponseEntity.noContent().build();
+    // }
 
     @Override
     @GetMapping("/{id}")
@@ -96,15 +92,4 @@ public class QuestionController implements IQuestionController {
         return ResponseEntity.ok(this.questionService.getQuestion(id));
     }
 
-    @Override
-    @GetMapping("/intro-video")
-    public ResponseEntity<Resource> getIntroVideo() {
-
-        FileSystemResource video = this.questionService.getIntroVideo();
-        System.out.println(video.getFilename());
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=video.mp4")
-                .contentType(MediaTypeFactory.getMediaType(video).orElse(MediaType.APPLICATION_OCTET_STREAM))
-                .body(video);
-    }
 }

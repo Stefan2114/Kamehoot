@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.kamehoot.kamehoot_backend.config.JWTConfig;
-import com.kamehoot.kamehoot_backend.services.JwtService;
+import com.kamehoot.kamehoot_backend.security.JwtService;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

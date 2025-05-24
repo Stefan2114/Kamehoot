@@ -6,10 +6,9 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import com.kamehoot.kamehoot_backend.models.Question;
-import org.springframework.core.io.Resource;
 
 public interface IQuestionController {
-    // Updated method signature to include pagination parameters
+
     ResponseEntity<List<Question>> getQuestions(
             List<String> categories,
             List<Integer> difficulties,
@@ -17,13 +16,14 @@ public interface IQuestionController {
             String orderBy,
             String orderDirection);
 
-    ResponseEntity<Void> addQuestion(Question question);
+    // ResponseEntity<Void> addQuestion(Question question); // i need to see how can
+    // i get the User from the token
 
-    ResponseEntity<Void> deleteQuestion(UUID questionId);
+    // ResponseEntity<Void> deleteQuestion(UUID questionId); i need to make sure the
+    // one that deletes it is either admin or the one who created it
 
-    ResponseEntity<Void> updateQuestion(Question question);
+    // ResponseEntity<Void> updateQuestion(Question question); // the same here
 
     ResponseEntity<Question> getQuestion(UUID id);
 
-    ResponseEntity<Resource> getIntroVideo();
 }

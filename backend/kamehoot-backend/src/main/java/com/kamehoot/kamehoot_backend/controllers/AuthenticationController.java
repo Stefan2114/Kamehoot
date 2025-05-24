@@ -14,8 +14,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.kamehoot.kamehoot_backend.DTOs.AuthenticateRequest;
 import com.kamehoot.kamehoot_backend.DTOs.TokenResponse;
+import com.kamehoot.kamehoot_backend.security.JwtService;
 import com.kamehoot.kamehoot_backend.services.IUserService;
-import com.kamehoot.kamehoot_backend.services.JwtService;
 
 @RequestMapping("/auth")
 @RestController

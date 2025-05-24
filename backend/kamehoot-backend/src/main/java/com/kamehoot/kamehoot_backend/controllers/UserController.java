@@ -30,43 +30,47 @@ public class UserController implements IUserController {
     }
 
     @Override
-    @PostMapping("/register")
-    public ResponseEntity<Void> registerUser(@RequestBody AuthenticateRequest request) {
-        this.userService.registerUser(request);
-        return ResponseEntity.noContent().build();
-    }
-
-    @Override
     @GetMapping
     public ResponseEntity<List<AppUser>> getAllUsers() {
         return ResponseEntity.ok(this.userService.getAllUsers());
     }
 
-    @Override
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUserById(@PathVariable UUID id) {
-        this.userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
-    }
+    // @Override
+    // @PostMapping("/register")
+    // public ResponseEntity<Void> registerUser(@RequestBody AuthenticateRequest
+    // request) {
+    // this.userService.registerUser(request);
+    // return ResponseEntity.noContent().build();
+    // }
 
-    @Override
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUserPassword(@PathVariable UUID id, @RequestBody AuthenticateRequest request) {
-        this.userService.updateUser(id, request);
-        return ResponseEntity.noContent().build();
-    }
+    // @Override
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<Void> deleteUserById(@PathVariable UUID id) {
+    // this.userService.deleteUser(id);
+    // return ResponseEntity.noContent().build();
+    // }
 
-    @Override
-    @GetMapping("/{id}/questions")
-    public ResponseEntity<List<Question>> getUserQuestionList(@PathVariable UUID id) {
-        return ResponseEntity.ok(this.userService.getUserQuestionList(id));
-    }
+    // @Override
+    // @PutMapping("/{id}")
+    // public ResponseEntity<Void> updateUserPassword(@PathVariable UUID id,
+    // @RequestBody AuthenticateRequest request) {
+    // this.userService.updateUser(id, request);
+    // return ResponseEntity.noContent().build();
+    // }
 
-    @Override
-    @PostMapping("/{id}/questions")
-    public ResponseEntity<Void> addUserQuestion(@PathVariable UUID id, @RequestBody QuestionIdDTO questionId) {
+    // @Override
+    // @GetMapping("/{id}/questions")
+    // public ResponseEntity<List<Question>> getUserQuestionList(@PathVariable UUID
+    // id) {
+    // return ResponseEntity.ok(this.userService.getUserQuestionList(id));
+    // }
 
-        this.userService.addUserQuestion(id, questionId.id());
-        return ResponseEntity.noContent().build();
-    }
+    // @Override
+    // @PostMapping("/{id}/questions")
+    // public ResponseEntity<Void> addUserQuestion(@PathVariable UUID id,
+    // @RequestBody QuestionIdDTO questionId) {
+
+    // this.userService.addUserQuestion(id, questionId.id());
+    // return ResponseEntity.noContent().build();
+    // }
 }
