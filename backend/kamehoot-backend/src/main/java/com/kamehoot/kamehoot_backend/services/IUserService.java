@@ -23,10 +23,4 @@ public interface IUserService {
 
     // void updateUser(UUID userId, AuthenticateRequest request);
 
-    List<Question> getUserQuestionList(UUID userId);
-
-    void addUserQuestion(UUID id, Question question);
-
-    void deleteUserQuestion(UUID id, UUID questionId);
-
 }

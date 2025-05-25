@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kamehoot.kamehoot_backend.DTOs.AuthenticateRequest;
-import com.kamehoot.kamehoot_backend.DTOs.QuestionIdDTO;
 import com.kamehoot.kamehoot_backend.models.AppUser;
-import com.kamehoot.kamehoot_backend.models.Question;
 import com.kamehoot.kamehoot_backend.services.IUserService;
 
 @RestController

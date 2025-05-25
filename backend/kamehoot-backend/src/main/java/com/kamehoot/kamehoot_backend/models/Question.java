@@ -65,6 +65,7 @@ public class Question {
     @ElementCollection
     @CollectionTable(name = "wrong_answers", joinColumns = { @JoinColumn(name = "question_id") })
     @Column(name = "wrong_answer", length = 128, nullable = false)
+    // @Size()
     private List<String> wrongAnswers = new ArrayList<>();
 
     @Column(nullable = false)
