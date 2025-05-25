@@ -24,6 +24,6 @@ public class Category {
     @GeneratedValue
     private UUID id;
 
-    @Column(length = 100, unique = true, nullable = false)
+    @Column(length = 64, unique = true, nullable = false)
     private String name;
 }

@@ -1,22 +1,27 @@
 package com.kamehoot.kamehoot_backend.models;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "user_questions", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "user_id", "question_id" }) })
+@Table(name = "quizzes")
+// @Table(name = "quizzes", uniqueConstraints = {
+// @UniqueConstraint(columnNames = { "user_id", "question_id" }) })
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,17 +32,23 @@ import lombok.Setter;
 // public questions or personal questions
 // another user can play other user quiz but can not use it's questions
 // directly. They have to create their own questions that are similar
-public class UserQuestion {
+public class Quiz {
 
     @Id
     @GeneratedValue
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private AppUser user;
+    @JoinColumn(name = "creator_id", nullable = false)
+    private AppUser creator;
 
-    @ManyToOne
-    @JoinColumn(name = "question_id", nullable = false)
-    private Question question;
+    @Column(length = 128, nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private LocalDateTime creationDate;
+
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuizQuestion> quizQuestions;
+
 }

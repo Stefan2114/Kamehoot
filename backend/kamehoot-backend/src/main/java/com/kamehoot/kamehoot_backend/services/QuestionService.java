@@ -1,4 +1,3 @@
-// 2. Update the QuestionService implementation
 package com.kamehoot.kamehoot_backend.services;
 
 import java.io.InputStream;
@@ -21,31 +20,28 @@ import com.kamehoot.kamehoot_backend.DTOs.QuestionDTO;
 import com.kamehoot.kamehoot_backend.models.AppUser;
 import com.kamehoot.kamehoot_backend.models.Category;
 import com.kamehoot.kamehoot_backend.models.Question;
-import com.kamehoot.kamehoot_backend.models.WrongAnswer;
+import com.kamehoot.kamehoot_backend.models.Visibility;
 import com.kamehoot.kamehoot_backend.repos.ICategoryRepository;
 import com.kamehoot.kamehoot_backend.repos.IQuestionRepository;
 import com.kamehoot.kamehoot_backend.repos.IUserRepository;
-import com.kamehoot.kamehoot_backend.repos.IWrongAnswerRepository;
 
 @Service
 public class QuestionService implements IQuestionService {
         private final IQuestionRepository questionRepository;
         private final ICategoryRepository categoryRepository;
-        private final IWrongAnswerRepository wrongAnswerRepository;
         private final PasswordEncoder passwordEncoder;
         private final IUserRepository userRepository;
 
         @Autowired
         public QuestionService(IQuestionRepository questionRepository, ICategoryRepository categoryRepository,
-                        IWrongAnswerRepository wrongAnswerRepository, PasswordEncoder passwordEncoder,
+                        PasswordEncoder passwordEncoder,
                         IUserRepository userRepository) {
                 this.questionRepository = questionRepository;
                 this.categoryRepository = categoryRepository;
-                this.wrongAnswerRepository = wrongAnswerRepository;
                 this.passwordEncoder = passwordEncoder;
                 this.userRepository = userRepository;
 
-                saveJsonQuestions();
+                // saveJsonQuestions();
         }
 
         @Override
@@ -188,19 +184,15 @@ public class QuestionService implements IQuestionService {
                         Category category = this.categoryRepository.findByName(question.category());
                         Question newQuestion = new Question();
                         newQuestion.setCreator(admin);
+                        newQuestion.setVisibility(Visibility.PUBLIC);
                         newQuestion.setCreationDate(question.creationDate());
                         newQuestion.setCategory(category);
                         newQuestion.setCorrectAnswer(question.correctAnswer());
                         newQuestion.setDifficulty(question.difficulty());
                         newQuestion.setQuestionText(question.questionText());
+                        newQuestion.setWrongAnswers(question.wrongAnswers());
+                        this.questionRepository.save(newQuestion);
 
-                        Question savedQuestion = this.questionRepository.save(newQuestion);
-                        for (String wrongAnswer : question.wrongAnswers()) {
-                                WrongAnswer newWrongAnswer = new WrongAnswer();
-                                newWrongAnswer.setAnswerText(wrongAnswer);
-                                newWrongAnswer.setQuestion(savedQuestion);
-                                this.wrongAnswerRepository.save(newWrongAnswer);
-                        }
                 }
         }
 }
