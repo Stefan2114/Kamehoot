@@ -21,6 +21,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+// this is good, the user can only see his questions and the public once. So
+// there are 2 types of questions public and private
+// there will be quizzes that are all public. An user can create a quiz using
+// public questions or personal questions
+// another user can play other user quiz but can not use it's questions
+// directly. They have to create their own questions that are similar
 public class UserQuestion {
 
     @Id
