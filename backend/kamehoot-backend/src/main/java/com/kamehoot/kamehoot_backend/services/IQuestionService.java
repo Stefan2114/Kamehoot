@@ -26,7 +26,7 @@ public interface IQuestionService {
 
     void updateQuestion(QuestionDTO questionDTO);
 
-    void addUserQuestion(UUID id, QuestionDTO questionDTO);
+    void addUserQuestion(String username, QuestionDTO questionDTO);
 
     void deleteQuestionById(UUID questionId);
 

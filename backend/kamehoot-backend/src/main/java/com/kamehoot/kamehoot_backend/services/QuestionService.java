@@ -148,11 +148,11 @@ public class QuestionService implements IQuestionService {
         }
 
         @Override
-        public void addUserQuestion(UUID id, QuestionDTO questionDTO) {
-                AppUser user = this.userRepository.findById(id)
+        public void addUserQuestion(String username, QuestionDTO questionDTO) {
+                AppUser user = this.userRepository.findByUsername(username)
                                 .orElseThrow(() -> {
                                         throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                                        "User not found with id: " + id);
+                                                        "User not found with username: " + username);
                                 });
                 Category category = this.categoryRepository.findByName(questionDTO.category());
                 if (category == null) {

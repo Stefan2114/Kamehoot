@@ -6,6 +6,10 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.kamehoot.kamehoot_backend.DTOs.QuestionDTO;
 import com.kamehoot.kamehoot_backend.models.Question;
 import com.kamehoot.kamehoot_backend.services.IQuestionService;
 
@@ -59,30 +65,37 @@ public class QuestionController implements IQuestionController {
         }
     }
 
-    // @Override
-    // @PostMapping
-    // public ResponseEntity<Void> addQuestion(@RequestBody Question question) {
-    // System.out.println(question);
-    // this.questionService.addQuestion(question);
-    // return ResponseEntity.noContent().build();
-    // }
+    @Override
+    @PostMapping
+    public ResponseEntity<Void> addQuestion(@RequestBody QuestionDTO question) {
+        System.out.println(question);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-    // @Override
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<Void> deleteQuestion(@PathVariable("id") UUID
-    // questionId) {
-    // System.out.println("I deleted the question with id: " + questionId);
-    // this.questionService.deleteQuestionById(questionId);
-    // return ResponseEntity.noContent().build();
-    // }
+        if (auth instanceof JwtAuthenticationToken jwtAuth) {
+            String username = jwtAuth.getName();
+            this.questionService.addUserQuestion(username, question);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
 
-    // @Override
-    // @PutMapping
-    // public ResponseEntity<Void> updateQuestion(@RequestBody Question question) {
-    // System.out.println(question);
-    // this.questionService.updateQuestion(question);
-    // return ResponseEntity.noContent().build();
-    // }
+    }
+
+    @Override
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteQuestion(@PathVariable("id") UUID questionId) {
+        System.out.println("I deleted the question with id: " + questionId);
+        this.questionService.deleteQuestionById(questionId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    @PutMapping
+    public ResponseEntity<Void> updateQuestion(@RequestBody QuestionDTO question) {
+        System.out.println(question);
+        this.questionService.updateQuestion(question);
+        return ResponseEntity.noContent().build();
+    }
 
     @Override
     @GetMapping("/{id}")
