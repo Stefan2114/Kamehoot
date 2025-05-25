@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.kamehoot.kamehoot_backend.DTOs.AuthenticateRequest;
+import com.kamehoot.kamehoot_backend.DTOs.QuizRequest;
 import com.kamehoot.kamehoot_backend.models.AppUser;
 import com.kamehoot.kamehoot_backend.models.Question;
 import com.kamehoot.kamehoot_backend.models.Quiz;
@@ -143,27 +144,28 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void addUserQuiz(UUID id, Quiz quiz) {
+    public void addUserQuiz(UUID id, QuizRequest quizDTO) {
         AppUser user = this.userRepository.findById(id)
                 .orElseThrow(() -> {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + id);
                 });
 
+        Quiz quiz = new Quiz();
         quiz.setCreator(user);
-        quiz.setCreationDate(LocalDateTime.now());
-        Quiz savedQuiz = null;
+        quiz.setCreationDate(quizDTO.creationDate());
+        quiz.setTitle(quizDTO.title());
+        Quiz savedQuiz = this.quizRepository.save(quiz);
 
-        try {
-            savedQuiz = this.quizRepository.save(quiz);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't save quiz");
-
-        }
-
-        if (quiz.getQuizQuestions() != null && !quiz.getQuizQuestions().isEmpty()) {
+        if (quizDTO.questionIds() != null) {
             try {
-                for (QuizQuestion quizQuestion : quiz.getQuizQuestions()) {
+                for (UUID questionId : quizDTO.questionIds()) {
+                    Question question = this.questionRepository.findById(questionId).orElseThrow(() -> {
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "Question not found with id: " + questionId);
+                    });
+                    QuizQuestion quizQuestion = new QuizQuestion();
                     quizQuestion.setQuiz(savedQuiz);
+                    quizQuestion.setQuestion(question);
                     this.quizQuestionRepository.save(quizQuestion);
                 }
             } catch (Exception e) {
