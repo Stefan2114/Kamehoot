@@ -19,12 +19,8 @@ public interface IUserService {
 
     List<AppUser> getAllUsers();
 
-    void deleteUser(UUID userId);
+    // void deleteUser(UUID userId);
 
-    void updateUser(UUID userId, AuthenticateRequest request);
-
-    List<Question> getUserQuestionList(UUID userId);
-
-    void addUserQuestion(UUID id, UUID questionId);
+    // void updateUser(UUID userId, AuthenticateRequest request);
 
 }

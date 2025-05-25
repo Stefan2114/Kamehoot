@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 
 import com.kamehoot.kamehoot_backend.DTOs.AuthenticateRequest;
-import com.kamehoot.kamehoot_backend.DTOs.QuestionIdDTO;
 import com.kamehoot.kamehoot_backend.models.AppUser;
 import com.kamehoot.kamehoot_backend.models.Question;
 

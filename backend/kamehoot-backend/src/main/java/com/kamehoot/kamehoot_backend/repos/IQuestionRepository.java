@@ -15,4 +15,9 @@ public interface IQuestionRepository extends JpaRepository<Question, UUID> {
     @Query("SELECT q FROM Question q ORDER BY q.creationDate DESC")
     List<Question> getAllSortedByCreationDateDesc();
 
+    List<Question> findByCreatorId(UUID userId);
+
+    @Query("SELECT q FROM Question q WHERE q.visibility = 'PUBLIC' ORDER BY q.creationDate DESC")
+    List<Question> findPublicQuestions();
+
 }

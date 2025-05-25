@@ -30,7 +30,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = { "userQuestions", "userQuizzes" })
 public class AppUser {
 
     @Id
@@ -42,13 +42,18 @@ public class AppUser {
 
     @Column(length = 256, nullable = false)
     private String password;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = { @JoinColumn(name = "user_id") })
     @Column(name = "role", length = 100, nullable = false)
     private Set<String> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<UserQuestion> userQuestions;
+    private List<Question> userQuestions;
+
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Quiz> userQuizzes;
 
 }

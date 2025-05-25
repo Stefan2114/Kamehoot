@@ -1,5 +1,7 @@
 package com.kamehoot.kamehoot_backend.DTOs;
 
-public record AuthenticateRequest(String username, String password) {
+import jakarta.validation.constraints.NotBlank;
+
+public record AuthenticateRequest(@NotBlank String username, @NotBlank String password) {
 
 }
