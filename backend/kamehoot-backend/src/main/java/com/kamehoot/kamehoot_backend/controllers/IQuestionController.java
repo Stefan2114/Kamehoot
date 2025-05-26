@@ -1,4 +1,3 @@
-// 4. Update the IQuestionController interface
 package com.kamehoot.kamehoot_backend.controllers;
 
 import java.util.List;
@@ -18,13 +17,15 @@ public interface IQuestionController {
             String orderBy,
             String orderDirection);
 
-    ResponseEntity<Void> addQuestion(QuestionDTO questionDTO); // i need to see how can
-    // i get the User from the token
+    ResponseEntity<List<Question>> getPublicQuestions();
 
-    ResponseEntity<Void> deleteQuestion(UUID questionId); // i need to make sure the
-    // one that deletes it is either admin or the one who created it
+    ResponseEntity<List<Question>> getPrivateQuestions();
 
-    ResponseEntity<Void> updateQuestion(QuestionDTO questionDTO); // the same here
+    ResponseEntity<Void> addQuestion(QuestionDTO question);
+
+    ResponseEntity<Void> deleteQuestion(UUID questionId);
+
+    ResponseEntity<Void> updateQuestion(QuestionDTO question);
 
     ResponseEntity<Question> getQuestion(UUID id);
 

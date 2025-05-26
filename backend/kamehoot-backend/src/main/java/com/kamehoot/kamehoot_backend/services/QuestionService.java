@@ -1,6 +1,7 @@
 package com.kamehoot.kamehoot_backend.services;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +45,7 @@ public class QuestionService implements IQuestionService {
         }
 
         @Override
-        public List<Question> getQuestions() {
+        public List<Question> getAllQuestions() {
                 return this.questionRepository.findAll();
         }
 
@@ -72,15 +73,49 @@ public class QuestionService implements IQuestionService {
         // should be changed to use db and pagination
         @Override
         public List<Question> getQuestions(
+                        UUID userId,
                         List<String> categories,
                         List<Integer> difficulties,
                         String searchTerm,
                         String orderBy,
                         String orderDirection) {
 
-                List<Question> allQuestions = this.questionRepository.findAll();
+                List<Question> publicQuestions = this.questionRepository.findPublicQuestions();
+                List<Question> userPrivateQuestions = new ArrayList<>();
 
-                List<Question> filteredQuestions = allQuestions.stream()
+                if (userId != null) {
+                        // Get user's private questions (all questions by this user that are not already
+                        // in public)
+                        List<Question> allUserQuestions = this.questionRepository.findByCreatorId(userId);
+                        userPrivateQuestions = allUserQuestions.stream()
+                                        .filter(q -> !q.getVisibility().equals("PUBLIC"))
+                                        .collect(Collectors.toList());
+                }
+
+                // Combine public questions with user's private questions
+                List<Question> combinedQuestions = new ArrayList<>();
+                combinedQuestions.addAll(publicQuestions);
+                combinedQuestions.addAll(userPrivateQuestions);
+
+                // Remove duplicates if any (in case user's public questions are already
+                // included)
+                combinedQuestions = combinedQuestions.stream()
+                                .distinct()
+                                .collect(Collectors.toList());
+
+                return filterAndSortQuestions(combinedQuestions, categories, difficulties, searchTerm, orderBy,
+                                orderDirection);
+        }
+
+        private List<Question> filterAndSortQuestions(
+                        List<Question> questions,
+                        List<String> categories,
+                        List<Integer> difficulties,
+                        String searchTerm,
+                        String orderBy,
+                        String orderDirection) {
+
+                List<Question> filteredQuestions = questions.stream()
                                 .filter(q -> categories == null || categories.isEmpty()
                                                 || categories.contains(q.getCategory().getName()))
                                 .filter(q -> difficulties == null || difficulties.isEmpty()
@@ -90,23 +125,26 @@ public class QuestionService implements IQuestionService {
                                 .collect(Collectors.toList());
 
                 if (orderBy != null && !orderBy.isEmpty()) {
-
                         Comparator<Question> comparator = null;
                         switch (orderBy) {
                                 case "difficulty":
                                         comparator = Comparator.comparing(Question::getDifficulty);
                                         break;
+                                case "category":
+                                        comparator = Comparator.comparing(q -> q.getCategory().getName());
+                                        break;
+                                case "questionText":
+                                        comparator = Comparator.comparing(Question::getQuestionText);
+                                        break;
                                 default:
                                         comparator = Comparator.comparing(Question::getCreationDate);
                                         break;
-
                         }
-                        boolean ascending = "asc".equalsIgnoreCase(orderDirection);
 
+                        boolean ascending = "asc".equalsIgnoreCase(orderDirection);
                         if (!ascending) {
                                 comparator = comparator.reversed();
                         }
-
                         filteredQuestions.sort(comparator);
                 }
 

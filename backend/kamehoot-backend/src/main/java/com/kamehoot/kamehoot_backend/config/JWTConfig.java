@@ -71,7 +71,7 @@ public class JWTConfig {
                                                 .requestMatchers("/auth/**").permitAll()
 
                                                 .requestMatchers(HttpMethod.GET, "/categories", "/questions",
-                                                                "/protocol")
+                                                                "/protocol", "/health")
                                                 .permitAll()
 
                                                 .anyRequest().authenticated())
