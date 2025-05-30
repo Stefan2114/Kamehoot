@@ -1,16 +1,15 @@
-# Global ignores
+# OS-specific files
 .DS_Store
 Thumbs.db
-._* # macOS resource forks
+._*                # macOS resource forks
+*.swp
+*.swo
 
 # IDE / Editors
 .vscode/
 .idea/
 *.iml
-
-# OS-specific files
-*.swp
-*.swo
+*.iws
 
 # Logs & temp files
 *.log
@@ -19,3 +18,16 @@ Thumbs.db
 *.bak
 *.cache
 *.pid
+
+# Compiled files (general)
+*.class
+*.jar
+*.war
+*.ear
+
+# Docker (shared ignores)
+docker-compose.override.yml
+.docker/
+.env
+*.db
+
