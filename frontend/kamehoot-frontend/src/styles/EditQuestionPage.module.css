@@ -1,10 +1,6 @@
-* {
-    box-sizing: border-box;
-}
-  
-.edit-question-page-container{
-    height: 97vh;
-    width: 99vw;
-    display: flex;
-    background-color: white;
+.edit-question-page-container {
+  width: 100vw;
+  height: 100vh;
+  padding: 20px;
+  background-color: #f5f5f5;
 }

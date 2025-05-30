@@ -14,39 +14,56 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   mode = "add",
 }) => {
   const [categories, setCategories] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8081/categories")
-      .then((response) => response.json())
-      .then((data: string[]) => setCategories(data))
-      .catch((error) => console.error("Error fetching messages:", error));
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("http://localhost:8081/categories");
+        const data: string[] = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCategories();
   }, []);
 
-  console.log(initialQuestion?.category || categories[0]);
   const [formData, setFormData] = useState({
-    questionText: initialQuestion?.questionText || "",
-    category: initialQuestion?.category || categories[0],
-    correctAnswer: initialQuestion?.correctAnswer || "",
-    wrongAnswers: initialQuestion?.wrongAnswers
-      ? [...initialQuestion.wrongAnswers, "", ""]
-      : ["", ""],
-    difficulty: initialQuestion?.difficulty || 1,
+    questionText: "",
+    category: "",
+    correctAnswer: "",
+    wrongAnswers: ["", ""],
+    difficulty: 1,
   });
 
+  // Update form data when categories are loaded or initialQuestion changes
   useEffect(() => {
     if (initialQuestion) {
       setFormData({
         questionText: initialQuestion.questionText,
         category: initialQuestion.category,
         correctAnswer: initialQuestion.correctAnswer,
-        wrongAnswers: initialQuestion.wrongAnswers,
+        wrongAnswers: [...initialQuestion.wrongAnswers],
         difficulty: initialQuestion.difficulty,
       });
+    } else if (categories.length > 0 && !formData.category) {
+      setFormData((prev) => ({
+        ...prev,
+        category: categories[0],
+      }));
     }
-  }, [initialQuestion]);
+  }, [initialQuestion, categories]);
 
-  if (categories.length == 0) {
-    return <div>Sorry no categories available to create a question</div>;
+  if (isLoading) {
+    return <div>Loading categories...</div>;
+  }
+
+  if (categories.length === 0) {
+    return <div>Sorry, no categories available to create a question</div>;
   }
 
   const handleInputChange = (
@@ -55,7 +72,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     >
   ) => {
     const { name, value } = e.target;
-
     const processedValue = name === "difficulty" ? Number(value) : value;
 
     setFormData((prev) => ({
@@ -73,32 +89,14 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.questionText.trim()) {
-      alert("Question text is required!");
-      return;
-    }
-
-    if (!formData.correctAnswer.trim()) {
-      alert("Correct answer is required!");
-      return;
-    }
-
-    const validWrongAnswers = formData.wrongAnswers.filter(
-      (answer) => answer.trim() !== ""
-    );
-    if (validWrongAnswers.length !== 2) {
-      alert("2 wrong answers are required for multiple-choice questions");
-      return;
-    }
-
     const submittedQuestion: Question = {
-      id: initialQuestion?.id || 0, // set the id to 0
+      id: initialQuestion?.id || "", // Will be handled by parent component
       questionText: formData.questionText.trim(),
       category: formData.category,
       correctAnswer: formData.correctAnswer.trim(),
       wrongAnswers: formData.wrongAnswers.map((answer) => answer.trim()),
       difficulty: Number(formData.difficulty),
-      creationDate: new Date(),
+      creationDate: initialQuestion?.creationDate || new Date(),
     };
 
     onSubmit(submittedQuestion);
@@ -122,7 +120,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                       checked={formData.category === cat}
                       onChange={handleInputChange}
                     />
-                    <label>{cat}</label>
+                    <label htmlFor={`category-${cat}`}>{cat}</label>
                   </div>
                 ))}
               </div>
@@ -141,7 +139,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                       checked={formData.difficulty === diff}
                       onChange={handleInputChange}
                     />
-                    <label>
+                    <label htmlFor={`difficulty-${diff}`}>
                       {diff === 1 ? "Easy" : diff === 2 ? "Medium" : "Hard"}
                     </label>
                   </div>
@@ -159,6 +157,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                 value={formData.questionText}
                 onChange={handleInputChange}
                 className={styles["question-text-input"]}
+                required
               />
             </div>
 
@@ -170,12 +169,13 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                 value={formData.correctAnswer}
                 onChange={handleInputChange}
                 className={styles["answer-input"]}
+                required
               />
             </div>
 
             {[0, 1].map((index) => (
-              <div className={styles["question-section"]}>
-                <label>Wrong answer:</label>
+              <div key={index} className={styles["question-section"]}>
+                <label>Wrong answer {index + 1}:</label>
                 <textarea
                   placeholder="type..."
                   value={formData.wrongAnswers[index]}
@@ -183,6 +183,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                     handleWrongAnswerChange(index, e.target.value)
                   }
                   className={styles["answer-input"]}
+                  required
                 />
               </div>
             ))}

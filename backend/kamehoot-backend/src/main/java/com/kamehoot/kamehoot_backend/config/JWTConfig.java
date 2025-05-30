@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.kamehoot.kamehoot_backend.security.JwtAuthenticationFilter;
 import com.kamehoot.kamehoot_backend.security.JwtService;
@@ -58,11 +59,13 @@ public class JWTConfig {
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                        JwtAuthenticationFilter jwtAuthenticationFilter, SecurityExceptionHandler authEntryPoint)
+                        JwtAuthenticationFilter jwtAuthenticationFilter, SecurityExceptionHandler authEntryPoint,
+                        CorsConfigurationSource corsConfiguration)
                         throws Exception {
 
                 return http
                                 .csrf(csrf -> csrf.disable())
+                                .cors(cors -> cors.configurationSource(corsConfiguration))
                                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authEntryPoint))
                                 .authorizeHttpRequests(auth -> auth
 
@@ -71,7 +74,7 @@ public class JWTConfig {
                                                 .requestMatchers("/auth/**").permitAll()
 
                                                 .requestMatchers(HttpMethod.GET, "/categories", "/questions",
-                                                                "/protocol")
+                                                                "/protocol", "/health")
                                                 .permitAll()
 
                                                 .anyRequest().authenticated())

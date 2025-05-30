@@ -8,16 +8,16 @@ import com.kamehoot.kamehoot_backend.models.Question;
 
 public interface IQuestionService {
 
-    List<Question> getQuestions();
+    List<Question> getAllQuestions();
 
     List<Question> getPublicQuestions();
 
-    List<Question> getUserQuestionList(UUID userId);
+    List<Question> getPrivateQuestions(UUID userId);
 
     Question getQuestion(UUID id);
 
     // should be changed to use db and pagination
-    List<Question> getQuestions(
+    List<Question> getQuestions(UUID userId,
             List<String> categories,
             List<Integer> difficulties,
             String searchTerm,
@@ -26,7 +26,7 @@ public interface IQuestionService {
 
     void updateQuestion(QuestionDTO questionDTO);
 
-    void addUserQuestion(UUID id, QuestionDTO questionDTO);
+    void addUserQuestion(String username, QuestionDTO questionDTO);
 
     void deleteQuestionById(UUID questionId);
 

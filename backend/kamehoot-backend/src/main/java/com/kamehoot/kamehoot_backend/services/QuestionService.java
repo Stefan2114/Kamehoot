@@ -1,6 +1,9 @@
 package com.kamehoot.kamehoot_backend.services;
 
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +47,7 @@ public class QuestionService implements IQuestionService {
         }
 
         @Override
-        public List<Question> getQuestions() {
+        public List<Question> getAllQuestions() {
                 return this.questionRepository.findAll();
         }
 
@@ -54,7 +57,7 @@ public class QuestionService implements IQuestionService {
         }
 
         @Override
-        public List<Question> getUserQuestionList(UUID userId) {
+        public List<Question> getPrivateQuestions(UUID userId) {
                 if (this.userRepository.existsById(userId) == false) {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + userId);
                 }
@@ -72,15 +75,28 @@ public class QuestionService implements IQuestionService {
         // should be changed to use db and pagination
         @Override
         public List<Question> getQuestions(
+                        UUID userId,
                         List<String> categories,
                         List<Integer> difficulties,
                         String searchTerm,
                         String orderBy,
                         String orderDirection) {
 
-                List<Question> allQuestions = this.questionRepository.findAll();
+                List<Question> questions = this.questionRepository.findQuestionsForUser(userId);
 
-                List<Question> filteredQuestions = allQuestions.stream()
+                return filterAndSortQuestions(questions, categories, difficulties, searchTerm, orderBy,
+                                orderDirection);
+        }
+
+        private List<Question> filterAndSortQuestions(
+                        List<Question> questions,
+                        List<String> categories,
+                        List<Integer> difficulties,
+                        String searchTerm,
+                        String orderBy,
+                        String orderDirection) {
+
+                List<Question> filteredQuestions = questions.stream()
                                 .filter(q -> categories == null || categories.isEmpty()
                                                 || categories.contains(q.getCategory().getName()))
                                 .filter(q -> difficulties == null || difficulties.isEmpty()
@@ -90,23 +106,26 @@ public class QuestionService implements IQuestionService {
                                 .collect(Collectors.toList());
 
                 if (orderBy != null && !orderBy.isEmpty()) {
-
                         Comparator<Question> comparator = null;
                         switch (orderBy) {
                                 case "difficulty":
                                         comparator = Comparator.comparing(Question::getDifficulty);
                                         break;
+                                case "category":
+                                        comparator = Comparator.comparing(q -> q.getCategory().getName());
+                                        break;
+                                case "questionText":
+                                        comparator = Comparator.comparing(Question::getQuestionText);
+                                        break;
                                 default:
                                         comparator = Comparator.comparing(Question::getCreationDate);
                                         break;
-
                         }
-                        boolean ascending = "asc".equalsIgnoreCase(orderDirection);
 
+                        boolean ascending = "asc".equalsIgnoreCase(orderDirection);
                         if (!ascending) {
                                 comparator = comparator.reversed();
                         }
-
                         filteredQuestions.sort(comparator);
                 }
 
@@ -148,11 +167,11 @@ public class QuestionService implements IQuestionService {
         }
 
         @Override
-        public void addUserQuestion(UUID id, QuestionDTO questionDTO) {
-                AppUser user = this.userRepository.findById(id)
+        public void addUserQuestion(String username, QuestionDTO questionDTO) {
+                AppUser user = this.userRepository.findByUsername(username)
                                 .orElseThrow(() -> {
                                         throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                                        "User not found with id: " + id);
+                                                        "User not found with username: " + username);
                                 });
                 Category category = this.categoryRepository.findByName(questionDTO.category());
                 if (category == null) {
@@ -225,9 +244,20 @@ public class QuestionService implements IQuestionService {
                 user2.setRoles(Set.of("USER"));
                 userRepository.save(user2);
 
-                this.categoryRepository.save(category1);
+                Category mathCategory = this.categoryRepository.save(category1);
                 this.categoryRepository.save(category2);
                 System.out.println("Categories saved");
+
+                Question userQuestion = new Question();
+                userQuestion.setCreator(user2);
+                userQuestion.setVisibility(Visibility.PRIVATE);
+                userQuestion.setCreationDate(LocalDateTime.now());
+                userQuestion.setCategory(mathCategory);
+                userQuestion.setCorrectAnswer("64");
+                userQuestion.setDifficulty(1);
+                userQuestion.setQuestionText("What is 8*8?");
+                userQuestion.setWrongAnswers(Arrays.asList("81", "56"));
+                this.questionRepository.save(userQuestion);
 
                 List<QuestionDTO> jsonQuestions = loadQuestionsFromJson();
                 System.out.println("JSON Questions got");

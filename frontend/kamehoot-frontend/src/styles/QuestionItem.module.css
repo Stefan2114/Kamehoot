@@ -1,85 +1,65 @@
-* {
-    box-sizing: border-box;
-  }
-  
-  .question-item{
-  
-    padding: 10px;
-    margin: 8px;
-    display: flex;
-    font-weight: 600;
-    box-shadow: 2px 5px 5px rgba(0,0,0,0.05);
-    border: 1px;
-    border-style: solid;
-    border-color: rgba(1,1,1,0.05);
-    width: 98%;
-    border-radius: 12px;
-  }
-  
-  .question-item:hover{
-    box-shadow: 4px 6px 5px rgba(0,0,0,0.05);
-    transform: translateY(-2px);
-  } 
-  
-  .question-content {
-    flex:1;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  
-  }
-  
-  .question-text{
-    font-size: 25px;
-    color: #333;
-    text-overflow: ellipsis;
-  }
-  
-  
-  .question-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  
-  .question-details {
-    font-size: 15px;
-    display: flex;
-    gap: 40px;
-  }
-  
-  
-  
-  .detail-item {
-    display: flex;
-    gap: 3px;
-  }
-  
-  
-  .detail-label {
-    color: #555;
-  }
-  
-  .detail-value {
-    color: #333;
-    background-color: #f0f0f0;
-    padding: 2px 4px;
-    border-radius: 4px;
-  
-  }
-  
-  
-  .see-more-btn{
-    background-color: #f0f0f0;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  
-  .see-more-btn:hover{
-    background-color: #e0e0e0;
-    transform: translateY(-1px);
-  } 
+.question-item {
+  background-color: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: box-shadow 0.2s;
+}
+
+.question-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.question-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.question-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+}
+
+.question-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.question-details {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+}
+
+.detail-item {
+  display: flex;
+  gap: 4px;
+}
+
+.detail-label {
+  color: #666;
+}
+
+.detail-value {
+  color: #333;
+  font-weight: 500;
+}
+
+.see-more-btn {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.see-more-btn:hover {
+  background-color: #0056b3;
+}
