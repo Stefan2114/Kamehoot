@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: kamehoot-db
+    restart: always
+    environment:
+      POSTGRES_DB: kamehoot
+      POSTGRES_USER: kamehoot_user
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - kamehoot-net
+
+  backend:
+    build:
+      context: ./backend/kamehoot-backend
+      dockerfile: Dockerfile
+    container_name: kamehoot-backend
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/kamehoot
+      SPRING_DATASOURCE_USERNAME: kamehoot_user
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SERVER_PORT: 8443
+      SERVER_SSL_ENABLED: "true"
+      SERVER_SSL_KEY_STORE: classpath:keystore.p12
+      SERVER_SSL_KEY_STORE_PASSWORD: parolamea
+      SERVER_SSL_KEY_STORE_TYPE: PKCS12
+      SERVER_SSL_KEY_ALIAS: my-ssl-cert
+    ports:
+      - "8443:8443"
+    volumes:
+      - ./backend/kamehoot-backend/resources/certs:/app/resources/certs:ro
+    networks:
+      - kamehoot-net
+      
+  frontend:
+    build:
+      context: ./frontend/kamehoot-frontend
+    container_name: kamehoot-frontend
+    ports:
+      - "5173:80"   # maps host port 5173 to container port 80 (nginx)
+    networks:
+      - kamehoot-net
+
+
+volumes:
+  db_data:
+
+networks:
+  kamehoot-net:
+    driver: bridge
+
