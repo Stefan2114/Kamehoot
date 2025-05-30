@@ -1,19 +1,26 @@
-# Build files
+# Build & output
 target/
-.mvn/
 out/
+.mvn/
+
+# Compiled artifacts
+*.class
+*.jar
+*.war
+*.ear
 
 # Logs
 *.log
 
-# Configuration files (Sensitive data)
+# Application configuration (sensitive)
 application.yml
 application-local.properties
 application-prod.properties
+.env
 
 # Maven
 pom.xml.tag
 pom.xml.releaseBackup
 dependency-reduced-pom.xml
 release.properties
-~/.m2/repository/
+
