@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Question, QuestionFromBackend } from "../types/question";
 import QuestionItem from "../components/QuestionItem";
