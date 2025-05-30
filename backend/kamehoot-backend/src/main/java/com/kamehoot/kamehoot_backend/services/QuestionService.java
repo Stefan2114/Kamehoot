@@ -1,7 +1,9 @@
 package com.kamehoot.kamehoot_backend.services;
 
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +57,7 @@ public class QuestionService implements IQuestionService {
         }
 
         @Override
-        public List<Question> getUserQuestionList(UUID userId) {
+        public List<Question> getPrivateQuestions(UUID userId) {
                 if (this.userRepository.existsById(userId) == false) {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + userId);
                 }
@@ -80,30 +82,9 @@ public class QuestionService implements IQuestionService {
                         String orderBy,
                         String orderDirection) {
 
-                List<Question> publicQuestions = this.questionRepository.findPublicQuestions();
-                List<Question> userPrivateQuestions = new ArrayList<>();
+                List<Question> questions = this.questionRepository.findQuestionsForUser(userId);
 
-                if (userId != null) {
-                        // Get user's private questions (all questions by this user that are not already
-                        // in public)
-                        List<Question> allUserQuestions = this.questionRepository.findByCreatorId(userId);
-                        userPrivateQuestions = allUserQuestions.stream()
-                                        .filter(q -> !q.getVisibility().equals("PUBLIC"))
-                                        .collect(Collectors.toList());
-                }
-
-                // Combine public questions with user's private questions
-                List<Question> combinedQuestions = new ArrayList<>();
-                combinedQuestions.addAll(publicQuestions);
-                combinedQuestions.addAll(userPrivateQuestions);
-
-                // Remove duplicates if any (in case user's public questions are already
-                // included)
-                combinedQuestions = combinedQuestions.stream()
-                                .distinct()
-                                .collect(Collectors.toList());
-
-                return filterAndSortQuestions(combinedQuestions, categories, difficulties, searchTerm, orderBy,
+                return filterAndSortQuestions(questions, categories, difficulties, searchTerm, orderBy,
                                 orderDirection);
         }
 
@@ -263,9 +244,20 @@ public class QuestionService implements IQuestionService {
                 user2.setRoles(Set.of("USER"));
                 userRepository.save(user2);
 
-                this.categoryRepository.save(category1);
+                Category mathCategory = this.categoryRepository.save(category1);
                 this.categoryRepository.save(category2);
                 System.out.println("Categories saved");
+
+                Question userQuestion = new Question();
+                userQuestion.setCreator(user2);
+                userQuestion.setVisibility(Visibility.PRIVATE);
+                userQuestion.setCreationDate(LocalDateTime.now());
+                userQuestion.setCategory(mathCategory);
+                userQuestion.setCorrectAnswer("64");
+                userQuestion.setDifficulty(1);
+                userQuestion.setQuestionText("What is 8*8?");
+                userQuestion.setWrongAnswers(Arrays.asList("81", "56"));
+                this.questionRepository.save(userQuestion);
 
                 List<QuestionDTO> jsonQuestions = loadQuestionsFromJson();
                 System.out.println("JSON Questions got");

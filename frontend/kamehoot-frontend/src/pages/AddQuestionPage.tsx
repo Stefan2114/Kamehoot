@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Question } from "../types/question";
+import { Question, QuestionDTO } from "../types/question";
 import QuestionForm from "../components/QuestionForm";
+import { ApiService } from "../utils/api";
 import styles from "../styles/AddQuestionPage.module.css";
 
 const AddQuestionPage: React.FC = () => {
@@ -9,16 +10,16 @@ const AddQuestionPage: React.FC = () => {
 
   const addQuestion = async (question: Question) => {
     try {
-      const response = await fetch("http://localhost:8081/questions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(question),
-      });
+      const questionDTO: QuestionDTO = {
+        creationDate: new Date().toISOString(),
+        questionText: question.questionText,
+        category: question.category,
+        correctAnswer: question.correctAnswer,
+        wrongAnswers: question.wrongAnswers,
+        difficulty: question.difficulty,
+      };
 
-      if (!response.ok) {
-        throw new Error("Failed to add question");
-      }
-
+      await ApiService.post("/questions", questionDTO);
       console.log("Question added successfully!");
       navigate("/questions");
     } catch (error) {
@@ -32,12 +33,10 @@ const AddQuestionPage: React.FC = () => {
       alert("Question text is required!");
       return;
     }
-
     if (!newQuestion.correctAnswer.trim()) {
       alert("Correct answer is required!");
       return;
     }
-
     const validWrongAnswers = newQuestion.wrongAnswers.filter(
       (answer) => answer.trim() !== ""
     );

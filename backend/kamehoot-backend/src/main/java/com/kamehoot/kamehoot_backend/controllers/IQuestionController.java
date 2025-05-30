@@ -10,7 +10,7 @@ import com.kamehoot.kamehoot_backend.models.Question;
 
 public interface IQuestionController {
 
-    ResponseEntity<List<Question>> getQuestions(
+    ResponseEntity<List<QuestionDTO>> getQuestions(
             List<String> categories,
             List<Integer> difficulties,
             String searchTerm,
@@ -19,7 +19,7 @@ public interface IQuestionController {
 
     ResponseEntity<List<Question>> getPublicQuestions();
 
-    ResponseEntity<List<Question>> getPrivateQuestions();
+    ResponseEntity<List<QuestionDTO>> getPrivateQuestions();
 
     ResponseEntity<Void> addQuestion(QuestionDTO question);
 
@@ -27,6 +27,6 @@ public interface IQuestionController {
 
     ResponseEntity<Void> updateQuestion(QuestionDTO question);
 
-    ResponseEntity<Question> getQuestion(UUID id);
+    ResponseEntity<QuestionDTO> getQuestion(UUID id);
 
 }

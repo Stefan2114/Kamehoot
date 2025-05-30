@@ -1,39 +1,42 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Question } from "../types/question";
+import { Question, QuestionFromBackend } from "../types/question";
+import { ApiService } from "../utils/api";
 import styles from "../styles/QuestionPage.module.css";
 
 const QuestionPage = () => {
   const { id } = useParams<{ id: string }>();
-
   const navigate = useNavigate();
-
   const [question, setQuestion] = useState<Question>();
 
   useEffect(() => {
-    fetch(`http://localhost:8081/questions/${id}`)
-      .then((response) => response.json())
-      .then((data: Question) => setQuestion(data))
-      .catch((error) => console.error("Error fetching question:", error));
-  });
+    const fetchQuestion = async () => {
+      try {
+        if (id) {
+          const data = await ApiService.get<QuestionFromBackend>(
+            `/questions/${id}`
+          );
+          setQuestion({
+            ...data,
+            creationDate: new Date(data.creationDate.split(".")[0]),
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching question:", error);
+      }
+    };
+
+    fetchQuestion();
+  }, [id]);
 
   if (!question) {
-    return <div>Couldn't fetch the question</div>;
+    return <div>Loading question...</div>;
   }
 
-  const deleteQuestion = async (questionId: number) => {
+  const deleteQuestion = async (questionId: string) => {
     try {
-      const response = await fetch(
-        `http://localhost:8081/questions/${questionId}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete question");
-      }
-
+      console.log("Trying to delete the question");
+      await ApiService.delete(`/questions/${questionId}`);
       console.log("Question deleted successfully!");
       navigate("/questions");
     } catch (error) {
@@ -43,7 +46,9 @@ const QuestionPage = () => {
   };
 
   const handleDeleteQuestion = () => {
-    deleteQuestion(question.id);
+    if (window.confirm("Are you sure you want to delete this question?")) {
+      deleteQuestion(question.id);
+    }
   };
 
   return (
@@ -63,7 +68,11 @@ const QuestionPage = () => {
           <div className={styles["detail-section"]}>
             <label className={styles["detail-type"]}>Difficulty:</label>
             <label className={styles["detail-text"]}>
-              {question.difficulty}
+              {question.difficulty === 1
+                ? "Easy"
+                : question.difficulty === 2
+                ? "Medium"
+                : "Hard"}
             </label>
           </div>
         </div>
@@ -73,14 +82,12 @@ const QuestionPage = () => {
             {question.correctAnswer}
           </label>
         </div>
-
-        {question.wrongAnswers.map((wrongAnswer) => (
-          <div className={styles["question-section"]}>
+        {question.wrongAnswers.map((wrongAnswer, index) => (
+          <div key={index} className={styles["question-section"]}>
             <label className={styles["answer-type"]}>Wrong answer:</label>
             <label className={styles["answer-text"]}>{wrongAnswer}</label>
           </div>
         ))}
-
         <div className={styles["question-actions"]}>
           <Link
             to={`/questions/edit/${question.id}`}

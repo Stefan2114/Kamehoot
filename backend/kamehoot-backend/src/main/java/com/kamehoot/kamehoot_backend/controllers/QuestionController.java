@@ -6,9 +6,9 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,7 +38,7 @@ public class QuestionController implements IQuestionController {
 
     @Override
     @GetMapping
-    public ResponseEntity<List<Question>> getQuestions(
+    public ResponseEntity<List<QuestionDTO>> getQuestions(
             @RequestParam(required = false) List<String> categories,
             @RequestParam(required = false) List<Integer> difficulties,
             @RequestParam(required = false) String searchTerm,
@@ -49,7 +49,7 @@ public class QuestionController implements IQuestionController {
         UUID authenticatedUserId = null;
 
         // Get authenticated user ID if available
-        if (auth instanceof JwtAuthenticationToken jwtAuth) {
+        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
             String username = jwtAuth.getName();
             try {
                 authenticatedUserId = this.userService.getUserByUsername(username).getId();
@@ -66,20 +66,22 @@ public class QuestionController implements IQuestionController {
                 !orderBy.equals("creationDate") ||
                 !orderDirection.equals("desc");
 
+        List<Question> questions;
         if (hasFilters || authenticatedUserId != null) {
             // Use the filtered endpoint with authentication context
-            return ResponseEntity.ok(
-                    this.questionService.getQuestions(
-                            authenticatedUserId,
-                            categories,
-                            difficulties,
-                            searchTerm,
-                            orderBy,
-                            orderDirection));
+            questions = this.questionService.getQuestions(
+                    authenticatedUserId,
+                    categories,
+                    difficulties,
+                    searchTerm,
+                    orderBy,
+                    orderDirection);
         } else {
             // Fallback for unauthenticated users with no filters (public only)
-            return ResponseEntity.ok(this.questionService.getPublicQuestions());
+            questions = this.questionService.getPublicQuestions();
         }
+        return ResponseEntity.ok(mapQuestionsToDTOs(questions));
+
     }
 
     @Override
@@ -93,11 +95,12 @@ public class QuestionController implements IQuestionController {
 
     @Override
     @GetMapping("/private")
-    public ResponseEntity<List<Question>> getPrivateQuestions() {
+    public ResponseEntity<List<QuestionDTO>> getPrivateQuestions() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UUID authenticatedUserId = null;
-        if (auth instanceof JwtAuthenticationToken jwtAuth) {
+        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
+
             String username = jwtAuth.getName();
             try {
                 authenticatedUserId = this.userService.getUserByUsername(username).getId();
@@ -109,9 +112,15 @@ public class QuestionController implements IQuestionController {
             }
 
         }
-        if (authenticatedUserId == null)
+        if (authenticatedUserId == null) {
+            System.out.println("userId null");
+
             return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(this.questionService.getPrivateQuestions(authenticatedUserId));
+
+        }
+
+        List<Question> questions = this.questionService.getPrivateQuestions((authenticatedUserId));
+        return ResponseEntity.ok(mapQuestionsToDTOs(questions));
 
     }
 
@@ -121,7 +130,7 @@ public class QuestionController implements IQuestionController {
         System.out.println(question);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth instanceof JwtAuthenticationToken jwtAuth) {
+        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
             String username = jwtAuth.getName();
             this.questionService.addUserQuestion(username, question);
             return ResponseEntity.noContent().build();
@@ -149,10 +158,20 @@ public class QuestionController implements IQuestionController {
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<Question> getQuestion(@PathVariable UUID id) {
+    public ResponseEntity<QuestionDTO> getQuestion(@PathVariable UUID id) {
         System.out.println(id);
         System.out.println("I got here to get a question by id");
-        return ResponseEntity.ok(this.questionService.getQuestion(id));
+        return ResponseEntity.ok(mapQuestionToDTO(this.questionService.getQuestion(id)));
+    }
+
+    private QuestionDTO mapQuestionToDTO(Question question) {
+        return new QuestionDTO(question.getId(), question.getCreationDate(),
+                question.getQuestionText(), question.getCategory().getName(), question.getCorrectAnswer(),
+                question.getWrongAnswers(), question.getDifficulty());
+    }
+
+    private List<QuestionDTO> mapQuestionsToDTOs(List<Question> questions) {
+        return questions.stream().map(question -> mapQuestionToDTO(question)).toList();
     }
 
 }

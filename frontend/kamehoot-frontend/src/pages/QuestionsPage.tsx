@@ -2,33 +2,24 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Question, QuestionFromBackend } from "../types/question";
 import QuestionItem from "../components/QuestionItem";
+import { ApiService } from "../utils/api";
+import { useAuth } from "../contexts/AuthContext";
 import styles from "../styles/QuestionsPage.module.css";
 
 const QuestionsPage = () => {
   const navigate = useNavigate();
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const loaderRef = useRef(null);
+  const { logout } = useAuth();
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1);
-  const [initialLoad, setInitialLoad] = useState(true);
-
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [difficultyFilter, setDifficultyFilter] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [orderBy, setOrderBy] = useState("difficulty");
-  const [orderDirection, setOrderDirection] = useState("asc");
+  const [orderBy, setOrderBy] = useState("creationDate");
+  const [orderDirection, setOrderDirection] = useState("desc");
 
-  const PAGE_SIZE = 10; // Number of questions to fetch per page
-
-  const fetchQuestions = useCallback(
-    (pageNumber: number, reset: boolean = false) => {
-      setLoading(true);
-
-      // Build query parameters
+  const fetchQuestions = useCallback(async () => {
+    try {
       const params = new URLSearchParams();
 
       if (categoryFilter.length > 0) {
@@ -45,96 +36,39 @@ const QuestionsPage = () => {
 
       params.append("orderBy", orderBy);
       params.append("orderDirection", orderDirection);
-      params.append("page", pageNumber.toString());
-      params.append("pageSize", PAGE_SIZE.toString());
 
-      // Make API request
-      fetch(`http://localhost:8081/questions?${params.toString()}`)
-        .then((response) => response.json())
-        .then((data: QuestionFromBackend[]) => {
-          const parsed = data.map((q) => ({
-            ...q,
-            creationDate: new Date(q.creationDate.split(".")[0]),
-          }));
+      const data = await ApiService.get<QuestionFromBackend[]>(
+        `/questions?${params.toString()}`
+      );
+      const parsed = data.map((q) => ({
+        ...q,
+        creationDate: new Date(q.creationDate.split(".")[0]),
+      }));
 
-          // If there are fewer items than the page size, we've reached the end
-          if (parsed.length < PAGE_SIZE) {
-            setHasMore(false);
-          } else {
-            setHasMore(true);
-          }
-
-          if (reset) {
-            setQuestions(parsed);
-          } else {
-            setQuestions((prevQuestions) => [...prevQuestions, ...parsed]);
-          }
-
-          setInitialLoad(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching questions:", error);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    },
-    [categoryFilter, difficultyFilter, searchTerm, orderBy, orderDirection]
-  );
-
-  // Observer callback for infinite scrolling
-  const handleObserver = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      const target = entries[0];
-      if (target.isIntersecting && hasMore && !loading) {
-        setPage((prevPage) => prevPage + 1);
-      }
-    },
-    [hasMore, loading]
-  );
-
-  // Set up the intersection observer
-  useEffect(() => {
-    const option = {
-      root: null,
-      rootMargin: "20px",
-      threshold: 0,
-    };
-
-    observerRef.current = new IntersectionObserver(handleObserver, option);
-
-    if (loaderRef.current) {
-      observerRef.current.observe(loaderRef.current);
+      setQuestions(parsed);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
     }
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [handleObserver]);
+  }, [categoryFilter, difficultyFilter, searchTerm, orderBy, orderDirection]);
 
   // Fetch categories once
   useEffect(() => {
-    fetch("http://localhost:8081/categories")
-      .then((response) => response.json())
-      .then((data: string[]) => setCategories(data))
-      .catch((error) => console.error("Error fetching categories:", error));
+    const fetchCategories = async () => {
+      try {
+        const data = await ApiService.get<string[]>("/categories");
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
   }, []);
 
   // Reset and fetch questions when filters change
   useEffect(() => {
-    setPage(1);
-    setHasMore(true);
-    fetchQuestions(1, true);
-  }, [categoryFilter, difficultyFilter, searchTerm, orderBy, orderDirection]);
-
-  // Fetch additional pages when page number changes
-  useEffect(() => {
-    if (!initialLoad && page > 1) {
-      fetchQuestions(page, false);
-    }
-  }, [page, initialLoad, fetchQuestions]);
+    fetchQuestions();
+  }, [fetchQuestions]);
 
   const handleCategoryFilterChange = (category: string) =>
     setCategoryFilter((prev) =>
@@ -153,16 +87,43 @@ const QuestionsPage = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSearchTerm(e.target.value);
 
-  const handleOrderByChange = (e: React.ChangeEvent<HTMLSelectElement>) =>
+  const handleOrderByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setOrderBy(e.target.value);
+    if (orderBy === "creationDate") {
+      setOrderDirection("desc");
+    } else {
+      setOrderDirection("asc");
+    }
+  };
 
   const handleAddQuestion = () => {
     navigate("/questions/add");
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <div className={styles["questions-container"]}>
       <div className={styles["sidebar"]}>
+        <div style={{ marginBottom: "20px" }}>
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#dc3545",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Logout
+          </button>
+        </div>
+
         <button className={styles["add-button"]} onClick={handleAddQuestion}>
           Add Question
         </button>
@@ -202,14 +163,6 @@ const QuestionsPage = () => {
             </div>
           ))}
         </div>
-
-        <video className={styles["intro-video"]} controls>
-          <source
-            src="http://localhost:8081/questions/intro-video"
-            type="video/mp4"
-          />
-          Your browser does not support the video tag.
-        </video>
       </div>
 
       <div className={styles["main-content"]}>
@@ -228,38 +181,19 @@ const QuestionsPage = () => {
             onChange={handleOrderByChange}
           >
             <option value="difficulty">Sort by Difficulty</option>
-            <option value="date">Sort by Date</option>
+            <option value="creationDate">Sort by Date</option>
           </select>
         </div>
 
-        {initialLoad && loading ? (
-          <div className={styles["loading"]}>Loading questions...</div>
-        ) : (
-          <>
-            <div className={styles["questions-list"]}>
-              {questions.length > 0 ? (
-                questions.map((question) => (
-                  <QuestionItem key={question.id} question={question} />
-                ))
-              ) : (
-                <div className={styles["no-questions"]}>No questions found</div>
-              )}
-            </div>
-
-            {/* Loader element that will trigger the next page load when it comes into view */}
-            {hasMore && (
-              <div ref={loaderRef} className={styles["loader"]}>
-                {loading && <div>Loading more questions...</div>}
-              </div>
-            )}
-
-            {!hasMore && questions.length > 0 && (
-              <div className={styles["end-message"]}>
-                No more questions to load
-              </div>
-            )}
-          </>
-        )}
+        <div className={styles["questions-list"]}>
+          {questions.length > 0 ? (
+            questions.map((question) => (
+              <QuestionItem key={question.id} question={question} />
+            ))
+          ) : (
+            <div className={styles["no-questions"]}>No questions found</div>
+          )}
+        </div>
       </div>
     </div>
   );
