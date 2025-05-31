@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import com.kamehoot.kamehoot_backend.DTOs.AuthenticateRequest;
 import com.kamehoot.kamehoot_backend.models.AppUser;
-import com.kamehoot.kamehoot_backend.models.Question;
 
 public interface IUserService {
 
@@ -18,6 +17,12 @@ public interface IUserService {
     Boolean existsByUsername(String username);
 
     List<AppUser> getAllUsers();
+
+    void setTwoFaSecret(String username, String secret);
+
+    void enable2FA(String username);
+
+    void disable2FA(String username);
 
     // void deleteUser(UUID userId);
 

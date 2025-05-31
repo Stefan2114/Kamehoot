@@ -43,7 +43,7 @@ public class QuestionService implements IQuestionService {
                 this.passwordEncoder = passwordEncoder;
                 this.userRepository = userRepository;
 
-                // saveJsonQuestions();
+                saveJsonQuestions();
         }
 
         @Override

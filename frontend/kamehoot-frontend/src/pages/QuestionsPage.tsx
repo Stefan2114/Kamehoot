@@ -51,7 +51,6 @@ const QuestionsPage = () => {
     }
   }, [categoryFilter, difficultyFilter, searchTerm, orderBy, orderDirection]);
 
-  // Fetch categories once
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -65,7 +64,6 @@ const QuestionsPage = () => {
     fetchCategories();
   }, []);
 
-  // Reset and fetch questions when filters change
   useEffect(() => {
     fetchQuestions();
   }, [fetchQuestions]);
@@ -100,6 +98,10 @@ const QuestionsPage = () => {
     navigate("/questions/add");
   };
 
+  const handleProfile = () => {
+    navigate("/profile");
+  };
+
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -108,7 +110,27 @@ const QuestionsPage = () => {
   return (
     <div className={styles["questions-container"]}>
       <div className={styles["sidebar"]}>
-        <div style={{ marginBottom: "20px" }}>
+        <div
+          style={{
+            marginBottom: "20px",
+            display: "flex",
+            gap: "10px",
+            flexDirection: "column",
+          }}
+        >
+          <button
+            onClick={handleProfile}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#007bff",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Profile
+          </button>
           <button
             onClick={handleLogout}
             style={{

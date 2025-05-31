@@ -46,14 +46,14 @@ public class SecurityConfig {
             factory.addAdditionalTomcatConnectors(connector);
 
             // Add the missing security constraint
-            // factory.addContextCustomizers(context -> {
-            // SecurityConstraint securityConstraint = new SecurityConstraint();
-            // securityConstraint.setUserConstraint("CONFIDENTIAL");
-            // SecurityCollection collection = new SecurityCollection();
-            // collection.addPattern("/*");
-            // securityConstraint.addCollection(collection);
-            // context.addConstraint(securityConstraint);
-            // });
+            factory.addContextCustomizers(context -> {
+                SecurityConstraint securityConstraint = new SecurityConstraint();
+                securityConstraint.setUserConstraint("CONFIDENTIAL");
+                SecurityCollection collection = new SecurityCollection();
+                collection.addPattern("/*");
+                securityConstraint.addCollection(collection);
+                context.addConstraint(securityConstraint);
+            });
         };
 
     }

@@ -7,14 +7,17 @@ import React, {
 } from "react";
 import { AuthService } from "../utils/auth";
 import { ApiService } from "../utils/api";
-import { AuthResponse, LoginRequest } from "../types/auth";
+import { AuthResponse, LoginRequest, TwoFaSetupResponse } from "../types/auth";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (credentials: LoginRequest) => Promise<void>;
+  login: (credentials: LoginRequest) => Promise<AuthResponse>;
   register: (credentials: LoginRequest) => Promise<void>;
   logout: () => void;
   loading: boolean;
+  setup2FA: () => Promise<TwoFaSetupResponse>;
+  verify2FA: (totpCode: number) => Promise<void>;
+  disable2FA: (totpCode: number) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,14 +44,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (credentials: LoginRequest) => {
+  const login = async (credentials: LoginRequest): Promise<AuthResponse> => {
     try {
+      console.log("Sending login request:", credentials);
       const response = await ApiService.post<AuthResponse>(
         "/auth/login",
         credentials
       );
-      AuthService.setToken(response.token, response.expiresInSeconds);
-      setIsAuthenticated(true);
+      console.log("Login response:", response);
+
+      if (!response.requires2FA) {
+        AuthService.setToken(response.token, response.expirationSeconds);
+        setIsAuthenticated(true);
+      }
+      return response;
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
@@ -61,10 +70,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         "/auth/register",
         credentials
       );
-      AuthService.setToken(response.token, response.expiresInSeconds);
+      AuthService.setToken(response.token, response.expirationSeconds);
       setIsAuthenticated(true);
     } catch (error) {
       console.error("Registration failed:", error);
+      throw error;
+    }
+  };
+
+  const setup2FA = async (): Promise<TwoFaSetupResponse> => {
+    try {
+      return await ApiService.post<TwoFaSetupResponse>("/auth/setup-2fa");
+    } catch (error) {
+      console.error("2FA setup failed:", error);
+      throw error;
+    }
+  };
+
+  const verify2FA = async (totpCode: number): Promise<void> => {
+    try {
+      await ApiService.post("/auth/verify-2fa", {
+        username: "", // You'd need to store this
+        password: "", // You'd need to store this
+        totpCode,
+      });
+    } catch (error) {
+      console.error("2FA verification failed:", error);
+      throw error;
+    }
+  };
+  const disable2FA = async (totpCode: number): Promise<void> => {
+    try {
+      await ApiService.post("/auth/disable-2fa", { totpCode });
+    } catch (error) {
+      console.error("2FA disable failed:", error);
       throw error;
     }
   };
@@ -76,7 +115,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, register, logout, loading }}
+      value={{
+        isAuthenticated,
+        login,
+        register,
+        logout,
+        loading,
+        setup2FA,
+        verify2FA,
+        disable2FA,
+      }}
     >
       {children}
     </AuthContext.Provider>

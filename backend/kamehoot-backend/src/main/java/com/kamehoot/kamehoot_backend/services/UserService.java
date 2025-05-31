@@ -13,6 +13,8 @@ import com.kamehoot.kamehoot_backend.DTOs.AuthenticateRequest;
 import com.kamehoot.kamehoot_backend.models.AppUser;
 import com.kamehoot.kamehoot_backend.repos.IUserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class UserService implements IUserService {
 
@@ -60,6 +62,31 @@ public class UserService implements IUserService {
     @Override
     public List<AppUser> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public void setTwoFaSecret(String username, String secret) {
+        AppUser user = getUserByUsername(username);
+        user.setTwoFaSecret(secret);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void enable2FA(String username) {
+        AppUser user = getUserByUsername(username);
+        user.setTwoFaEnabled(true);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void disable2FA(String username) {
+        AppUser user = getUserByUsername(username);
+        user.setTwoFaEnabled(false);
+        user.setTwoFaSecret(null);
+        userRepository.save(user);
     }
 
     // @Override

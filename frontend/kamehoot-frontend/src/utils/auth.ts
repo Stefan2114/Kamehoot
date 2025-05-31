@@ -1,3 +1,6 @@
+import { TwoFaSetupResponse } from "../types/auth";
+import { ApiService } from "./api";
+
 export class AuthService {
   private static TOKEN_KEY = 'auth_token';
   private static EXPIRY_KEY = 'auth_expiry';
@@ -29,5 +32,18 @@ export class AuthService {
 
   static isAuthenticated(): boolean {
     return this.getToken() !== null;
+  }
+
+  // 2FA API methods
+  static async setup2FA(): Promise<TwoFaSetupResponse> {
+    return ApiService.post<TwoFaSetupResponse>('/auth/setup-2fa');
+  }
+
+  static async verify2FA(totpCode: number): Promise<string> {
+    return ApiService.post<string>('/auth/verify-2fa', { totpCode });
+  }
+
+  static async disable2FA(totpCode: number): Promise<string> {
+    return ApiService.post<string>('/auth/disable-2fa', { totpCode });
   }
 }

@@ -19,7 +19,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:8081/categories");
+        const response = await fetch("https://localhost:8443/categories");
         const data: string[] = await response.json();
         setCategories(data);
       } catch (error) {

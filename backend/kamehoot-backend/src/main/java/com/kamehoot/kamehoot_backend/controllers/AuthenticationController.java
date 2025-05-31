@@ -14,7 +14,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.kamehoot.kamehoot_backend.DTOs.AuthenticateRequest;
 import com.kamehoot.kamehoot_backend.DTOs.TokenResponse;
+import com.kamehoot.kamehoot_backend.DTOs.TwoFaSetupRequest;
+import com.kamehoot.kamehoot_backend.DTOs.TwoFaVerifyRequest;
+import com.kamehoot.kamehoot_backend.models.AppUser;
 import com.kamehoot.kamehoot_backend.security.JwtService;
+import com.kamehoot.kamehoot_backend.security.TwoFactorAuthService;
 import com.kamehoot.kamehoot_backend.services.IUserService;
 
 @RequestMapping("/auth")
@@ -24,12 +28,14 @@ public class AuthenticationController implements IAuthenticationController {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final IUserService userService;
+    private final TwoFactorAuthService twoFactorAuthService;
 
     public AuthenticationController(JwtService jwtService, AuthenticationManager authenticationManager,
-            IUserService userService) {
+            IUserService userService, TwoFactorAuthService twoFactorAuthService) {
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.userService = userService;
+        this.twoFactorAuthService = twoFactorAuthService;
     }
 
     // @PostMapping("/token")
@@ -51,10 +57,63 @@ public class AuthenticationController implements IAuthenticationController {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userLogin.username(), userLogin.password()));
+
+        AppUser user = this.userService.getUserByUsername(userLogin.username());
+        if (user.isTwoFaEnabled()) {
+            if (userLogin.totpCode() == null) {
+                return ResponseEntity.ok(new TokenResponse(null, 0L, true, "2FA code required"));
+            }
+
+            if (!twoFactorAuthService.verifyCode(user.getTwoFaSecret(), userLogin.totpCode())) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid 2FA code");
+            }
+        }
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtService.generateToken(authentication);
         return new ResponseEntity<>(new TokenResponse(token, this.jwtService.getTokenExpirationSeconds()),
                 HttpStatus.OK);
+    }
+
+    @PostMapping("/setup-2fa")
+    public ResponseEntity<TwoFaSetupRequest> setup2FA(Authentication authentication) {
+        String username = authentication.getName();
+        String secretKey = twoFactorAuthService.generateSecretKey();
+        String qrCodeUrl = twoFactorAuthService.getQRBarcodeURL(username, secretKey);
+
+        userService.setTwoFaSecret(username, secretKey);
+
+        return ResponseEntity.ok(new TwoFaSetupRequest(qrCodeUrl, secretKey));
+    }
+
+    @PostMapping("/verify-2fa")
+    public ResponseEntity<String> verify2FA(@RequestBody TwoFaVerifyRequest request, Authentication authentication) {
+        String username = authentication.getName();
+        AppUser user = this.userService.getUserByUsername(username);
+
+        if (twoFactorAuthService.verifyCode(user.getTwoFaSecret(), request.totpCode())) {
+            userService.enable2FA(username);
+            return ResponseEntity.ok("2FA enable successfully");
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid 2FA code");
+        }
+    }
+
+    @PostMapping("/disable-2fa")
+    public ResponseEntity<String> disable2FA(@RequestBody TwoFaVerifyRequest request, Authentication authentication) {
+        String username = authentication.getName();
+        AppUser user = this.userService.getUserByUsername(username);
+
+        if (!user.isTwoFaEnabled()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "2FA is not enable");
+        }
+
+        if (twoFactorAuthService.verifyCode(user.getTwoFaSecret(), request.totpCode())) {
+            userService.disable2FA(username);
+            return ResponseEntity.ok("2FA disabled successfully");
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid 2FA code");
+        }
     }
 
     @Override

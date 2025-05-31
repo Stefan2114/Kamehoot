@@ -29,23 +29,22 @@ export class ApiService {
     }
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(errorText || `HTTP ${response.status}: ${response.statusText}`);
     }
 
     const contentType = response.headers.get('content-type');
     const contentLength = response.headers.get('content-length');
 
-    if (response.status === 204 || contentLength === '0' || 
+    if (response.status === 204 || contentLength === '0' ||
         (!contentType?.includes('application/json') && !contentLength)) {
       return null;
     }
 
-    // Try to parse JSON, but handle empty responses gracefully
     try {
       const text = await response.text();
       return text ? JSON.parse(text) : null;
     } catch (error) {
-      // If JSON parsing fails, return null for empty responses
       return null;
     }
   }

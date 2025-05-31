@@ -71,7 +71,11 @@ public class JWTConfig {
 
                                                 .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
 
-                                                .requestMatchers("/auth/**").permitAll()
+                                                .requestMatchers("/auth/login", "/auth/register").permitAll()
+
+                                                .requestMatchers("/auth/setup-2fa", "/auth/verify-2fa",
+                                                                "/auth/disable-2fa")
+                                                .authenticated()
 
                                                 .requestMatchers(HttpMethod.GET, "/categories", "/questions",
                                                                 "/protocol", "/health")

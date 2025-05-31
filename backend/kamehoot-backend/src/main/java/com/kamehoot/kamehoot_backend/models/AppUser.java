@@ -48,6 +48,12 @@ public class AppUser {
     @Column(name = "role", length = 100, nullable = false)
     private Set<String> roles = new HashSet<>();
 
+    @Column(name = "two_fa_enabled", nullable = false)
+    private boolean twoFaEnabled = false;
+
+    @Column(name = "two_fa_secret", length = 32)
+    private String twoFaSecret;
+
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Question> userQuestions;
