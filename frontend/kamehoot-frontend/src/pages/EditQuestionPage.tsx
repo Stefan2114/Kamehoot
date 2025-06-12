@@ -34,7 +34,7 @@ const EditQuestionPage = () => {
     try {
       const questionDTO: QuestionDTO = {
         id: question.id,
-        creationDate: question.creationDate.toISOString(),
+        creationDate: new Date().toISOString(),
         questionText: question.questionText,
         category: question.category,
         correctAnswer: question.correctAnswer,

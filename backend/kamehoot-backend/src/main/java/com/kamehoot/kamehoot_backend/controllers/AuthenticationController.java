@@ -21,6 +21,8 @@ import com.kamehoot.kamehoot_backend.security.JwtService;
 import com.kamehoot.kamehoot_backend.security.TwoFactorAuthService;
 import com.kamehoot.kamehoot_backend.services.IUserService;
 
+import jakarta.validation.Valid;
+
 @RequestMapping("/auth")
 @RestController
 public class AuthenticationController implements IAuthenticationController {
@@ -38,20 +40,9 @@ public class AuthenticationController implements IAuthenticationController {
         this.twoFactorAuthService = twoFactorAuthService;
     }
 
-    // @PostMapping("/token")
-    // public String token(@RequestBody AuthenticateRequest userLogin) {
-
-    // System.out.println("Generating token for user: " + userLogin.username());
-    // System.out.println("User password: " + userLogin.password());
-    // Authentication authentication = this.authenticationManager.authenticate(
-    // new UsernamePasswordAuthenticationToken(userLogin.username(),
-    // userLogin.password()));
-    // return this.tokenService.generateToken(authentication);
-    // }
-
     @Override
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody AuthenticateRequest userLogin) {
+    public ResponseEntity<TokenResponse> login(@Valid @RequestBody AuthenticateRequest userLogin) {
 
         System.out.println("Login received");
 
@@ -87,7 +78,8 @@ public class AuthenticationController implements IAuthenticationController {
     }
 
     @PostMapping("/verify-2fa")
-    public ResponseEntity<String> verify2FA(@RequestBody TwoFaVerifyRequest request, Authentication authentication) {
+    public ResponseEntity<String> verify2FA(@Valid @RequestBody TwoFaVerifyRequest request,
+            Authentication authentication) {
         String username = authentication.getName();
         AppUser user = this.userService.getUserByUsername(username);
 
@@ -100,7 +92,8 @@ public class AuthenticationController implements IAuthenticationController {
     }
 
     @PostMapping("/disable-2fa")
-    public ResponseEntity<String> disable2FA(@RequestBody TwoFaVerifyRequest request, Authentication authentication) {
+    public ResponseEntity<String> disable2FA(@Valid @RequestBody TwoFaVerifyRequest request,
+            Authentication authentication) {
         String username = authentication.getName();
         AppUser user = this.userService.getUserByUsername(username);
 
@@ -118,7 +111,7 @@ public class AuthenticationController implements IAuthenticationController {
 
     @Override
     @PostMapping("/register")
-    public ResponseEntity<TokenResponse> register(@RequestBody AuthenticateRequest userRegister) {
+    public ResponseEntity<TokenResponse> register(@Valid @RequestBody AuthenticateRequest userRegister) {
 
         System.out.println("Register received");
         if (userService.existsByUsername(userRegister.username())) {

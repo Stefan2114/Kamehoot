@@ -2,7 +2,6 @@ package com.kamehoot.kamehoot_backend.services;
 
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -43,7 +42,7 @@ public class QuestionService implements IQuestionService {
                 this.passwordEncoder = passwordEncoder;
                 this.userRepository = userRepository;
 
-                saveJsonQuestions();
+                // saveJsonQuestions();
         }
 
         @Override
@@ -234,13 +233,13 @@ public class QuestionService implements IQuestionService {
 
                 AppUser user = new AppUser();
                 user.setUsername("admin");
-                user.setPassword(passwordEncoder.encode("admin"));
+                user.setPassword(passwordEncoder.encode("Admin1234!"));
                 user.setRoles(Set.of("ADMIN"));
                 AppUser admin = userRepository.save(user);
 
                 AppUser user2 = new AppUser();
                 user2.setUsername("stef");
-                user2.setPassword(passwordEncoder.encode("stef"));
+                user2.setPassword(passwordEncoder.encode("Stefan2004!"));
                 user2.setRoles(Set.of("USER"));
                 userRepository.save(user2);
 

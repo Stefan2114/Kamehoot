@@ -30,11 +30,19 @@ public class UserService implements IUserService {
 
     @Override
     public void registerUser(AuthenticateRequest request) {
+
+        if (existsByUsername(request.username())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists");
+        }
         AppUser user = new AppUser();
         user.setUsername(request.username());
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setRoles(Set.of("USER"));
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to register user: " + e.getMessage());
+        }
     }
 
     @Override
@@ -67,6 +75,11 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public void setTwoFaSecret(String username, String secret) {
+
+        if (secret == null || secret.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Two-factor authentication secret cannot be empty");
+        }
         AppUser user = getUserByUsername(username);
         user.setTwoFaSecret(secret);
         userRepository.save(user);
