@@ -4,9 +4,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.Check;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -20,23 +24,20 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "quizzes")
-// @Table(name = "quizzes", uniqueConstraints = {
-// @UniqueConstraint(columnNames = { "user_id", "question_id" }) })
+@Check(constraints = "visibility IN ('PRIVATE', 'PUBLIC') AND user1Score >= 0 AND user2Score >= 0")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-// this is good, the user can only see his questions and the public once. So
-// there are 2 types of questions public and private
-// there will be quizzes that are all public. An user can create a quiz using
-// public questions or personal questions
-// another user can play other user quiz but can not use it's questions
-// directly. They have to create their own questions that are similar
 public class Quiz {
 
     @Id
     @GeneratedValue
     private UUID id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 64, nullable = false)
+    private Visibility visibility;
 
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
@@ -48,7 +49,10 @@ public class Quiz {
     @Column(nullable = false)
     private LocalDateTime creationDate;
 
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private List<QuizQuestion> quizQuestions;
+
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    private List<UserMatch> userMatches;
 
 }

@@ -17,7 +17,7 @@ import com.kamehoot.kamehoot_backend.repos.IQuizQuestionRepository;
 import com.kamehoot.kamehoot_backend.repos.IQuizRepository;
 import com.kamehoot.kamehoot_backend.repos.IUserRepository;
 
-public class QuizService implements IQuizService {
+public class QuizService {
     private final IUserRepository userRepository;
     private final IQuestionRepository questionRepository;
     private final IQuizRepository quizRepository;
@@ -34,13 +34,12 @@ public class QuizService implements IQuizService {
 
     }
 
-    @Override
     public List<Quiz> getUserQuizList(UUID userId) {
         return quizRepository.findByCreatorId(userId);
     }
 
-    @Override
     public void addQuiz(UUID userId, QuizRequest quizDTO) {
+
         AppUser user = this.userRepository.findById(userId)
                 .orElseThrow(() -> {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + userId);
@@ -59,9 +58,14 @@ public class QuizService implements IQuizService {
                         throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                                 "Question not found with id: " + questionId);
                     });
+
                     QuizQuestion quizQuestion = new QuizQuestion();
                     quizQuestion.setQuiz(savedQuiz);
-                    quizQuestion.setQuestion(question);
+                    quizQuestion.setCategory(question.getCategory());
+                    quizQuestion.setCorrectAnswer(question.getCorrectAnswer());
+                    quizQuestion.setDifficulty(question.getDifficulty());
+                    quizQuestion.setQuestionText(question.getQuestionText());
+                    quizQuestion.setWrongAnswers(question.getWrongAnswers());
                     this.quizQuestionRepository.save(quizQuestion);
                 }
             } catch (Exception e) {
@@ -72,15 +76,14 @@ public class QuizService implements IQuizService {
 
     }
 
-    @Override
-    public void deleteQuiz(UUID quizId) {
-        try {
-            this.quizRepository.deleteById(quizId);
+    // public void deleteQuiz(UUID quizId) {
+    // try {
+    // this.quizRepository.deleteById(quizId);
 
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Couldn't delete question with id: " + quizId + " Error: " + e.getMessage());
+    // } catch (Exception e) {
+    // throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+    // "Couldn't delete question with id: " + quizId + " Error: " + e.getMessage());
 
-        }
-    }
+    // }
+    // }
 }

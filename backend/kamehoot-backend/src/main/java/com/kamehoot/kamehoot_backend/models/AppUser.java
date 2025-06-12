@@ -43,6 +43,9 @@ public class AppUser {
     @Column(length = 256, nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private Boolean deleted = false;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = { @JoinColumn(name = "user_id") })
     @Column(name = "role", length = 100, nullable = false)
@@ -61,5 +64,8 @@ public class AppUser {
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Quiz> userQuizzes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserMatch> userMatches;
 
 }

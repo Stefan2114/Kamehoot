@@ -47,7 +47,7 @@ public class Question {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 64, nullable = false)
-    private Visibility visibility;
+    private Visibility visibility = Visibility.PRIVATE;
 
     @Column(nullable = false)
     private LocalDateTime creationDate;
