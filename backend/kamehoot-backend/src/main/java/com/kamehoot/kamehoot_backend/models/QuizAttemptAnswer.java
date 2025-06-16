@@ -2,6 +2,8 @@ package com.kamehoot.kamehoot_backend.models;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,21 +17,30 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "players")
+@Table(name = "quiz_attempt_answers")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Player {
+public class QuizAttemptAnswer {
 
     @Id
     @GeneratedValue
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private AppUser user;
+    @JoinColumn(name = "attempt_id", nullable = false)
+    @JsonIgnore
+    private QuizAttempt attempt;
+
+    @ManyToOne
+    @JoinColumn(name = "quiz_question_id", nullable = false)
+    private QuizQuestion quizQuestion;
+
+    @Column(length = 128, nullable = false)
+    private String userAnswer;
 
     @Column(nullable = false)
-    private Integer score;
+    private Boolean isCorrect;
+
 }

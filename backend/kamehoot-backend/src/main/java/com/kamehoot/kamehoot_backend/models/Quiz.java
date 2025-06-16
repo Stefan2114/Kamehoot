@@ -1,10 +1,13 @@
 package com.kamehoot.kamehoot_backend.models;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.Check;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,7 +27,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "quizzes")
-@Check(constraints = "visibility IN ('PRIVATE', 'PUBLIC') AND user1Score >= 0 AND user2Score >= 0")
+@Check(constraints = "visibility IN ('PRIVATE', 'PUBLIC')")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -37,22 +40,35 @@ public class Quiz {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 64, nullable = false)
-    private Visibility visibility;
+    @JsonIgnore
+    private Visibility visibility = Visibility.PRIVATE;
 
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
+    @JsonIgnore
     private AppUser creator;
 
     @Column(length = 128, nullable = false)
     private String title;
 
+    @Column(length = 512, nullable = false)
+    private String description = "";
+
     @Column(nullable = false)
     private LocalDateTime creationDate;
 
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
-    private List<QuizQuestion> quizQuestions;
+    // @Column(nullable = false)
+    // private LocalDateTime lastModified;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
-    private List<UserMatch> userMatches;
+    private List<QuizQuestion> questions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<QuizAttempt> attempts = new ArrayList<>();
+
+    public Integer getMaxPossibleScore() {
+        return questions.size();
+    }
 
 }

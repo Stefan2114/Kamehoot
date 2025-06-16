@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Question, QuestionFromBackend } from "../types/question";
+import { Question } from "../types/question";
 import QuestionItem from "../components/QuestionItem";
-import { ApiService } from "../utils/api";
+import { ApiService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import styles from "../styles/QuestionsPage.module.css";
 
 const QuestionsPage = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -37,15 +36,11 @@ const QuestionsPage = () => {
       params.append("orderBy", orderBy);
       params.append("orderDirection", orderDirection);
 
-      const data = await ApiService.get<QuestionFromBackend[]>(
+      const data = await ApiService.get<Question[]>(
         `/questions?${params.toString()}`
       );
-      const parsed = data.map((q) => ({
-        ...q,
-        creationDate: new Date(q.creationDate.split(".")[0]),
-      }));
 
-      setQuestions(parsed);
+      setQuestions(data);
     } catch (error) {
       console.error("Error fetching questions:", error);
     }
@@ -98,15 +93,6 @@ const QuestionsPage = () => {
     navigate("/questions/add");
   };
 
-  const handleProfile = () => {
-    navigate("/profile");
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
   return (
     <div className={styles["questions-container"]}>
       <div className={styles["sidebar"]}>
@@ -117,34 +103,7 @@ const QuestionsPage = () => {
             gap: "10px",
             flexDirection: "column",
           }}
-        >
-          <button
-            onClick={handleProfile}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#007bff",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Profile
-          </button>
-          <button
-            onClick={handleLogout}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#dc3545",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Logout
-          </button>
-        </div>
+        ></div>
 
         <button className={styles["add-button"]} onClick={handleAddQuestion}>
           Add Question

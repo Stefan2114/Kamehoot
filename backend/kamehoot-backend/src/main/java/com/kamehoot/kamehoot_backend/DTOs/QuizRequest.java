@@ -8,6 +8,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record QuizRequest(@NotBlank String title, @NotNull LocalDateTime creationDate,
-        @NotNull @Size(min = 1) List<UUID> questionIds) {
+public record QuizRequest(@NotBlank String title, @NotBlank String description, @NotNull LocalDateTime creationDate,
+                @NotNull @Size(min = 1) List<UUID> questionIds) {
 }

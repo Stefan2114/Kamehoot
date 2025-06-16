@@ -57,6 +57,11 @@ public class AppUser {
     @Column(name = "two_fa_secret", length = 32)
     private String twoFaSecret;
 
+    // @Lob
+    // @Column(name="profile_photo")
+    // @JsonIgnore
+    // private byte[] profilePhoto;
+
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Question> userQuestions;
@@ -66,6 +71,7 @@ public class AppUser {
     private List<Quiz> userQuizzes;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserMatch> userMatches;
+    @JsonIgnore
+    private List<QuizAttempt> quizAttempts;
 
 }

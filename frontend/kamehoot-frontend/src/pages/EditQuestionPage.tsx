@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Question, QuestionFromBackend, QuestionDTO } from "../types/question";
+import { Question, QuestionDTO } from "../types/question";
 import QuestionForm from "../components/QuestionForm";
-import { ApiService } from "../utils/api";
+import { ApiService } from "../services/api";
 import styles from "../styles/EditQuestionPage.module.css";
 
 const EditQuestionPage = () => {
@@ -14,13 +14,8 @@ const EditQuestionPage = () => {
     const fetchQuestion = async () => {
       try {
         if (id) {
-          const data = await ApiService.get<QuestionFromBackend>(
-            `/questions/${id}`
-          );
-          setQuestion({
-            ...data,
-            creationDate: new Date(data.creationDate.split(".")[0]),
-          });
+          const data = await ApiService.get<Question>(`/questions/${id}`);
+          setQuestion(data);
         }
       } catch (error) {
         console.error("Error fetching question:", error);
@@ -34,7 +29,7 @@ const EditQuestionPage = () => {
     try {
       const questionDTO: QuestionDTO = {
         id: question.id,
-        creationDate: new Date().toISOString(),
+        creationDate: question.creationDate,
         questionText: question.questionText,
         category: question.category,
         correctAnswer: question.correctAnswer,

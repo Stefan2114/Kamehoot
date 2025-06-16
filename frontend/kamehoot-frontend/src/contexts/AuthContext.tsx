@@ -5,8 +5,8 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { AuthService } from "../utils/auth";
-import { ApiService } from "../utils/api";
+import { AuthService } from "../services/auth";
+import { ApiService } from "../services/api";
 import { AuthResponse, LoginRequest, TwoFaSetupResponse } from "../types/auth";
 
 interface AuthContextType {

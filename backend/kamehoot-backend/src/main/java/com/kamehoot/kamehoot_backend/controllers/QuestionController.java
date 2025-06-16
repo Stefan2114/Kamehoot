@@ -4,7 +4,6 @@ package com.kamehoot.kamehoot_backend.controllers;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,7 +31,6 @@ public class QuestionController implements IQuestionController {
     private final IQuestionService questionService;
     private final IUserService userService;
 
-    @Autowired
     public QuestionController(IQuestionService questionService, IUserService userService) {
         this.questionService = questionService;
         this.userService = userService;

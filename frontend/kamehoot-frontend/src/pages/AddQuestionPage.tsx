@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Question, QuestionDTO } from "../types/question";
 import QuestionForm from "../components/QuestionForm";
-import { ApiService } from "../utils/api";
+import { ApiService } from "../services/api";
 import styles from "../styles/AddQuestionPage.module.css";
 
 const AddQuestionPage: React.FC = () => {

@@ -4,6 +4,7 @@ import {
   createBrowserRouter,
   RouterProvider,
   Navigate,
+  Outlet,
 } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -14,59 +15,94 @@ import QuestionPage from "./pages/QuestionPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
+import Layout from "./components/Layout";
+import QuizzesPage from "./pages/QuizzesPage";
+import QuizPage from "./pages/QuizPage";
+
+const AppLayout = () => {
+  return (
+    <Layout>
+      <Outlet />
+    </Layout>
+  );
+};
+
+const ProtectedWrapper = ({ children }: { children: React.ReactNode }) => {
+  return <ProtectedRoute>{children}</ProtectedRoute>;
+};
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/questions" replace />,
-  },
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
-  },
-  {
-    path: "/profile",
-    element: (
-      <ProtectedRoute>
-        <ProfilePage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/questions",
-    element: (
-      <ProtectedRoute>
-        <QuestionsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/questions/add",
-    element: (
-      <ProtectedRoute>
-        <AddQuestionPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/questions/edit/:id",
-    element: (
-      <ProtectedRoute>
-        <EditQuestionPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/questions/:id",
-    element: (
-      <ProtectedRoute>
-        <QuestionPage />
-      </ProtectedRoute>
-    ),
+    element: <AppLayout />,
+    children: [
+      { index: true, element: <Navigate to="/questions" replace /> },
+
+      {
+        path: "/login",
+        element: <LoginPage />,
+      },
+      {
+        path: "/register",
+        element: <RegisterPage />,
+      },
+      {
+        path: "/profile",
+        element: (
+          <ProtectedWrapper>
+            <ProfilePage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/questions",
+        element: (
+          <ProtectedWrapper>
+            <QuestionsPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/questions/add",
+        element: (
+          <ProtectedWrapper>
+            <AddQuestionPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/questions/edit/:id",
+        element: (
+          <ProtectedWrapper>
+            <EditQuestionPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/questions/:id",
+        element: (
+          <ProtectedWrapper>
+            <QuestionPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/quizzes",
+        element: (
+          <ProtectedWrapper>
+            <QuizzesPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/quizzes/:id",
+        element: (
+          <ProtectedWrapper>
+            <QuizPage />
+          </ProtectedWrapper>
+        ),
+      },
+    ],
   },
 ]);
 

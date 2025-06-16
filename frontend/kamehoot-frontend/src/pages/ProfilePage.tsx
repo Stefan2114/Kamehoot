@@ -78,12 +78,6 @@ const ProfilePage: React.FC = () => {
     <div className={styles["profile-container"]}>
       <div className={styles["profile-header"]}>
         <h2>Profile Settings</h2>
-        <button
-          onClick={() => navigate("/questions")}
-          className={styles["back-button"]}
-        >
-          Back to Questions
-        </button>
       </div>
 
       <div className={styles["profile-content"]}>
