@@ -1,4 +1,4 @@
-package com.kamehoot.kamehoot_backend.models;
+package com.kamehoot.kamehoot_backend.enums;
 
 public enum Visibility {
     PRIVATE, PUBLIC

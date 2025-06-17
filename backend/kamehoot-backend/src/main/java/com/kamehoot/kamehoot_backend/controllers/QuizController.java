@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,6 +46,7 @@ public class QuizController {
 
     @GetMapping
     public ResponseEntity<List<Quiz>> getQuizzes() {
+        System.out.println("I want to get the questions");
         return ResponseEntity.ok(this.quizService.getQuizzes());
     }
 
@@ -67,8 +69,14 @@ public class QuizController {
 
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteQuiz(@PathVariable UUID id) {
+        this.quizService.deleteQuiz(id);
+        return ResponseEntity.noContent().build();
+    }
+
     private QuizDTO mapQuizToDTO(Quiz quiz) {
-        return new QuizDTO(quiz.getId(),
+        return new QuizDTO(quiz.getId(), quiz.getDeleted(),
                 quiz.getTitle(), quiz.getDescription(), quiz.getCreationDate(), quiz.getMaxPossibleScore(),
                 quiz.getQuestions().stream().map(quizQuestion -> quizQuestion.getQuestion()).toList());
     }

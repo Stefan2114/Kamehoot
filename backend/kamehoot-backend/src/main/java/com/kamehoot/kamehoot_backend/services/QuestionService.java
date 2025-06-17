@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.kamehoot.kamehoot_backend.DTOs.QuestionDTO;
+import com.kamehoot.kamehoot_backend.enums.Visibility;
 import com.kamehoot.kamehoot_backend.models.AppUser;
 import com.kamehoot.kamehoot_backend.models.Category;
 import com.kamehoot.kamehoot_backend.models.Question;
-import com.kamehoot.kamehoot_backend.models.Visibility;
 import com.kamehoot.kamehoot_backend.repos.ICategoryRepository;
 import com.kamehoot.kamehoot_backend.repos.IQuestionRepository;
 import com.kamehoot.kamehoot_backend.repos.IUserRepository;

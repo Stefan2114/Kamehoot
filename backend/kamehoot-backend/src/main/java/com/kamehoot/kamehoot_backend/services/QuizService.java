@@ -44,7 +44,7 @@ public class QuizService implements IQuizService {
 
     @Override
     public List<Quiz> getQuizzes() {
-        return this.quizRepository.findAll();
+        return this.quizRepository.findAllQuizzes();
     }
 
     @Override
@@ -93,14 +93,19 @@ public class QuizService implements IQuizService {
 
     }
 
-    // public void deleteQuiz(UUID quizId) {
-    // try {
-    // this.quizRepository.deleteById(quizId);
+    @Override
+    public void deleteQuiz(UUID id) {
+        try {
+            // this.quizRepository.deleteById(id);
+            Quiz quiz = this.quizRepository.findById(id).get();
+            quiz.setDeleted(true);
+            this.quizRepository.save(quiz);
 
-    // } catch (Exception e) {
-    // throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-    // "Couldn't delete question with id: " + quizId + " Error: " + e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Couldn't delete quiz with id: " + id + " Error: " + e.getMessage());
 
-    // }
-    // }
+        }
+    }
+
 }

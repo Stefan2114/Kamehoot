@@ -16,4 +16,6 @@ public interface IQuizService {
 
     Quiz getQuiz(UUID id);
 
+    void deleteQuiz(UUID id);
+
 }

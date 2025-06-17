@@ -1,0 +1,72 @@
+package com.kamehoot.kamehoot_backend.models;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.kamehoot.kamehoot_backend.enums.GameStatus;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class GameSession {
+
+    @Id
+    @GeneratedValue
+    private UUID id;
+
+    @ManyToOne
+    @JoinColumn(name = "quiz_id", nullable = false)
+    private Quiz quiz;
+
+    @ManyToOne
+    @JoinColumn(name = "host_id", nullable = false)
+    private AppUser host;
+
+    @Column(unique = true, length = 6, nullable = false)
+    private String gameCode;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private GameStatus status = GameStatus.WAITING;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column
+    private LocalDateTime startedAt;
+
+    @Column
+    private LocalDateTime endedAt;
+
+    @Column(nullable = false)
+    private Integer currentQuestionIndex = 0;
+
+    @Column(nullable = false)
+    private Integer questionTimeLimit = 15;
+
+    @OneToMany(mappedBy = "game_session", cascade = CascadeType.ALL)
+    private List<GamePlayer> players = new ArrayList<>();
+
+    public boolean isActiv() {
+        return status == GameStatus.IN_PROGRESS || status == GameStatus.WAITING;
+    }
+}

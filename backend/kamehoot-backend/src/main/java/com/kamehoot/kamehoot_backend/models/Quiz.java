@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.hibernate.annotations.Check;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kamehoot.kamehoot_backend.enums.Visibility;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -38,6 +39,9 @@ public class Quiz {
     @GeneratedValue
     private UUID id;
 
+    @Column(nullable = false)
+    private Boolean deleted = false;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 64, nullable = false)
     @JsonIgnore
@@ -65,7 +69,7 @@ public class Quiz {
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<QuizAttempt> attempts = new ArrayList<>();
+    private List<GameSession> sessions = new ArrayList<>();
 
     public Integer getMaxPossibleScore() {
         return questions.size();

@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.hibernate.annotations.Check;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kamehoot.kamehoot_backend.enums.Visibility;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;

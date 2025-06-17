@@ -72,6 +72,6 @@ public class AppUser {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<QuizAttempt> quizAttempts;
+    private List<GamePlayer> games;
 
 }

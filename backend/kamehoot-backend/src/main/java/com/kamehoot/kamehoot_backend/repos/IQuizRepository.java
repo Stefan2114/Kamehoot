@@ -12,9 +12,11 @@ import com.kamehoot.kamehoot_backend.models.Quiz;
 
 @Repository
 public interface IQuizRepository extends JpaRepository<Quiz, UUID> {
-    List<Quiz> findByCreatorId(UUID userId);
 
-    @Query("SELECT q FROM Quiz q WHERE q.creator.username = :username ORDER BY q.creationDate DESC")
+    @Query("SELECT q FROM Quiz q WHERE q.deleted = false ORDER BY q.creationDate DESC")
+    List<Quiz> findAllQuizzes();
+
+    @Query("SELECT q FROM Quiz q WHERE q.creator.username = :username AND q.deleted = false ORDER BY q.creationDate DESC")
     List<Quiz> findByCreatorUsername(@Param("username") String username);
 
 }
