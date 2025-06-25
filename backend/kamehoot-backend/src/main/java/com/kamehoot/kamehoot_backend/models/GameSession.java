@@ -41,9 +41,6 @@ public class GameSession {
     @JoinColumn(name = "host_id", nullable = false)
     private AppUser host;
 
-    @Column(unique = true, length = 6, nullable = false)
-    private String gameCode;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private GameStatus status = GameStatus.WAITING;
@@ -58,15 +55,12 @@ public class GameSession {
     private LocalDateTime endedAt;
 
     @Column(nullable = false)
-    private Integer currentQuestionIndex = 0;
-
-    @Column(nullable = false)
     private Integer questionTimeLimit = 15;
 
-    @OneToMany(mappedBy = "game_session", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "gameSession", cascade = CascadeType.ALL)
     private List<GamePlayer> players = new ArrayList<>();
 
-    public boolean isActiv() {
+    public boolean isActive() {
         return status == GameStatus.IN_PROGRESS || status == GameStatus.WAITING;
     }
 }

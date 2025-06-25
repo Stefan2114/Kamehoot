@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Question, QuestionDTO } from "../types/question";
 import QuestionForm from "../components/QuestionForm";
-import { ApiService } from "../services/api";
+import { ApiService } from "../services/apiService";
 import styles from "../styles/AddQuestionPage.module.css";
 
 const AddQuestionPage: React.FC = () => {
@@ -48,9 +48,17 @@ const AddQuestionPage: React.FC = () => {
     addQuestion(newQuestion);
   };
 
+  const handleCancel = () => {
+    navigate("/questions");
+  };
+
   return (
     <div className={styles["add-question-page-container"]}>
-      <QuestionForm onSubmit={handleAddQuestion} mode="add" />
+      <QuestionForm
+        onSubmit={handleAddQuestion}
+        onCancel={handleCancel}
+        mode="add"
+      />
     </div>
   );
 };

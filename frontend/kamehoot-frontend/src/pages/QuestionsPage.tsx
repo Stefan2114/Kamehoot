@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Question } from "../types/question";
 import QuestionItem from "../components/QuestionItem";
-import { ApiService } from "../services/api";
+import { ApiService } from "../services/apiService";
 import { useAuth } from "../contexts/AuthContext";
 import styles from "../styles/QuestionsPage.module.css";
 

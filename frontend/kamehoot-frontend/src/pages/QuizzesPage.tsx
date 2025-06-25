@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Quiz } from "../types/quiz";
 import QuizItem from "../components/QuizItem";
-import { ApiService } from "../services/api";
+import { ApiService } from "../services/apiService";
 import styles from "../styles/QuizzesPage.module.css";
 
 const QuizzesPage = () => {

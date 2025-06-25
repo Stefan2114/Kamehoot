@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record CreateGameRequest(
-        @NotNull UUID quizId,
-        @Min(10) @Max(120) Integer questionTimeLimit) {
+                @NotNull UUID quizId,
+                @Min(10) @Max(60) Integer questionTimeLimit) {
 
 }

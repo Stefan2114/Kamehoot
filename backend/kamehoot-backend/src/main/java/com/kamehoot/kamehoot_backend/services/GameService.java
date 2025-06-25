@@ -1,24 +1,28 @@
 package com.kamehoot.kamehoot_backend.services;
 
+import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
-import com.kamehoot.kamehoot_backend.DTOs.CreateGameRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kamehoot.kamehoot_backend.DTOs.GameQuestionDTO;
 import com.kamehoot.kamehoot_backend.DTOs.GameSessionDTO;
-import com.kamehoot.kamehoot_backend.DTOs.PlayerAnswerDTO;
 import com.kamehoot.kamehoot_backend.DTOs.PlayerDTO;
-import com.kamehoot.kamehoot_backend.DTOs.QuestionResultDTO;
-import com.kamehoot.kamehoot_backend.DTOs.SubmitAnswerRequest;
+import com.kamehoot.kamehoot_backend.DTOs.WebSocketDTO;
 import com.kamehoot.kamehoot_backend.enums.GameStatus;
 import com.kamehoot.kamehoot_backend.models.AppUser;
 import com.kamehoot.kamehoot_backend.models.GameAnswer;
@@ -42,10 +46,17 @@ public class GameService implements IGameService {
     private final IQuizRepository quizRepository;
     private final IUserRepository userRepository;
 
-    private final Map<String, GameSession> activeGames = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, Set<WebSocketSession>> activeGames = new ConcurrentHashMap<>();
+    private final Map<String, UUID> sessionToGame = new ConcurrentHashMap<>();
+    private final Map<UUID, LocalDateTime> questionStartTimes = new ConcurrentHashMap<>();
+    private final Map<String, UUID> codeToGameIds = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> gamesCurrentQuestionIndex = new ConcurrentHashMap<>();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public GameService(IGameSessionRepository gameSessionRepository, IGamePlayerRepository gamePlayerRepository,
-            IGameAnswerRepository gameAnswerRepository, IQuizRepository quizRepository,
+    public GameService(IGameSessionRepository gameSessionRepository,
+            IGamePlayerRepository gamePlayerRepository,
+            IGameAnswerRepository gameAnswerRepository,
+            IQuizRepository quizRepository,
             IUserRepository userRepository) {
         this.gameSessionRepository = gameSessionRepository;
         this.gamePlayerRepository = gamePlayerRepository;
@@ -55,265 +66,373 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public GameSessionDTO createGame(String hostUsername, CreateGameRequest request) {
-        AppUser host = this.userRepository.findByUsername(hostUsername)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    public void connect(UUID gameSessionId, WebSocketSession session) {
+        Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
+        sessions.add(session);
+        sessionToGame.put(session.getId(), gameSessionId);
+    }
 
-        Quiz quiz = this.quizRepository.findById(request.quizId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    @Override
+    public void disconnect(WebSocketSession session) {
+
+        UUID gameSessionId = sessionToGame.get(session.getId());
+        if (gameSessionId != null) {
+            Set<WebSocketSession> sessions = activeGames.get(gameSessionId);
+            sessions.remove(session);
+            if (sessions.isEmpty()) {
+                activeGames.remove(gameSessionId);
+            }
+
+        }
+        sessionToGame.remove(session.getId());
+    }
+
+    @Override
+    public String createGame(String hostUsername, UUID quizId, Integer timeLimit) {
+        AppUser host = userRepository.findByUsername(hostUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new RuntimeException("Quiz not found"));
 
         GameSession gameSession = new GameSession();
         gameSession.setQuiz(quiz);
         gameSession.setHost(host);
 
-        gameSession.setGameCode(generateGameCode());
         gameSession.setCreatedAt(LocalDateTime.now());
-        gameSession.setQuestionTimeLimit(request.questionTimeLimit());
+        gameSession.setQuestionTimeLimit(timeLimit != null ? timeLimit : 15);
+        gameSession.setStatus(GameStatus.WAITING);
+        UUID gameSessionId = gameSessionRepository.save(gameSession).getId();
+        String gameCode = this.generateGameCode();
 
+        this.codeToGameIds.put(gameCode, gameSessionId);
+
+        activeGames.put(gameSessionId, new ConcurrentSkipListSet<>());
+
+        return gameCode;
+    }
+
+    @Override
+    public void startGame(String hostUsername, UUID gameSessionId) {
+        GameSession gameSession = gameSessionRepository.findById(gameSessionId)
+                .orElseThrow(() -> new RuntimeException("Game not found"));
+
+        if (!gameSession.getHost().getUsername().equals(hostUsername)) {
+            throw new RuntimeException("Only host can start game");
+        }
+
+        if (gameSession.getPlayers().isEmpty()) {
+            throw new RuntimeException("Need at least 1 player");
+        }
+
+        gameSession.setStatus(GameStatus.IN_PROGRESS);
+        gameSession.setStartedAt(LocalDateTime.now());
+
+        gameSessionRepository.save(gameSession);
+
+        this.gamesCurrentQuestionIndex.put(gameSessionId, 0);
+
+        // Start first question immediately - no scheduling
+        startQuestion(gameSession);
+    }
+
+    private void startQuestion(GameSession gameSession) {
+
+        UUID gameSessionId = gameSession.getId();
+        QuizQuestion currentQuestion = getCurrentQuestion(gameSession);
+        LocalDateTime startTime = LocalDateTime.now();
+        questionStartTimes.put(gameSessionId, startTime);
+
+        // Prepare shuffled options
+        List<String> options = new ArrayList<>();
+        options.add(currentQuestion.getQuestion().getCorrectAnswer());
+        options.addAll(currentQuestion.getQuestion().getWrongAnswers());
+        Collections.shuffle(options);
+
+        Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
+
+        GameQuestionDTO gameQuestionDTO = new GameQuestionDTO(currentQuestion.getId(),
+                currentQuestion.getQuestion().getQuestionText(), options,
+                this.gamesCurrentQuestionIndex.get(gameSession.getId()), startTime, gameSession.getQuestionTimeLimit());
         try {
-            GameSession savedGameSession = this.gameSessionRepository.save(gameSession);
-            activeGames.put(savedGameSession.getGameCode(), savedGameSession);
-            return mapToDTO(savedGameSession);
-
-        } catch (Exception exception) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't create game session");
+            String messageJson = objectMapper.writeValueAsString(new WebSocketDTO("gameQuestion", gameQuestionDTO));
+            synchronized (sessions) {
+                for (WebSocketSession session : sessions) {
+                    if (session.isOpen()) {
+                        session.sendMessage(new TextMessage(messageJson));
+                    }
+                }
+            }
+        } catch (IOException exception) {
+            System.err.println("Error parsing the players to json " + exception.getMessage());
+            throw new RuntimeException("Error parsing to json");
         }
 
     }
 
+    private QuizQuestion getCurrentQuestion(GameSession gameSession) {
+        List<QuizQuestion> questions = gameSession.getQuiz().getQuestions();
+        Integer currentQuestionIndex = this.gamesCurrentQuestionIndex.get(gameSession.getId());
+        if (currentQuestionIndex >= questions.size()) {
+            throw new RuntimeException("No more questions");
+        }
+        return questions.get(currentQuestionIndex);
+    }
+
     @Override
-    public GameSessionDTO joinGame(String username, String gameCode) {
+    public void joinGame(String username, String gameCode) {
+        AppUser user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        AppUser user = this.userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        UUID gameSessionId = this.codeToGameIds.get(gameCode);
 
-        GameSession gameSession = activeGames.get(gameCode);
-        if (gameSession == null) {
-            gameSession = gameSessionRepository.findByGameCode(gameCode)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+        if (gameSessionId == null) {
+            throw new RuntimeException("No game found for the given gameCode");
         }
 
+        GameSession gameSession = gameSessionRepository.findById(gameSessionId)
+                .orElseThrow(() -> new RuntimeException("Game not found"));
+
         if (gameSession.getStatus() != GameStatus.WAITING) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Game already started");
+            throw new RuntimeException("Game already started");
         }
 
         boolean alreadyJoined = gameSession.getPlayers().stream()
                 .anyMatch(player -> player.getUser().getUsername().equals(username));
 
         if (alreadyJoined) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already joined the game");
+            throw new RuntimeException("Already in game");
         }
 
         GamePlayer gamePlayer = new GamePlayer();
         gamePlayer.setGameSession(gameSession);
         gamePlayer.setUser(user);
 
-        gamePlayer.setJoinedAt(LocalDateTime.now());
+        gamePlayerRepository.save(gamePlayer);
+        gameSession.getPlayers().add(gamePlayer);
 
+        Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
+        List<String> players = gameSession.getPlayers().stream().map(player -> player.getUser().getUsername()).toList();
         try {
-
-            gamePlayerRepository.save(gamePlayer);
-            gameSession.getPlayers().add(gamePlayer);
-            return mapToDTO(gameSession);
-
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Something went wrong joining the session");
+            String messageJson = objectMapper.writeValueAsString(new WebSocketDTO("playersJoined", players));
+            synchronized (sessions) {
+                for (WebSocketSession session : sessions) {
+                    if (session.isOpen()) {
+                        session.sendMessage(new TextMessage(messageJson));
+                    }
+                }
+            }
+        } catch (IOException exception) {
+            System.err.println("Error parsing the players to json " + exception.getMessage());
+            throw new RuntimeException("Error parsing to json");
         }
 
     }
 
     @Override
-    public void startGame(String hostUsername, UUID gameSessionId) {
-
-        GameSession gameSession = this.gameSessionRepository.findById(gameSessionId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
-
-        if (!gameSession.getHost().getUsername().equals(hostUsername)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only host can start the game");
-        }
-
-        if (gameSession.getPlayers().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Need at least 1 player to start the game");
-        }
-
-        gameSession.setStatus(GameStatus.IN_PROGRESS);
-        gameSession.setStartedAt(LocalDateTime.now());
-        gameSession.setCurrentQuestionIndex(0);
-
-        try {
-            this.gameSessionRepository.save(gameSession);
-            this.activeGames.put(gameSession.getGameCode(), gameSession);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Something went wrong while updating the gameSession");
-        }
-
-    }
-
-    @Override
-    public void submitAnswer(String username, SubmitAnswerRequest request) {
-
-        GameSession gameSession = this.gameSessionRepository.findById(request.gameSessionId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+    public void submitAnswer(String username, UUID gameSessionId, UUID questionId, String answer,
+            LocalDateTime answerTime) {
+        GameSession gameSession = gameSessionRepository.findById(gameSessionId)
+                .orElseThrow(() -> new RuntimeException("Game not found"));
 
         if (gameSession.getStatus() != GameStatus.IN_PROGRESS) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Game is not active");
-
+            throw new RuntimeException("Game not active");
         }
 
-        GamePlayer gamePlayer = gameSession.getPlayers().stream()
-                .filter(player -> player.getUser().getUsername().equals(username)).findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Player not in game"));
+        GamePlayer player = findPlayer(gameSession, username);
         QuizQuestion currentQuestion = getCurrentQuestion(gameSession);
-        if (!currentQuestion.getQuestion().getId().equals(request.questionId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid question");
+
+        if (!currentQuestion.getQuestion().getId().equals(questionId)) {
+            throw new RuntimeException("Wrong question");
         }
 
-        boolean alreadyAnswered = gamePlayer.getAnswers().stream()
-                .anyMatch(answer -> answer.getQuizQuestion().getId().equals(currentQuestion.getId()));
-
-        if (alreadyAnswered) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Question already answered");
+        if (hasAnswered(player, questionId)) {
+            throw new RuntimeException("Already answered");
         }
 
+        LocalDateTime startTime = this.questionStartTimes.get(gameSession.getId());
+        long responseTime = Duration.between(startTime, answerTime).toMillis();
+
+        boolean isCorrect = currentQuestion.getQuestion().getCorrectAnswer().equals(answer);
+        int points = isCorrect ? calculatePoints(responseTime, gameSession.getQuestionTimeLimit()) : 0;
+
+        // Save answer
         GameAnswer gameAnswer = new GameAnswer();
-        gameAnswer.setAnsweredAt(LocalDateTime.now());
-        gameAnswer.setGamePlayer(gamePlayer);
+        gameAnswer.setGamePlayer(player);
         gameAnswer.setQuizQuestion(currentQuestion);
-        gameAnswer.setUserAnswer(request.answer());
-
-        long responseTime = calculateResponseTime(gameSession);
-        gameAnswer.setResponseTime(responseTime);
-
-        boolean isCorrect = currentQuestion.getQuestion().getCorrectAnswer().equals(request.answer());
+        gameAnswer.setUserAnswer(answer);
         gameAnswer.setIsCorrect(isCorrect);
+        gameAnswer.setAnsweredAt(LocalDateTime.now());
+        gameAnswer.setResponseTime(responseTime);
+        gameAnswer.setPointsEarned(points);
 
-        if (isCorrect) {
-            int points = calculatePoints(responseTime, gameSession.getQuestionTimeLimit());
-            gameAnswer.setPointsEarned(points);
-            gamePlayer.setTotalScore(gamePlayer.getTotalScore() + points);
-        }
+        gameAnswerRepository.save(gameAnswer);
+
+        Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
 
         try {
-            this.gameAnswerRepository.save(gameAnswer);
-            this.gamePlayerRepository.save(gamePlayer);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Something went wrong saving the answer");
+            String messageJson = "";
+            Integer playersAnswered = this.gameAnswerRepository
+                    .getAllByGameSessionIdAndQuestionId(gameSessionId, questionId).size();
+            if (playersAnswered < gameSession.getPlayers().size()) {
+                messageJson = objectMapper.writeValueAsString(
+                        new WebSocketDTO("playersAnswered", playersAnswered));
+
+            } else {
+                messageJson = objectMapper.writeValueAsString(
+                        new WebSocketDTO("leaderboard", getSimpleLeaderboard(gameSession, questionId)));
+
+            }
+            synchronized (sessions) {
+                for (WebSocketSession session : sessions) {
+                    if (session.isOpen()) {
+                        session.sendMessage(new TextMessage(messageJson));
+                    }
+                }
+            }
+        } catch (IOException exception) {
+            System.err.println("Error parsing the players to json " + exception.getMessage());
+            throw new RuntimeException("Error parsing to json");
         }
 
     }
 
-    @Override
-    public QuestionResultDTO getQuestionResults(UUID gameSessionId) {
+    private int calculatePoints(long responseTimeMs, int timeLimitSeconds) {
+        long timeLimitMs = timeLimitSeconds * 1000L;
+        if (responseTimeMs >= timeLimitMs)
+            return 0;
 
-        GameSession gameSession = this.gameSessionRepository.findById(gameSessionId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "GameSession not found"));
-
-        QuizQuestion currentQuestion = getCurrentQuestion(gameSession);
-
-        List<PlayerAnswerDTO> playerAnswers = gameSession.getPlayers().stream().map(player -> {
-            GameAnswer answer = player.getAnswers().stream()
-                    .filter((playerAnswer -> playerAnswer.getQuizQuestion().getId().equals(currentQuestion.getId())))
-                    .findFirst()
-                    .orElse(null);
-
-            if (answer != null) {
-                return new PlayerAnswerDTO(player.getUser().getUsername(), answer.getUserAnswer(),
-                        answer.getIsCorrect(), answer.getResponseTime(), answer.getPointsEarned());
-            }
-            return null;
-        })
-                .filter(Objects::nonNull)
-                .toList();
-
-        List<PlayerDTO> leaderboard = getLeaderBoard(gameSession);
-
-        return new QuestionResultDTO(
-                currentQuestion.getQuestion().getId(),
-                currentQuestion.getQuestion().getQuestionText(),
-                currentQuestion.getQuestion().getCorrectAnswer(),
-                playerAnswers,
-                leaderboard);
+        double speedFactor = 1.0 - (responseTimeMs / (double) timeLimitMs);
+        return 100 + (int) (900 * speedFactor);
     }
 
     @Override
     public void nextQuestion(String hostUsername, UUID gameSessionId) {
         GameSession gameSession = this.gameSessionRepository.findById(gameSessionId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+                .orElseThrow(() -> new RuntimeException("Game not found"));
 
         if (!gameSession.getHost().getUsername().equals(hostUsername)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only host can start the game");
-
+            throw new RuntimeException("Only host can advance");
         }
+        Integer currentQuestionIndex = this.gamesCurrentQuestionIndex.get(gameSession.getId());
 
-        if (gameSession.getCurrentQuestionIndex() + 1 >= gameSession.getQuiz().getQuestions().size()) {
-            gameSession.setStatus(GameStatus.FINISHED);
-            gameSession.setEndedAt(LocalDateTime.now());
-        } else {
-            gameSession.setCurrentQuestionIndex(gameSession.getCurrentQuestionIndex() + 1);
+        this.gamesCurrentQuestionIndex.put(gameSessionId, currentQuestionIndex + 1);
+        startQuestion(gameSession);
+
+    }
+
+    private GamePlayer findPlayer(GameSession gameSession, String username) {
+        for (GamePlayer player : gameSession.getPlayers()) {
+            if (player.getUser().getUsername().equals(username)) {
+                return player;
+            }
         }
+        throw new RuntimeException("Player not in game");
+    }
 
-        try {
-            this.gameSessionRepository.save(gameSession);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error saving the game session");
-        }
+    private List<PlayerDTO> getSimpleLeaderboard(GameSession gameSession, UUID questionId) {
 
-        if (gameSession.getStatus() == GameStatus.FINISHED) {
-            activeGames.remove(gameSession.getGameCode());
+        return gameSession.getPlayers().stream().map(gamePlayer -> new PlayerDTO(gamePlayer.getUser().getUsername(),
+                gamePlayer.getTotalScore(), hasAnswered(gamePlayer, questionId)))
+                .sorted((a, b) -> b.totalScore().compareTo(a.totalScore())).toList();
+    }
 
-        }
+    private boolean hasAnswered(GamePlayer player, UUID questionId) {
 
+        return player.getAnswers().stream().anyMatch(answer -> answer.getQuizQuestion().getId().equals(questionId));
     }
 
     private String generateGameCode() {
         String code;
         do {
             code = String.format("%06d", new Random().nextInt(1000000));
-        } while (gameSessionRepository.existsByGameCode(code));
+        } while (this.codeToGameIds.containsKey(code));
         return code;
     }
 
-    private long calculateResponseTime(GameSession gameSession) {
-
-        // This is simplified - in real implementation, you'd track when question was
-        // shown
-        return System.currentTimeMillis() % 30000; // Mock response time
-    }
-
     @Override
-    public int calculatePoints(long responseTime, int timeLimit) {
-        double timeFactor = 1.0 - (responseTime / (timeLimit * 1000.0));
-        return Math.max(1, (int) (1000 * timeFactor));
-    }
+    public GameSessionDTO getGameSessionDTO(String gameCode) {
+        UUID gameSessionId = this.codeToGameIds.get(gameCode);
 
-    private QuizQuestion getCurrentQuestion(GameSession gameSession) {
-        List<QuizQuestion> questions = gameSession.getQuiz().getQuestions();
-        if (gameSession.getCurrentQuestionIndex() >= questions.size()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No more questions");
+        if (gameSessionId == null) {
+            throw new RuntimeException("No game found for the given gameCode");
         }
 
-        return questions.get(gameSession.getCurrentQuestionIndex());
+        GameSession gameSession = gameSessionRepository.findById(gameSessionId)
+                .orElseThrow(() -> new RuntimeException("Game not found"));
+
+        return new GameSessionDTO(gameSession.getId(), gameSession.getQuiz().getTitle(),
+                gameSession.getQuiz().getQuestions().size());
     }
 
-    private boolean hasAnsweredCurrentQuestion(GamePlayer player, GameSession gameSession) {
-        QuizQuestion currentQuestion = getCurrentQuestion(gameSession);
-        return player.getAnswers().stream()
-                .anyMatch(answer -> answer.getQuizQuestion().getId().equals(currentQuestion.getId()));
-    }
+    // private void showQuestionResults(GameSession gameSession) {
+    // QuizQuestion currentQuestion = getCurrentQuestion(gameSession);
+    // List<Map<String, Object>> playerResults = new ArrayList<>();
 
-    private List<PlayerDTO> getLeaderBoard(GameSession gameSession) {
-        return gameSession.getPlayers().stream()
-                .sorted((player1, player2) -> player1.getTotalScore().compareTo(player2.getTotalScore()))
-                .map(player -> new PlayerDTO(player.getUser().getUsername(), player.getTotalScore(),
-                        hasAnsweredCurrentQuestion(player, gameSession)))
-                .toList();
-    }
+    // for (GamePlayer player : gameSession.getPlayers()) {
+    // GameAnswer answer = findPlayerAnswer(player, currentQuestion.getId());
+    // playerResults.add(Map.of(
+    // "username", player.getUser().getUsername(),
+    // "correct", answer != null ? answer.getIsCorrect() : false,
+    // "points", answer != null ? answer.getPointsEarned() : 0,
+    // "totalScore", player.getTotalScore()));
+    // }
 
-    private GameSessionDTO mapToDTO(GameSession gameSession) {
-        return new GameSessionDTO(gameSession.getId(), gameSession.getGameCode(), gameSession.getStatus(),
-                gameSession.getQuiz().getTitle(), gameSession.getCurrentQuestionIndex(),
-                gameSession.getQuiz().getQuestions().size(), getLeaderBoard(gameSession), gameSession.getCreatedAt());
-    }
+    // Map<String, Object> results = Map.of(
+    // "type", "QUESTION_RESULTS",
+    // "correctAnswer", currentQuestion.getQuestion().getCorrectAnswer(),
+    // "playerResults", playerResults,
+    // "leaderboard", getSimpleLeaderboard(gameSession));
+
+    // messagingTemplate.convertAndSend("/topic/game/" + gameSession.getGameCode(),
+    // results);
+    // }
+
+    // private void endGame(GameSession gameSession) {
+    // gameSession.setStatus(GameStatus.FINISHED);
+    // gameSession.setEndedAt(LocalDateTime.now());
+    // gameSessionRepository.save(gameSession);
+
+    // activeGames.remove(gameSession.getGameCode());
+    // questionStartTimes.remove(gameSession.getId());
+
+    // List<Map<String, Object>> finalLeaderboard =
+    // getSimpleLeaderboard(gameSession);
+    // String winner = finalLeaderboard.isEmpty() ? "No winner" : (String)
+    // finalLeaderboard.get(0).get("username");
+
+    // Map<String, Object> gameEnd = Map.of(
+    // "type", "GAME_ENDED",
+    // "winner", winner,
+    // "finalLeaderboard", finalLeaderboard);
+
+    // messagingTemplate.convertAndSend("/topic/game/" + gameSession.getGameCode(),
+    // gameEnd);
+    // }
+
+    // private GameAnswer findPlayerAnswer(GamePlayer player, UUID questionId) {
+    // for (GameAnswer answer : player.getAnswers()) {
+    // if (answer.getQuizQuestion().getId().equals(questionId)) {
+    // return answer;
+    // }
+    // }
+    // return null;
+    // }
+
+    // private GameSessionDTO mapToDTO(GameSession gameSession) {
+    // List<PlayerDTO> players = gameSession.getPlayers().stream()
+    // .map(p -> new PlayerDTO(p.getUser().getUsername(), p.getTotalScore(), false))
+    // .toList();
+
+    // return new GameSessionDTO(
+    // gameSession.getId(),
+    // gameSession.getGameCode(),
+    // gameSession.getStatus(),
+    // gameSession.getQuiz().getTitle(),
+    // gameSession.getCurrentQuestionIndex(),
+    // gameSession.getQuiz().getQuestions().size(),
+    // players,
+    // gameSession.getCreatedAt());
+    // }
 
 }

@@ -4,6 +4,7 @@ package com.kamehoot.kamehoot_backend.controllers;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -133,7 +134,7 @@ public class QuestionController implements IQuestionController {
         if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
             String username = jwtAuth.getName();
             this.questionService.addUserQuestion(username, question);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } else {
             return ResponseEntity.badRequest().build();
         }
@@ -145,7 +146,7 @@ public class QuestionController implements IQuestionController {
     public ResponseEntity<Void> deleteQuestion(@PathVariable("id") UUID questionId) {
         System.out.println("I deleted the question with id: " + questionId);
         this.questionService.deleteQuestionById(questionId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Override
@@ -153,7 +154,7 @@ public class QuestionController implements IQuestionController {
     public ResponseEntity<Void> updateQuestion(@Valid @RequestBody QuestionDTO question) {
         System.out.println(question);
         this.questionService.updateQuestion(question);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Override

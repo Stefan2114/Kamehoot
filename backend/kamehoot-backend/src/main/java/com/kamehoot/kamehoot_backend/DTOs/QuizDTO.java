@@ -7,6 +7,6 @@ import java.util.UUID;
 import com.kamehoot.kamehoot_backend.models.Question;
 
 public record QuizDTO(UUID id, Boolean deleted, String title, String description, LocalDateTime creationDate,
-                Integer maxPossibleScore,
+                // Integer maxPossibleScore,
                 List<Question> questions) {
 }

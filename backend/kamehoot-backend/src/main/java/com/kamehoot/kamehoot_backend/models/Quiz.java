@@ -71,8 +71,8 @@ public class Quiz {
     @JsonIgnore
     private List<GameSession> sessions = new ArrayList<>();
 
-    public Integer getMaxPossibleScore() {
-        return questions.size();
-    }
+    // public Integer getMaxPossibleScore() {
+    // return questions.size();
+    // }
 
 }

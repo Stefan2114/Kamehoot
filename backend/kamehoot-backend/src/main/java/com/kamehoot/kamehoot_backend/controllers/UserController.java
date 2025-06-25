@@ -30,7 +30,8 @@ public class UserController implements IUserController {
     // @DeleteMapping("/{id}")
     // public ResponseEntity<Void> deleteUserById(@PathVariable UUID id) {
     // this.userService.deleteUser(id);
-    // return ResponseEntity.noContent().build();
+    // return ResponseEntity.status(HttpStatus.OK).build();
+
     // }
 
     // @Override
@@ -38,7 +39,8 @@ public class UserController implements IUserController {
     // public ResponseEntity<Void> updateUserPassword(@PathVariable UUID id,
     // @RequestBody AuthenticateRequest request) {
     // this.userService.updateUser(id, request);
-    // return ResponseEntity.noContent().build();
+    // return ResponseEntity.status(HttpStatus.OK).build();
+
     // }
 
 }

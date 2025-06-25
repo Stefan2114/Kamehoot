@@ -37,12 +37,10 @@ public class GamePlayer {
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser user;
 
-    @Column(nullable = false)
-    private Integer totalScore = 0;
-
-    @Column(nullable = false)
-    private LocalDateTime joinedAt;
-
-    @OneToMany(mappedBy = "game_player", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "gamePlayer", cascade = CascadeType.ALL)
     private List<GameAnswer> answers = new ArrayList<>();
+
+    public Integer getTotalScore() {
+        return answers.stream().mapToInt(GameAnswer::getPointsEarned).sum();
+    }
 }

@@ -3,6 +3,7 @@ package com.kamehoot.kamehoot_backend.controllers;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,7 +39,7 @@ public class QuizController {
         if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
             String username = jwtAuth.getName();
             this.quizService.addQuiz(username, quiz);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } else {
             return ResponseEntity.badRequest().build();
         }
@@ -72,12 +73,12 @@ public class QuizController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteQuiz(@PathVariable UUID id) {
         this.quizService.deleteQuiz(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     private QuizDTO mapQuizToDTO(Quiz quiz) {
         return new QuizDTO(quiz.getId(), quiz.getDeleted(),
-                quiz.getTitle(), quiz.getDescription(), quiz.getCreationDate(), quiz.getMaxPossibleScore(),
+                quiz.getTitle(), quiz.getDescription(), quiz.getCreationDate(),
                 quiz.getQuestions().stream().map(quizQuestion -> quizQuestion.getQuestion()).toList());
     }
 

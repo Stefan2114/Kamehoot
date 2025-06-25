@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Question } from "../types/question";
-import { ApiService } from "../services/api";
+import { ApiService } from "../services/apiService";
 import styles from "../styles/QuestionPage.module.css";
 
 const QuestionPage = () => {

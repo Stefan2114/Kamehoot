@@ -5,12 +5,14 @@ import styles from "../styles/QuestionForm.module.css";
 interface QuestionFormProps {
   initialQuestion?: Question;
   onSubmit: (question: Question) => void;
+  onCancel: () => void;
   mode: "add" | "edit";
 }
 
 const QuestionForm: React.FC<QuestionFormProps> = ({
   initialQuestion,
   onSubmit,
+  onCancel,
   mode = "add",
 }) => {
   const [categories, setCategories] = useState<string[]>([]);
@@ -102,6 +104,10 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     onSubmit(submittedQuestion);
   };
 
+  const handleCancel = () => {
+    onCancel();
+  };
+
   return (
     <div className={styles["question-form-container"]}>
       <form onSubmit={handleSubmit} className={styles["question-form"]}>
@@ -187,10 +193,18 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                 />
               </div>
             ))}
-
-            <button type="submit" className={styles["submit-button"]}>
-              {mode === "add" ? "Add Question" : "Update Question"}
-            </button>
+            <div className={styles["form-actions"]}>
+              <button type="submit" className={styles["submit-button"]}>
+                {mode === "add" ? "Add Question" : "Update Question"}
+              </button>
+              <button
+                type="button"
+                className={styles["cancel-button"]}
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       </form>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Quiz } from "../types/quiz";
-import { ApiService } from "../services/api";
+import { ApiService } from "../services/apiService";
 import styles from "../styles/QuizPage.module.css";
 
 const QuizPage = () => {
@@ -13,8 +13,6 @@ const QuizPage = () => {
     const fetchQuiz = async () => {
       try {
         if (id) {
-          console.log(id);
-          await new Promise((resolve) => setTimeout(resolve, 5000));
           const data = await ApiService.get<Quiz>(`/quizzes/${id}`);
           setQuiz(data);
         }

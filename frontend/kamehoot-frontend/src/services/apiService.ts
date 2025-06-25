@@ -1,4 +1,4 @@
-import { AuthService } from './auth';
+import { AuthService } from './authService';
 
 const API_BASE_URL = 'https://localhost:8443';
 

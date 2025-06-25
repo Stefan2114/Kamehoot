@@ -2,6 +2,7 @@ import { Question } from "./question";
 
 export interface Quiz{
     id:string,
+    deleted: boolean,
     title: string,
     description: string,
     creationDate: string,
@@ -12,6 +13,7 @@ export interface Quiz{
 
 export interface QuizDTO{
     id?:string,
+    deleted: boolean,
     title: string,
     description: string,
     creationDate: string,

@@ -39,7 +39,7 @@ public class DBService {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
 
-        // saveJsonQuestions();
+        saveJsonQuestions();
     }
 
     private void saveJsonQuestions() {

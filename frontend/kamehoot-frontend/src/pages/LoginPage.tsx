@@ -25,8 +25,11 @@ const LoginPage: React.FC = () => {
         ...(totpCode && { totpCode: parseInt(totpCode) }),
       };
 
+      console.log("trying to login");
+      //await new Promise((resolve) => setTimeout(resolve, 5000)); // Uncomment to simulate 5s delay
       const response = await login(credentials);
-
+      console.log("login");
+      //await new Promise((resolve) => setTimeout(resolve, 5000)); // Uncomment to simulate 5s delay
       if (response.requires2FA) {
         setRequires2FA(true);
         setError("Please enter your 2FA code");
@@ -34,6 +37,8 @@ const LoginPage: React.FC = () => {
         navigate("/questions");
       }
     } catch (error: any) {
+      console.error(error);
+      await new Promise((resolve) => setTimeout(resolve, 5000)); // Uncomment to simulate 5s delay
       if (error.message.includes("Invalid 2FA code")) {
         setError("Invalid 2FA code. Please try again.");
       } else {

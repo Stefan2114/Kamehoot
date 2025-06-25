@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Question, QuestionDTO } from "../types/question";
 import QuestionForm from "../components/QuestionForm";
-import { ApiService } from "../services/api";
+import { ApiService } from "../services/apiService";
 import styles from "../styles/EditQuestionPage.module.css";
 
 const EditQuestionPage = () => {
@@ -65,11 +65,16 @@ const EditQuestionPage = () => {
     updateQuestion(updatedQuestion);
   };
 
+  const handleCancel = () => {
+    navigate(`/questions/${id}`);
+  };
+
   return (
     <div className={styles["edit-question-page-container"]}>
       <QuestionForm
         initialQuestion={question}
         onSubmit={handleUpdateQuestion}
+        onCancel={handleCancel}
         mode="edit"
       />
     </div>

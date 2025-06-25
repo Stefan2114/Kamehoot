@@ -47,6 +47,8 @@ const TopBar: React.FC = () => {
         >
           Questions
         </Link>
+
+        <Link to="/games">Games</Link>
         <Link
           to="/profile"
           className={`${styles["topbar-link"]} ${
