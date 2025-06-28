@@ -205,7 +205,7 @@ public class GameController {
                     request.answer(), request.answerTime());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            System.out.println("I want to answer2" + e.getMessage());
+            System.out.println("Error answering" + e.getMessage());
 
             return ResponseEntity.badRequest().build();
         }
@@ -214,6 +214,7 @@ public class GameController {
     @PostMapping("/next/{id}")
     public ResponseEntity<Void> nextQuestion(@PathVariable UUID id) {
 
+        System.out.println("Trying to next question");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UUID authenticatedUserId = null;
         if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
@@ -237,6 +238,39 @@ public class GameController {
         }
         try {
             gameService.nextQuestion(authenticatedUserId, id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/{id}/emoji")
+    public ResponseEntity<Void> sendEmoji(@PathVariable UUID id, @RequestBody String emoji) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UUID authenticatedUserId = null;
+        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
+
+            String username = jwtAuth.getName();
+            try {
+                authenticatedUserId = this.userService.getUserByUsername(username).getId();
+
+            } catch (Exception e) {
+                // If user not found, continue with null (public questions only)
+                System.out.println("User not found: " + username);
+                return ResponseEntity.badRequest().build();
+            }
+
+        }
+        if (authenticatedUserId == null) {
+            System.out.println("userId null");
+
+            return ResponseEntity.badRequest().build();
+
+        }
+        try {
+            System.out.println("Adding emoji: " + emoji);
+            gameService.sendEmoji(id, emoji);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

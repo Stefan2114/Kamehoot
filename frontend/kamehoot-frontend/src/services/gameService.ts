@@ -19,6 +19,7 @@ export class GameService {
   }
 
   static async nextQuestion(gameSessionId: string): Promise<void> {
+    console.log("Trying to next question")
     return ApiService.post<void>(`/api/games/next/${gameSessionId}`);
   }
 
@@ -28,5 +29,8 @@ export class GameService {
 
   static async getGameSession(gameCode: string): Promise<GameSessionDTO> {
   return ApiService.get<GameSessionDTO>(`/api/games/${gameCode}`);
+}
+  static async sendEmoji(gameSessionId: string, emoji: string): Promise<void> {
+  return ApiService.post<void>(`/api/games/${gameSessionId}/emoji`, emoji);
 }
 }

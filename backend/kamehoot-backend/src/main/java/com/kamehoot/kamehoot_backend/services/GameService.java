@@ -12,12 +12,17 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.kamehoot.kamehoot_backend.DTOs.GameQuestionDTO;
@@ -37,6 +42,8 @@ import com.kamehoot.kamehoot_backend.repos.IGameSessionRepository;
 import com.kamehoot.kamehoot_backend.repos.IQuizRepository;
 import com.kamehoot.kamehoot_backend.repos.IUserRepository;
 
+import jakarta.annotation.PreDestroy;
+
 @Service
 @Transactional
 public class GameService implements IGameService {
@@ -55,6 +62,9 @@ public class GameService implements IGameService {
     private final Map<UUID, UUID> gamesHost = new ConcurrentHashMap<>();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
+    private final Map<UUID, ScheduledFuture<?>> questionTimeouts = new ConcurrentHashMap<>();
 
     public GameService(IGameSessionRepository gameSessionRepository,
             IGamePlayerRepository gamePlayerRepository,
@@ -84,11 +94,14 @@ public class GameService implements IGameService {
     public void disconnect(WebSocketSession session) {
         try {
             UUID gameSessionId = sessionToGame.get(session.getId());
+            sessionToGame.remove(session.getId());
             if (gameSessionId != null) {
                 Set<WebSocketSession> sessions = activeGames.get(gameSessionId);
                 if (sessions != null) {
                     sessions.remove(session);
-
+                    if (sessions.isEmpty()) {
+                        activeGames.remove(gameSessionId);
+                    }
                 }
 
             }
@@ -97,6 +110,24 @@ public class GameService implements IGameService {
             System.err.println(e.getMessage());
         }
 
+    }
+
+    @Override
+    public void sendEmoji(UUID gameSessionId, String emoji) {
+        GameSession gameSession = gameSessionRepository.findById(gameSessionId)
+                .orElseThrow(() -> new RuntimeException("Game not found"));
+        String messageJson;
+        try {
+            messageJson = objectMapper
+                    .writeValueAsString(new WebSocketDTO("emoji", gameSession.getStatus(), emoji));
+            Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
+
+            broadcastToGame(gameSessionId, messageJson, sessions);
+
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -161,32 +192,69 @@ public class GameService implements IGameService {
         LocalDateTime startTime = LocalDateTime.now();
         questionStartTimes.put(gameSessionId, startTime);
 
+        ScheduledFuture<?> timeoutTask = scheduler.schedule(() -> {
+            handleQuestionTimeout(gameSessionId, currentQuestion.getId());
+        }, gameSession.getQuestionTimeLimit(), TimeUnit.SECONDS);
+
+        questionTimeouts.put(gameSessionId, timeoutTask);
+
         // Prepare shuffled options
         List<String> options = new ArrayList<>();
         options.add(currentQuestion.getQuestion().getCorrectAnswer());
         options.addAll(currentQuestion.getQuestion().getWrongAnswers());
         Collections.shuffle(options);
 
-        Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
-
         GameQuestionDTO gameQuestionDTO = new GameQuestionDTO(currentQuestion.getId(),
                 currentQuestion.getQuestion().getQuestionText(), options,
-                this.gamesCurrentQuestionIndex.get(gameSession.getId()), startTime, gameSession.getQuestionTimeLimit());
+                this.gamesCurrentQuestionIndex.get(gameSession.getId()), gameSession.getQuestionTimeLimit());
         try {
 
-            String messageJson = objectMapper.writeValueAsString(new WebSocketDTO("gameQuestion", gameQuestionDTO));
-            synchronized (sessions) {
-                for (WebSocketSession session : sessions) {
-                    if (session.isOpen()) {
-                        session.sendMessage(new TextMessage(messageJson));
-                    }
-                }
-            }
-        } catch (IOException exception) {
+            String messageJson = objectMapper
+                    .writeValueAsString(new WebSocketDTO("gameQuestion", gameSession.getStatus(), gameQuestionDTO));
+
+            Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
+
+            broadcastToGame(gameSessionId, messageJson, sessions);
+        } catch (JsonProcessingException exception) {
             System.err.println("Error parsing the players to json " + exception.getMessage());
             throw new RuntimeException("Error parsing to json");
         }
 
+    }
+
+    private void handleQuestionTimeout(UUID gameSessionId, UUID questionId) {
+        try {
+            System.out.println("Question timeout triggered for game: " + gameSessionId);
+
+            GameSession freshSession = gameSessionRepository.findById(gameSessionId)
+                    .orElseThrow(() -> new RuntimeException("Game not found"));
+
+            System.out.println(freshSession);
+            // Send leaderboard and handle next question or end game
+            List<PlayerDTO> leaderboard = getSimpleLeaderboard(freshSession, questionId);
+            sendLeaderboard(freshSession, leaderboard);
+
+        } catch (Exception e) {
+            System.err.println("Error handling question timeout: " + e.getMessage());
+        }
+    }
+
+    private void sendLeaderboard(GameSession gameSession, List<PlayerDTO> leaderboard) throws IOException {
+
+        UUID gameSessionId = gameSession.getId();
+        System.out.println("Find problem1");
+        Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
+
+        if (gamesCurrentQuestionIndex.get(gameSessionId) + 1 >= gameSession.getQuiz().getQuestions()
+                .size()) {
+            this.endGame(gameSession);
+        }
+        System.out.println("Find problem2");
+
+        String messageJson = objectMapper.writeValueAsString(
+                new WebSocketDTO("leaderboard", gameSession.getStatus(), leaderboard));
+
+        broadcastToGame(gameSessionId, messageJson, sessions);
     }
 
     private QuizQuestion getCurrentQuestion(GameSession gameSession) {
@@ -228,19 +296,17 @@ public class GameService implements IGameService {
         gamePlayerRepository.save(gamePlayer);
         gameSession.getPlayers().add(gamePlayer);
 
-        Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
         List<PlayerDTO> players = gameSession.getPlayers().stream()
                 .map(player -> new PlayerDTO(player.getUser().getUsername(), 0, false)).toList();
         try {
-            String messageJson = objectMapper.writeValueAsString(new WebSocketDTO("playersJoined", players));
-            synchronized (sessions) {
-                for (WebSocketSession session : sessions) {
-                    if (session.isOpen()) {
-                        session.sendMessage(new TextMessage(messageJson));
-                    }
-                }
-            }
-        } catch (IOException exception) {
+            String messageJson = objectMapper
+                    .writeValueAsString(new WebSocketDTO("playersJoined", gameSession.getStatus(), players));
+
+            Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
+
+            broadcastToGame(gameSessionId, messageJson, sessions);
+
+        } catch (JsonProcessingException exception) {
             System.err.println("Error parsing the players to json " + exception.getMessage());
             throw new RuntimeException("Error parsing to json");
         }
@@ -269,6 +335,7 @@ public class GameService implements IGameService {
 
         if (hasAnswered(player, questionId)) {
             throw new RuntimeException("Already answered");
+
         }
 
         LocalDateTime startTime = this.questionStartTimes.get(gameSession.getId());
@@ -289,28 +356,25 @@ public class GameService implements IGameService {
 
         gameAnswerRepository.save(gameAnswer);
 
-        Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
-
         try {
-            String messageJson = objectMapper.writeValueAsString(
-                    new WebSocketDTO("leaderboard", getSimpleLeaderboard(gameSession, questionId)));
+            List<PlayerDTO> leaderboard = getSimpleLeaderboard(gameSession, questionId);
 
             Integer playersAnswered = this.gameAnswerRepository
                     .getAllByGameSessionIdAndQuestionId(gameSessionId, questionId).size();
 
-            if (playersAnswered >= gameSession.getPlayers().size()
-                    && gamesCurrentQuestionIndex.get(gameSessionId) + 1 >= gameSession.getQuiz().getQuestions()
-                            .size()) {
-                this.endGame(gameSession);
-            }
+            boolean allPlayersAnswered = playersAnswered >= gameSession.getPlayers().size();
 
-            synchronized (sessions) {
-                for (WebSocketSession session : sessions) {
-                    if (session.isOpen()) {
-                        session.sendMessage(new TextMessage(messageJson));
-                    }
+            if (allPlayersAnswered) {
+
+                ScheduledFuture<?> timeoutTask = questionTimeouts.get(gameSessionId);
+                if (timeoutTask != null && !timeoutTask.isDone()) {
+                    timeoutTask.cancel(false);
+                    System.out.println("Cancelled timeout");
                 }
             }
+
+            sendLeaderboard(gameSession, leaderboard);
+
         } catch (IOException exception) {
             System.err.println("Error parsing the players to json " + exception.getMessage());
             throw new RuntimeException("Error parsing to json");
@@ -320,7 +384,6 @@ public class GameService implements IGameService {
 
     private void endGame(GameSession gameSession) {
 
-        this.activeGames.remove(gameSession.getId());
         this.questionStartTimes.remove(gameSession.getId());
         this.gamesCurrentQuestionIndex.remove(gameSession.getId());
         this.gamesHost.remove(gameSession.getId());
@@ -399,6 +462,27 @@ public class GameService implements IGameService {
         return new GameSessionDTO(gameSession.getId(), gameSession.getStatus(), gameSession.getQuiz().getTitle(),
                 this.gamesCurrentQuestionIndex.get(gameSessionId),
                 gameSession.getQuiz().getQuestions().size());
+    }
+
+    private void broadcastToGame(UUID gameSessionId, String messageJson, Set<WebSocketSession> sessions) {
+
+        synchronized (sessions) {
+            for (WebSocketSession session : sessions) {
+                if (session.isOpen()) {
+                    try {
+                        session.sendMessage(new TextMessage(messageJson));
+
+                    } catch (IOException e) {
+                        System.err.println("Failed to send WebSocket message: " + e.getMessage());
+                    }
+                }
+            }
+        }
+    }
+
+    @PreDestroy
+    public void cleanup() {
+        scheduler.shutdown();
     }
 
 }

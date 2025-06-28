@@ -30,11 +30,11 @@ export interface GameQuestionDTO{
    questionText: string;
    options: string[];
    questionNumber: number;
-   startedAt: Date;
    timeLimit: number;
 }
 
 export interface WebSocketDTO{
   type: string,
-  info:  GameQuestionDTO | number | PlayerDTO[]
+  gameSessionStatus: string,
+  info:  GameQuestionDTO | number | PlayerDTO[] | string
 }

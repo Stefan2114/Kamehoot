@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -35,7 +36,7 @@ public class GamePlayer {
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser user;
 
-    @OneToMany(mappedBy = "gamePlayer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "gamePlayer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<GameAnswer> answers = new ArrayList<>();
 
     public Integer getTotalScore() {

@@ -26,6 +26,8 @@ public interface IGameService {
 
     GameSessionDTO getGameSessionDTO(String gameCode);
 
-    boolean isHost(UUID authenticatedUserId, UUID gameSessionId);
+    boolean isHost(UUID userId, UUID gameSessionId);
+
+    void sendEmoji(UUID gameSessionId, String emoji);
 
 }

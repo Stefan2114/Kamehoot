@@ -6,11 +6,10 @@ import java.util.UUID;
 
 public record GameQuestionDTO(
 
-        UUID questionId,
-        String questionText,
-        List<String> options,
-        Integer questionNumber,
-        LocalDateTime startedAt,
-        Integer timeLimit) {
+                UUID questionId,
+                String questionText,
+                List<String> options,
+                Integer questionNumber,
+                Integer timeLimit) {
 
 }

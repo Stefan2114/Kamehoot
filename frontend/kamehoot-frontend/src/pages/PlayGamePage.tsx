@@ -9,6 +9,13 @@ import {
 import { GameService } from "../services/gameService";
 import styles from "../styles/PlayGamePage.module.css";
 
+interface FloatingEmoji {
+  id: string;
+  emoji: string;
+  x: number;
+  y: number;
+}
+
 const PlayGamePage: React.FC = () => {
   const navigate = useNavigate();
   const { gameCode } = useParams<{ gameCode: string }>();
@@ -28,33 +35,36 @@ const PlayGamePage: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
+  const [floatingEmojis, setFloatingEmojis] = useState<FloatingEmoji[]>([]);
+  const availableEmojis = ["🔥", "😂", "💀", "👑"];
+
   // Loading states to prevent race conditions
   const [gameSessionLoaded, setGameSessionLoaded] = useState(false);
   const [hostCheckComplete, setHostCheckComplete] = useState(false);
   const [socketConnected, setSocketConnected] = useState(false);
   const [gameJoined, setGameJoined] = useState(false);
 
-  const fetchGameSession = async () => {
-    if (!gameCode) {
-      navigate("/games");
-      return;
-    }
-
-    try {
-      console.log("Fetching game session for code:", gameCode);
-      const data = await GameService.getGameSession(gameCode);
-      console.log("Game session fetched:", data);
-      setGameSession(data);
-      if (gameSessionLoaded === false) {
-        setGameSessionLoaded(true);
-      }
-    } catch (error) {
-      console.error("Error fetching gameSession:", error);
-      navigate("/games");
-    }
-  };
   // Fetch game session - runs once when component mounts
   useEffect(() => {
+    const fetchGameSession = async () => {
+      if (!gameCode) {
+        navigate("/games");
+        return;
+      }
+
+      try {
+        console.log("Fetching game session for code:", gameCode);
+        const data = await GameService.getGameSession(gameCode);
+        console.log("Game session fetched:", data);
+        setGameSession(data);
+        if (gameSessionLoaded === false) {
+          setGameSessionLoaded(true);
+        }
+      } catch (error) {
+        console.error("Error fetching gameSession:", error);
+        navigate("/games");
+      }
+    };
     fetchGameSession();
   }, [gameCode]);
 
@@ -95,6 +105,15 @@ const PlayGamePage: React.FC = () => {
 
     webSocket.onmessage = (event) => {
       const data: WebSocketDTO = JSON.parse(event.data);
+      console.log(data.gameSessionStatus);
+      setGameSession((prevSession) => {
+        if (!prevSession) return prevSession;
+        return {
+          ...prevSession,
+          status: data.gameSessionStatus,
+        };
+      });
+      console.log(gameSession.status);
 
       if (data.type === "leaderboard" || data.type === "playersJoined") {
         if (Array.isArray(data.info)) {
@@ -105,8 +124,6 @@ const PlayGamePage: React.FC = () => {
           );
 
           if (data.type === "leaderboard") {
-            fetchGameSession();
-
             setShowLeaderboard(true);
             setHasAnswered(false);
             setSelectedAnswer("");
@@ -119,6 +136,9 @@ const PlayGamePage: React.FC = () => {
         setHasAnswered(false);
         setSelectedAnswer("");
         setTimeLeft(newGameQuestion.timeLimit);
+      } else if (data.type === "emoji") {
+        const emoji = data.info as string;
+        addFloatingEmoji(emoji);
       }
     };
 
@@ -177,6 +197,35 @@ const PlayGamePage: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [timeLeft, hasAnswered, gameQuestion]);
+
+  const addFloatingEmoji = useCallback((emoji: string) => {
+    console.log("adding emoji");
+    const id = Math.random().toString(36).substr(2, 9);
+    const x = Math.random() * window.innerWidth * 0.8 + window.innerWidth * 0.1;
+    const y =
+      Math.random() * window.innerHeight * 0.8 + window.innerHeight * 0.1;
+
+    const newEmoji: FloatingEmoji = {
+      id,
+      emoji,
+      x: x,
+      y: y,
+    };
+
+    setFloatingEmojis((prev) => [...prev, newEmoji]);
+
+    // Remove emoji after 3 seconds
+    setTimeout(() => {
+      setFloatingEmojis((prev) => prev.filter((e) => e.id !== id));
+    }, 3000);
+  }, []);
+
+  const sendEmojiReaction = (emoji: string) => {
+    if (!gameSession) return;
+    console.log("adding emoji");
+
+    GameService.sendEmoji(gameSession.id, emoji);
+  };
 
   // Event handlers (using useCallback to prevent unnecessary re-renders)
   const handleStartGame = useCallback(async () => {
@@ -243,6 +292,7 @@ const PlayGamePage: React.FC = () => {
         <div className={styles["game-content"]}>
           <div className={styles["game-header"]}>
             <h1>Game Lobby: {gameSession.quizTitle}</h1>
+            <h1>Game Code: {gameCode}</h1>
             <h2>Players ({players.length})</h2>
           </div>
 
@@ -310,6 +360,31 @@ const PlayGamePage: React.FC = () => {
             </button>
           </div>
         </div>
+        {floatingEmojis.map((floatingEmoji) => (
+          <div
+            key={floatingEmoji.id}
+            className={styles["floating-emoji"]}
+            style={{
+              left: floatingEmoji.x,
+              top: floatingEmoji.y,
+            }}
+          >
+            {floatingEmoji.emoji}
+          </div>
+        ))}
+
+        {/* Emoji Reaction Buttons */}
+        <div className={styles["emoji-reactions"]}>
+          {availableEmojis.map((emoji, index) => (
+            <button
+              key={index}
+              onClick={() => sendEmojiReaction(emoji)}
+              className={styles["emoji-button"]}
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
       </div>
     );
   }
@@ -350,6 +425,31 @@ const PlayGamePage: React.FC = () => {
               Waiting for host to continue...
             </p>
           )}
+        </div>
+        {floatingEmojis.map((floatingEmoji) => (
+          <div
+            key={floatingEmoji.id}
+            className={styles["floating-emoji"]}
+            style={{
+              left: floatingEmoji.x,
+              top: floatingEmoji.y,
+            }}
+          >
+            {floatingEmoji.emoji}
+          </div>
+        ))}
+
+        {/* Emoji Reaction Buttons */}
+        <div className={styles["emoji-reactions"]}>
+          {availableEmojis.map((emoji, index) => (
+            <button
+              key={index}
+              onClick={() => sendEmojiReaction(emoji)}
+              className={styles["emoji-button"]}
+            >
+              {emoji}
+            </button>
+          ))}
         </div>
       </div>
     );
