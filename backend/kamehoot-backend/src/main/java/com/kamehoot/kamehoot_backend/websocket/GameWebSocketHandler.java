@@ -22,6 +22,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
         String query = session.getUri().getQuery();
+        System.out.println("Connected with query" + query);
         UUID gameSessionId = null;
         if (query != null && query.contains("gameSessionId=")) {
 

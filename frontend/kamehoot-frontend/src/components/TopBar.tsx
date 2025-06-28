@@ -47,8 +47,14 @@ const TopBar: React.FC = () => {
         >
           Questions
         </Link>
-
-        <Link to="/games">Games</Link>
+        <Link
+          to="/games"
+          className={`${styles["topbar-link"]} ${
+            location.pathname === "/home" ? "active" : ""
+          }`}
+        >
+          Games
+        </Link>{" "}
         <Link
           to="/profile"
           className={`${styles["topbar-link"]} ${
@@ -57,7 +63,6 @@ const TopBar: React.FC = () => {
         >
           Profile
         </Link>
-
         <div className={styles["topbar-auth"]}>
           {isAuthenticated ? (
             <div className={styles["auth-section"]}>

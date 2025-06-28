@@ -22,10 +22,7 @@ import AddQuizPage from "./pages/AddQuizPage";
 import HomePage from "./pages/HomePage";
 import GamesPage from "./pages/GamesPage";
 import CreateGamePage from "./pages/CreateGamePage";
-import JoinGamePage from "./pages/JoinGamePage";
-import GameLobbyPage from "./pages/GameLobbyPage";
-import GamePlayPage from "./pages/GamePlayPage";
-import { GameProvider } from "./contexts/GameContext";
+import PlayGamePage from "./pages/PlayGamePage";
 
 const AppLayout = () => {
   return (
@@ -37,10 +34,6 @@ const AppLayout = () => {
 
 const ProtectedWrapper = ({ children }: { children: React.ReactNode }) => {
   return <ProtectedRoute>{children}</ProtectedRoute>;
-};
-
-const GameWrapper = ({ children }: { children: React.ReactNode }) => {
-  return <GameProvider>{children}</GameProvider>;
 };
 
 const router = createBrowserRouter([
@@ -160,39 +153,15 @@ const router = createBrowserRouter([
         path: "/games/create",
         element: (
           <ProtectedWrapper>
-            <GameWrapper>
-              <CreateGamePage />
-            </GameWrapper>
+            <CreateGamePage />
           </ProtectedWrapper>
         ),
       },
       {
-        path: "/games/join",
+        path: "/games/:gameCode",
         element: (
           <ProtectedWrapper>
-            <GameWrapper>
-              <JoinGamePage />
-            </GameWrapper>
-          </ProtectedWrapper>
-        ),
-      },
-      {
-        path: "/game/lobby/:gameCode",
-        element: (
-          <ProtectedWrapper>
-            <GameWrapper>
-              <GameLobbyPage />
-            </GameWrapper>
-          </ProtectedWrapper>
-        ),
-      },
-      {
-        path: "/game/play/:gameCode",
-        element: (
-          <ProtectedWrapper>
-            <GameWrapper>
-              <GamePlayPage />
-            </GameWrapper>
+            <PlayGamePage />
           </ProtectedWrapper>
         ),
       },

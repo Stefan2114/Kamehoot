@@ -81,7 +81,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
 
-                        .requestMatchers("/auth/login", "/auth/register", "/ws/**").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register", "/ws/**", "/game").permitAll()
 
                         .requestMatchers("/auth/setup-2fa", "/auth/verify-2fa",
                                 "/auth/disable-2fa")

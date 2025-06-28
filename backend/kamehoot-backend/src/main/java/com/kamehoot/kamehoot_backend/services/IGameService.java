@@ -13,17 +13,19 @@ public interface IGameService {
 
     void disconnect(WebSocketSession session);
 
-    String createGame(String hostUsername, UUID quizId, Integer timeLimit);
+    String createGame(UUID userId, UUID quizId, Integer timeLimit);
 
-    void startGame(String hostUsername, UUID gameSessionId);
+    void startGame(UUID userId, UUID gameSessionId);
 
-    void joinGame(String username, String gameCode);
+    void joinGame(UUID userId, UUID gameSessionId);
 
-    void submitAnswer(String username, UUID gameSessionId, UUID questionId, String answer,
+    void submitAnswer(UUID userId, UUID gameSessionId, UUID questionId, String answer,
             LocalDateTime answerTime);
 
-    void nextQuestion(String hostUsername, UUID gameSessionId);
+    void nextQuestion(UUID userId, UUID gameSessionId);
 
     GameSessionDTO getGameSessionDTO(String gameCode);
+
+    boolean isHost(UUID authenticatedUserId, UUID gameSessionId);
 
 }

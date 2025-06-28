@@ -32,11 +32,12 @@ const CreateGamePage: React.FC = () => {
 
     setLoading(true);
     try {
-      const gameSession = await GameService.createGame({
+      const gameCode = await GameService.createGame({
         quizId: selectedQuizId,
         questionTimeLimit: timeLimit,
       });
-      navigate(`/game/lobby/${gameSession.gameCode}`);
+      console.log(gameCode);
+      navigate(`/games/${gameCode}`);
     } catch (error) {
       console.error("Error creating game:", error);
       alert("Failed to create game");

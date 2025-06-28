@@ -5,13 +5,13 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +19,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.kamehoot.kamehoot_backend.DTOs.GameQuestionDTO;
 import com.kamehoot.kamehoot_backend.DTOs.GameSessionDTO;
 import com.kamehoot.kamehoot_backend.DTOs.PlayerDTO;
@@ -51,6 +52,8 @@ public class GameService implements IGameService {
     private final Map<UUID, LocalDateTime> questionStartTimes = new ConcurrentHashMap<>();
     private final Map<String, UUID> codeToGameIds = new ConcurrentHashMap<>();
     private final Map<UUID, Integer> gamesCurrentQuestionIndex = new ConcurrentHashMap<>();
+    private final Map<UUID, UUID> gamesHost = new ConcurrentHashMap<>();
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public GameService(IGameSessionRepository gameSessionRepository,
@@ -63,33 +66,42 @@ public class GameService implements IGameService {
         this.gameAnswerRepository = gameAnswerRepository;
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     @Override
     public void connect(UUID gameSessionId, WebSocketSession session) {
-        Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
-        sessions.add(session);
-        sessionToGame.put(session.getId(), gameSessionId);
+        try {
+            Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
+            sessions.add(session);
+            sessionToGame.put(session.getId(), gameSessionId);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     @Override
     public void disconnect(WebSocketSession session) {
+        try {
+            UUID gameSessionId = sessionToGame.get(session.getId());
+            if (gameSessionId != null) {
+                Set<WebSocketSession> sessions = activeGames.get(gameSessionId);
+                if (sessions != null) {
+                    sessions.remove(session);
 
-        UUID gameSessionId = sessionToGame.get(session.getId());
-        if (gameSessionId != null) {
-            Set<WebSocketSession> sessions = activeGames.get(gameSessionId);
-            sessions.remove(session);
-            if (sessions.isEmpty()) {
-                activeGames.remove(gameSessionId);
+                }
+
             }
-
+            sessionToGame.remove(session.getId());
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
-        sessionToGame.remove(session.getId());
+
     }
 
     @Override
-    public String createGame(String hostUsername, UUID quizId, Integer timeLimit) {
-        AppUser host = userRepository.findByUsername(hostUsername)
+    public String createGame(UUID userId, UUID quizId, Integer timeLimit) {
+        AppUser host = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Quiz quiz = quizRepository.findById(quizId)
@@ -107,17 +119,23 @@ public class GameService implements IGameService {
 
         this.codeToGameIds.put(gameCode, gameSessionId);
 
-        activeGames.put(gameSessionId, new ConcurrentSkipListSet<>());
+        activeGames.put(gameSessionId, new HashSet<>());
+        gamesHost.put(gameSessionId, userId);
 
         return gameCode;
     }
 
+    public boolean isHost(UUID userId, UUID gameSessionId) {
+        UUID hostId = this.gamesHost.get(gameSessionId);
+        return hostId != null && hostId.equals(userId);
+    }
+
     @Override
-    public void startGame(String hostUsername, UUID gameSessionId) {
+    public void startGame(UUID userId, UUID gameSessionId) {
         GameSession gameSession = gameSessionRepository.findById(gameSessionId)
                 .orElseThrow(() -> new RuntimeException("Game not found"));
 
-        if (!gameSession.getHost().getUsername().equals(hostUsername)) {
+        if (!gameSession.getHost().getId().equals(userId)) {
             throw new RuntimeException("Only host can start game");
         }
 
@@ -155,6 +173,7 @@ public class GameService implements IGameService {
                 currentQuestion.getQuestion().getQuestionText(), options,
                 this.gamesCurrentQuestionIndex.get(gameSession.getId()), startTime, gameSession.getQuestionTimeLimit());
         try {
+
             String messageJson = objectMapper.writeValueAsString(new WebSocketDTO("gameQuestion", gameQuestionDTO));
             synchronized (sessions) {
                 for (WebSocketSession session : sessions) {
@@ -180,11 +199,9 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public void joinGame(String username, String gameCode) {
-        AppUser user = userRepository.findByUsername(username)
+    public void joinGame(UUID userId, UUID gameSessionId) {
+        AppUser user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        UUID gameSessionId = this.codeToGameIds.get(gameCode);
 
         if (gameSessionId == null) {
             throw new RuntimeException("No game found for the given gameCode");
@@ -198,7 +215,7 @@ public class GameService implements IGameService {
         }
 
         boolean alreadyJoined = gameSession.getPlayers().stream()
-                .anyMatch(player -> player.getUser().getUsername().equals(username));
+                .anyMatch(player -> player.getUser().getId().equals(userId));
 
         if (alreadyJoined) {
             throw new RuntimeException("Already in game");
@@ -212,7 +229,8 @@ public class GameService implements IGameService {
         gameSession.getPlayers().add(gamePlayer);
 
         Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
-        List<String> players = gameSession.getPlayers().stream().map(player -> player.getUser().getUsername()).toList();
+        List<PlayerDTO> players = gameSession.getPlayers().stream()
+                .map(player -> new PlayerDTO(player.getUser().getUsername(), 0, false)).toList();
         try {
             String messageJson = objectMapper.writeValueAsString(new WebSocketDTO("playersJoined", players));
             synchronized (sessions) {
@@ -230,7 +248,7 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public void submitAnswer(String username, UUID gameSessionId, UUID questionId, String answer,
+    public void submitAnswer(UUID userId, UUID gameSessionId, UUID questionId, String answer,
             LocalDateTime answerTime) {
         GameSession gameSession = gameSessionRepository.findById(gameSessionId)
                 .orElseThrow(() -> new RuntimeException("Game not found"));
@@ -239,10 +257,13 @@ public class GameService implements IGameService {
             throw new RuntimeException("Game not active");
         }
 
-        GamePlayer player = findPlayer(gameSession, username);
+        GamePlayer player = findPlayer(gameSession, userId);
         QuizQuestion currentQuestion = getCurrentQuestion(gameSession);
 
-        if (!currentQuestion.getQuestion().getId().equals(questionId)) {
+        System.out.println(questionId);
+        System.out.println(currentQuestion.getQuestion().getId());
+
+        if (!currentQuestion.getId().equals(questionId)) {
             throw new RuntimeException("Wrong question");
         }
 
@@ -271,18 +292,18 @@ public class GameService implements IGameService {
         Set<WebSocketSession> sessions = this.activeGames.get(gameSessionId);
 
         try {
-            String messageJson = "";
+            String messageJson = objectMapper.writeValueAsString(
+                    new WebSocketDTO("leaderboard", getSimpleLeaderboard(gameSession, questionId)));
+
             Integer playersAnswered = this.gameAnswerRepository
                     .getAllByGameSessionIdAndQuestionId(gameSessionId, questionId).size();
-            if (playersAnswered < gameSession.getPlayers().size()) {
-                messageJson = objectMapper.writeValueAsString(
-                        new WebSocketDTO("playersAnswered", playersAnswered));
 
-            } else {
-                messageJson = objectMapper.writeValueAsString(
-                        new WebSocketDTO("leaderboard", getSimpleLeaderboard(gameSession, questionId)));
-
+            if (playersAnswered >= gameSession.getPlayers().size()
+                    && gamesCurrentQuestionIndex.get(gameSessionId) + 1 >= gameSession.getQuiz().getQuestions()
+                            .size()) {
+                this.endGame(gameSession);
             }
+
             synchronized (sessions) {
                 for (WebSocketSession session : sessions) {
                     if (session.isOpen()) {
@@ -297,6 +318,20 @@ public class GameService implements IGameService {
 
     }
 
+    private void endGame(GameSession gameSession) {
+
+        this.activeGames.remove(gameSession.getId());
+        this.questionStartTimes.remove(gameSession.getId());
+        this.gamesCurrentQuestionIndex.remove(gameSession.getId());
+        this.gamesHost.remove(gameSession.getId());
+        gameSession.setEndedAt(LocalDateTime.now());
+        gameSession.setStatus(GameStatus.FINISHED);
+        this.gameSessionRepository.save(gameSession);
+
+        // private final Map<String, UUID> codeToGameIds = new ConcurrentHashMap<>();
+
+    }
+
     private int calculatePoints(long responseTimeMs, int timeLimitSeconds) {
         long timeLimitMs = timeLimitSeconds * 1000L;
         if (responseTimeMs >= timeLimitMs)
@@ -307,11 +342,11 @@ public class GameService implements IGameService {
     }
 
     @Override
-    public void nextQuestion(String hostUsername, UUID gameSessionId) {
+    public void nextQuestion(UUID userId, UUID gameSessionId) {
         GameSession gameSession = this.gameSessionRepository.findById(gameSessionId)
                 .orElseThrow(() -> new RuntimeException("Game not found"));
 
-        if (!gameSession.getHost().getUsername().equals(hostUsername)) {
+        if (!gameSession.getHost().getId().equals(userId)) {
             throw new RuntimeException("Only host can advance");
         }
         Integer currentQuestionIndex = this.gamesCurrentQuestionIndex.get(gameSession.getId());
@@ -321,9 +356,9 @@ public class GameService implements IGameService {
 
     }
 
-    private GamePlayer findPlayer(GameSession gameSession, String username) {
+    private GamePlayer findPlayer(GameSession gameSession, UUID userId) {
         for (GamePlayer player : gameSession.getPlayers()) {
-            if (player.getUser().getUsername().equals(username)) {
+            if (player.getUser().getId().equals(userId)) {
                 return player;
             }
         }
@@ -361,78 +396,9 @@ public class GameService implements IGameService {
         GameSession gameSession = gameSessionRepository.findById(gameSessionId)
                 .orElseThrow(() -> new RuntimeException("Game not found"));
 
-        return new GameSessionDTO(gameSession.getId(), gameSession.getQuiz().getTitle(),
+        return new GameSessionDTO(gameSession.getId(), gameSession.getStatus(), gameSession.getQuiz().getTitle(),
+                this.gamesCurrentQuestionIndex.get(gameSessionId),
                 gameSession.getQuiz().getQuestions().size());
     }
-
-    // private void showQuestionResults(GameSession gameSession) {
-    // QuizQuestion currentQuestion = getCurrentQuestion(gameSession);
-    // List<Map<String, Object>> playerResults = new ArrayList<>();
-
-    // for (GamePlayer player : gameSession.getPlayers()) {
-    // GameAnswer answer = findPlayerAnswer(player, currentQuestion.getId());
-    // playerResults.add(Map.of(
-    // "username", player.getUser().getUsername(),
-    // "correct", answer != null ? answer.getIsCorrect() : false,
-    // "points", answer != null ? answer.getPointsEarned() : 0,
-    // "totalScore", player.getTotalScore()));
-    // }
-
-    // Map<String, Object> results = Map.of(
-    // "type", "QUESTION_RESULTS",
-    // "correctAnswer", currentQuestion.getQuestion().getCorrectAnswer(),
-    // "playerResults", playerResults,
-    // "leaderboard", getSimpleLeaderboard(gameSession));
-
-    // messagingTemplate.convertAndSend("/topic/game/" + gameSession.getGameCode(),
-    // results);
-    // }
-
-    // private void endGame(GameSession gameSession) {
-    // gameSession.setStatus(GameStatus.FINISHED);
-    // gameSession.setEndedAt(LocalDateTime.now());
-    // gameSessionRepository.save(gameSession);
-
-    // activeGames.remove(gameSession.getGameCode());
-    // questionStartTimes.remove(gameSession.getId());
-
-    // List<Map<String, Object>> finalLeaderboard =
-    // getSimpleLeaderboard(gameSession);
-    // String winner = finalLeaderboard.isEmpty() ? "No winner" : (String)
-    // finalLeaderboard.get(0).get("username");
-
-    // Map<String, Object> gameEnd = Map.of(
-    // "type", "GAME_ENDED",
-    // "winner", winner,
-    // "finalLeaderboard", finalLeaderboard);
-
-    // messagingTemplate.convertAndSend("/topic/game/" + gameSession.getGameCode(),
-    // gameEnd);
-    // }
-
-    // private GameAnswer findPlayerAnswer(GamePlayer player, UUID questionId) {
-    // for (GameAnswer answer : player.getAnswers()) {
-    // if (answer.getQuizQuestion().getId().equals(questionId)) {
-    // return answer;
-    // }
-    // }
-    // return null;
-    // }
-
-    // private GameSessionDTO mapToDTO(GameSession gameSession) {
-    // List<PlayerDTO> players = gameSession.getPlayers().stream()
-    // .map(p -> new PlayerDTO(p.getUser().getUsername(), p.getTotalScore(), false))
-    // .toList();
-
-    // return new GameSessionDTO(
-    // gameSession.getId(),
-    // gameSession.getGameCode(),
-    // gameSession.getStatus(),
-    // gameSession.getQuiz().getTitle(),
-    // gameSession.getCurrentQuestionIndex(),
-    // gameSession.getQuiz().getQuestions().size(),
-    // players,
-    // gameSession.getCreatedAt());
-    // }
 
 }

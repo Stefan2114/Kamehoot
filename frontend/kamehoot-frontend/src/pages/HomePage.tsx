@@ -15,7 +15,7 @@ const HomePage = () => {
   const fetchQuizzes = useCallback(async () => {
     try {
       setIsLoading(true);
-      console.log("Trying to fet quizzes");
+      console.log("Trying to fetch quizzes");
       const params = new URLSearchParams();
       if (searchTerm) {
         params.append("searchTerm", searchTerm);
@@ -40,12 +40,20 @@ const HomePage = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSearchTerm(e.target.value);
 
-  const handleCreateQuiz = () => {
-    navigate("/quizzes/add");
+  const handleNavigateToGames = () => {
+    navigate("/games");
   };
 
-  const handleManageQuizzes = () => {
+  const handleNavigateToQuizzes = () => {
     navigate("/quizzes");
+  };
+
+  const handleNavigateToQuestions = () => {
+    navigate("/questions");
+  };
+
+  const handleCreateQuiz = () => {
+    navigate("/quizzes/add");
   };
 
   const getWelcomeMessage = () => {
@@ -63,62 +71,83 @@ const HomePage = () => {
             {getWelcomeMessage()} Ready to test your knowledge?
           </h1>
           <p className={styles["welcome-subtitle"]}>
-            Choose from our collection of engaging quizzes and challenge
-            yourself!
+            Explore our platform - manage your quizzes, create engaging games,
+            and build custom questions!
           </p>
-          <div className={styles["welcome-actions"]}>
-            <button
-              className={styles["primary-button"]}
-              onClick={handleCreateQuiz}
-            >
-              Create New Quiz
-            </button>
-            <button
-              className={styles["secondary-button"]}
-              onClick={handleManageQuizzes}
-            >
-              Manage My Quizzes
-            </button>
-          </div>
         </div>
       </div>
 
       <div className={styles["main-content"]}>
-        <div className={styles["content-header"]}>
-          <h2 className={styles["section-title"]}>Available Quizzes</h2>
-          <div className={styles["quiz-actions"]}>
-            <div className={styles["search-container"]}>
-              <input
-                type="text"
-                placeholder="Search quizzes..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className={styles["search-input"]}
-              />
+        <div className={styles["navigation-section"]}>
+          <h2 className={styles["section-title"]}>
+            What would you like to do?
+          </h2>
+          <div className={styles["navigation-cards"]}>
+            <div className={styles["nav-card"]}>
+              <div className={styles["nav-card-icon"]}>🎮</div>
+              <h3 className={styles["nav-card-title"]}>Games</h3>
+              <p className={styles["nav-card-description"]}>
+                Create interactive game sessions, manage game rooms, and host
+                live quiz competitions
+              </p>
+              <button
+                className={styles["nav-card-button"]}
+                onClick={handleNavigateToGames}
+              >
+                Go to Games
+              </button>
+            </div>
+
+            <div className={styles["nav-card"]}>
+              <div className={styles["nav-card-icon"]}>📚</div>
+              <h3 className={styles["nav-card-title"]}>Quizzes</h3>
+              <p className={styles["nav-card-description"]}>
+                Browse, create, and manage your quiz collections with
+                comprehensive question sets
+              </p>
+              <button
+                className={styles["nav-card-button"]}
+                onClick={handleNavigateToQuizzes}
+              >
+                Go to Quizzes
+              </button>
+            </div>
+
+            <div className={styles["nav-card"]}>
+              <div className={styles["nav-card-icon"]}>❓</div>
+              <h3 className={styles["nav-card-title"]}>Questions</h3>
+              <p className={styles["nav-card-description"]}>
+                Create, edit, and organize individual questions for your quiz
+                content
+              </p>
+              <button
+                className={styles["nav-card-button"]}
+                onClick={handleNavigateToQuestions}
+              >
+                Go to Questions
+              </button>
             </div>
           </div>
         </div>
 
-        <div className={styles["quiz-actions"]}>
-          <div className={styles["search-container"]}>
-            <input
-              type="text"
-              placeholder="Search quizzes..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className={styles["search-input"]}
-            />
-          </div>
-
-          <div className={styles["game-actions"]}>
+        <div className={styles["quick-actions-section"]}>
+          <h2 className={styles["section-title"]}>Quick Actions</h2>
+          <div className={styles["quick-actions"]}>
             <button
-              className={styles["create-game-button"]}
-              onClick={() => navigate("/games/create")}
+              className={styles["quick-action-button"]}
+              onClick={handleCreateQuiz}
             >
-              🎮 Create Game
+              ➕ Create New Quiz
             </button>
 
-            <div className={styles["join-game-container"]}>
+            <button
+              className={styles["quick-action-button"]}
+              onClick={() => navigate("/games/create")}
+            >
+              🎯 Start New Game
+            </button>
+
+            <div className={styles["join-game-section"]}>
               <input
                 type="text"
                 placeholder="Enter Game PIN"
@@ -131,6 +160,7 @@ const HomePage = () => {
                 onClick={() => {
                   if (gamePin.trim()) navigate(`/game/${gamePin}/lobby`);
                 }}
+                disabled={!gamePin.trim()}
               >
                 🔗 Join Game
               </button>
