@@ -18,7 +18,7 @@ const RegisterPage: React.FC = () => {
 
     try {
       await register({ username, password });
-      navigate("/questions");
+      navigate("/home");
     } catch (error) {
       setError("Registration failed. Username might already be taken.");
     } finally {

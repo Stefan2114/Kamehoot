@@ -4,7 +4,7 @@ package com.kamehoot.kamehoot_backend.controllers;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,13 +24,14 @@ import com.kamehoot.kamehoot_backend.models.Question;
 import com.kamehoot.kamehoot_backend.services.IQuestionService;
 import com.kamehoot.kamehoot_backend.services.IUserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/questions")
 public class QuestionController implements IQuestionController {
     private final IQuestionService questionService;
     private final IUserService userService;
 
-    @Autowired
     public QuestionController(IQuestionService questionService, IUserService userService) {
         this.questionService = questionService;
         this.userService = userService;
@@ -126,14 +127,14 @@ public class QuestionController implements IQuestionController {
 
     @Override
     @PostMapping
-    public ResponseEntity<Void> addQuestion(@RequestBody QuestionDTO question) {
+    public ResponseEntity<Void> addQuestion(@Valid @RequestBody QuestionDTO question) {
         System.out.println(question);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
             String username = jwtAuth.getName();
             this.questionService.addUserQuestion(username, question);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } else {
             return ResponseEntity.badRequest().build();
         }
@@ -145,15 +146,15 @@ public class QuestionController implements IQuestionController {
     public ResponseEntity<Void> deleteQuestion(@PathVariable("id") UUID questionId) {
         System.out.println("I deleted the question with id: " + questionId);
         this.questionService.deleteQuestionById(questionId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Override
     @PutMapping
-    public ResponseEntity<Void> updateQuestion(@RequestBody QuestionDTO question) {
+    public ResponseEntity<Void> updateQuestion(@Valid @RequestBody QuestionDTO question) {
         System.out.println(question);
         this.questionService.updateQuestion(question);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Override

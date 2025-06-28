@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Question, QuestionFromBackend } from "../types/question";
-import { ApiService } from "../utils/api";
+import { Question } from "../types/question";
+import { ApiService } from "../services/apiService";
 import styles from "../styles/QuestionPage.module.css";
 
 const QuestionPage = () => {
@@ -13,13 +13,8 @@ const QuestionPage = () => {
     const fetchQuestion = async () => {
       try {
         if (id) {
-          const data = await ApiService.get<QuestionFromBackend>(
-            `/questions/${id}`
-          );
-          setQuestion({
-            ...data,
-            creationDate: new Date(data.creationDate.split(".")[0]),
-          });
+          const data = await ApiService.get<Question>(`/questions/${id}`);
+          setQuestion(data);
         }
       } catch (error) {
         console.error("Error fetching question:", error);
@@ -75,6 +70,13 @@ const QuestionPage = () => {
                 : "Hard"}
             </label>
           </div>
+
+          <div className={styles["detail-section"]}>
+            <label className={styles["detail-type"]}>Creation Date:</label>
+            <label className={styles["detail-text"]}>
+              {question.creationDate}
+            </label>
+          </div>
         </div>
         <div className={styles["question-section"]}>
           <label className={styles["answer-type"]}>Correct answer:</label>
@@ -101,9 +103,6 @@ const QuestionPage = () => {
           >
             Delete Question
           </button>
-          <Link to="/questions" className={styles["back-button"]}>
-            Back to Questions
-          </Link>
         </div>
       </div>
     </div>

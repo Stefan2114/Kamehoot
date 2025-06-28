@@ -8,10 +8,14 @@ import com.kamehoot.kamehoot_backend.models.Quiz;
 
 public interface IQuizService {
 
-    List<Quiz> getUserQuizList(UUID userId);
+    List<Quiz> getUserQuizzes(String username);
 
-    void addQuiz(UUID id, QuizRequest quizDTO);
+    List<Quiz> getQuizzes();
 
-    void deleteQuiz(UUID quizId);
+    void addQuiz(String userId, QuizRequest quizDTO);
+
+    Quiz getQuiz(UUID id);
+
+    void deleteQuiz(UUID id);
 
 }

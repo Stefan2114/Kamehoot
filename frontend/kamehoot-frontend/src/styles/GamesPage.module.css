@@ -1,0 +1,149 @@
+.container {
+  width: 100%;
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.title {
+  margin: 0 0 32px 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.action-button {
+  background-color: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 24px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  text-align: center;
+}
+
+.action-button:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #007bff;
+}
+
+.create-game {
+  background-color: #f8f9fa;
+}
+
+.join-game {
+  background-color: #fff;
+}
+
+.icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.action-button h2 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.action-button p {
+  margin: 0 0 16px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.game-code-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.game-code-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.join-button {
+  width: 100%;
+  padding: 10px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.join-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.join-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 14px;
+  margin: 8px 0 0 0;
+}
+
+.how-to-play {
+  background-color: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 24px;
+  margin-top: 32px;
+}
+
+.how-to-play h2 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.step {
+  background-color: #f8f9fa;
+  padding: 16px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.step h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.step p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+}

@@ -4,6 +4,7 @@ import {
   createBrowserRouter,
   RouterProvider,
   Navigate,
+  Outlet,
 } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -13,51 +14,158 @@ import EditQuestionPage from "./pages/EditQuestionPage";
 import QuestionPage from "./pages/QuestionPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import ProfilePage from "./pages/ProfilePage";
+import Layout from "./components/Layout";
+import QuizzesPage from "./pages/QuizzesPage";
+import QuizPage from "./pages/QuizPage";
+import AddQuizPage from "./pages/AddQuizPage";
+import HomePage from "./pages/HomePage";
+import GamesPage from "./pages/GamesPage";
+import CreateGamePage from "./pages/CreateGamePage";
+import PlayGamePage from "./pages/PlayGamePage";
+
+const AppLayout = () => {
+  return (
+    <Layout>
+      <Outlet />
+    </Layout>
+  );
+};
+
+const ProtectedWrapper = ({ children }: { children: React.ReactNode }) => {
+  return <ProtectedRoute>{children}</ProtectedRoute>;
+};
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/questions" replace />,
-  },
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
-  },
-  {
-    path: "/questions",
-    element: (
-      <ProtectedRoute>
-        <QuestionsPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/questions/add",
-    element: (
-      <ProtectedRoute>
-        <AddQuestionPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/questions/edit/:id",
-    element: (
-      <ProtectedRoute>
-        <EditQuestionPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/questions/:id",
-    element: (
-      <ProtectedRoute>
-        <QuestionPage />
-      </ProtectedRoute>
-    ),
+    element: <AppLayout />,
+    children: [
+      { index: true, element: <Navigate to="/" replace /> },
+
+      {
+        path: "/",
+        element: <HomePage />,
+      },
+      {
+        path: "/home",
+        element: <HomePage />,
+      },
+      {
+        path: "/login",
+        element: <LoginPage />,
+      },
+      {
+        path: "/register",
+        element: <RegisterPage />,
+      },
+      {
+        path: "/profile",
+        element: (
+          <ProtectedWrapper>
+            <ProfilePage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/questions",
+        element: (
+          <ProtectedWrapper>
+            <QuestionsPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/questions/add",
+        element: (
+          <ProtectedWrapper>
+            <AddQuestionPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/questions/edit/:id",
+        element: (
+          <ProtectedWrapper>
+            <EditQuestionPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/questions/:id",
+        element: (
+          <ProtectedWrapper>
+            <QuestionPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/quizzes",
+        element: (
+          <ProtectedWrapper>
+            <QuizzesPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/quizzes/:id",
+        element: (
+          <ProtectedWrapper>
+            <QuizPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/quizzes/add",
+        element: (
+          <ProtectedWrapper>
+            <AddQuizPage />
+          </ProtectedWrapper>
+        ),
+      },
+
+      {
+        path: "/quizzes/:id",
+        element: (
+          <ProtectedWrapper>
+            <QuizPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/quizzes/add",
+        element: (
+          <ProtectedWrapper>
+            <AddQuizPage />
+          </ProtectedWrapper>
+        ),
+      },
+      // Game routes with GameProvider
+      {
+        path: "/games",
+        element: (
+          <ProtectedWrapper>
+            <GamesPage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/games/create",
+        element: (
+          <ProtectedWrapper>
+            <CreateGamePage />
+          </ProtectedWrapper>
+        ),
+      },
+      {
+        path: "/games/:gameCode",
+        element: (
+          <ProtectedWrapper>
+            <PlayGamePage />
+          </ProtectedWrapper>
+        ),
+      },
+    ],
   },
 ]);
 

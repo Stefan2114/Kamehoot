@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Question, QuestionFromBackend } from "../types/question";
+import { Question } from "../types/question";
 import QuestionItem from "../components/QuestionItem";
-import { ApiService } from "../utils/api";
+import { ApiService } from "../services/apiService";
 import { useAuth } from "../contexts/AuthContext";
 import styles from "../styles/QuestionsPage.module.css";
 
 const QuestionsPage = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -37,21 +36,16 @@ const QuestionsPage = () => {
       params.append("orderBy", orderBy);
       params.append("orderDirection", orderDirection);
 
-      const data = await ApiService.get<QuestionFromBackend[]>(
+      const data = await ApiService.get<Question[]>(
         `/questions?${params.toString()}`
       );
-      const parsed = data.map((q) => ({
-        ...q,
-        creationDate: new Date(q.creationDate.split(".")[0]),
-      }));
 
-      setQuestions(parsed);
+      setQuestions(data);
     } catch (error) {
       console.error("Error fetching questions:", error);
     }
   }, [categoryFilter, difficultyFilter, searchTerm, orderBy, orderDirection]);
 
-  // Fetch categories once
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -65,7 +59,6 @@ const QuestionsPage = () => {
     fetchCategories();
   }, []);
 
-  // Reset and fetch questions when filters change
   useEffect(() => {
     fetchQuestions();
   }, [fetchQuestions]);
@@ -100,29 +93,17 @@ const QuestionsPage = () => {
     navigate("/questions/add");
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
   return (
     <div className={styles["questions-container"]}>
       <div className={styles["sidebar"]}>
-        <div style={{ marginBottom: "20px" }}>
-          <button
-            onClick={handleLogout}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#dc3545",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Logout
-          </button>
-        </div>
+        <div
+          style={{
+            marginBottom: "20px",
+            display: "flex",
+            gap: "10px",
+            flexDirection: "column",
+          }}
+        ></div>
 
         <button className={styles["add-button"]} onClick={handleAddQuestion}>
           Add Question

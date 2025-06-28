@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.hibernate.annotations.Check;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kamehoot.kamehoot_backend.enums.Visibility;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -47,7 +48,7 @@ public class Question {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 64, nullable = false)
-    private Visibility visibility;
+    private Visibility visibility = Visibility.PRIVATE;
 
     @Column(nullable = false)
     private LocalDateTime creationDate;
@@ -88,4 +89,5 @@ public class Question {
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
+
 }

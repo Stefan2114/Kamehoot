@@ -5,12 +5,14 @@ import styles from "../styles/QuestionForm.module.css";
 interface QuestionFormProps {
   initialQuestion?: Question;
   onSubmit: (question: Question) => void;
+  onCancel: () => void;
   mode: "add" | "edit";
 }
 
 const QuestionForm: React.FC<QuestionFormProps> = ({
   initialQuestion,
   onSubmit,
+  onCancel,
   mode = "add",
 }) => {
   const [categories, setCategories] = useState<string[]>([]);
@@ -19,7 +21,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:8081/categories");
+        const response = await fetch("https://localhost:8443/categories");
         const data: string[] = await response.json();
         setCategories(data);
       } catch (error) {
@@ -96,10 +98,14 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       correctAnswer: formData.correctAnswer.trim(),
       wrongAnswers: formData.wrongAnswers.map((answer) => answer.trim()),
       difficulty: Number(formData.difficulty),
-      creationDate: initialQuestion?.creationDate || new Date(),
+      creationDate: initialQuestion?.creationDate || new Date().toISOString(),
     };
 
     onSubmit(submittedQuestion);
+  };
+
+  const handleCancel = () => {
+    onCancel();
   };
 
   return (
@@ -187,10 +193,18 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
                 />
               </div>
             ))}
-
-            <button type="submit" className={styles["submit-button"]}>
-              {mode === "add" ? "Add Question" : "Update Question"}
-            </button>
+            <div className={styles["form-actions"]}>
+              <button type="submit" className={styles["submit-button"]}>
+                {mode === "add" ? "Add Question" : "Update Question"}
+              </button>
+              <button
+                type="button"
+                className={styles["cancel-button"]}
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       </form>

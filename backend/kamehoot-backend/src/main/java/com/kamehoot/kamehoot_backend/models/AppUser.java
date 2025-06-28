@@ -43,10 +43,24 @@ public class AppUser {
     @Column(length = 256, nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private Boolean deleted = false;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = { @JoinColumn(name = "user_id") })
     @Column(name = "role", length = 100, nullable = false)
     private Set<String> roles = new HashSet<>();
+
+    @Column(name = "two_fa_enabled", nullable = false)
+    private boolean twoFaEnabled = false;
+
+    @Column(name = "two_fa_secret", length = 32)
+    private String twoFaSecret;
+
+    // @Lob
+    // @Column(name="profile_photo")
+    // @JsonIgnore
+    // private byte[] profilePhoto;
 
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -55,5 +69,9 @@ public class AppUser {
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Quiz> userQuizzes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<GamePlayer> games;
 
 }

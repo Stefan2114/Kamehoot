@@ -1,12 +1,21 @@
 package com.kamehoot.kamehoot_backend.models;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.hibernate.annotations.Check;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kamehoot.kamehoot_backend.enums.Visibility;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -20,35 +29,51 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "quizzes")
-// @Table(name = "quizzes", uniqueConstraints = {
-// @UniqueConstraint(columnNames = { "user_id", "question_id" }) })
+@Check(constraints = "visibility IN ('PRIVATE', 'PUBLIC')")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-// this is good, the user can only see his questions and the public once. So
-// there are 2 types of questions public and private
-// there will be quizzes that are all public. An user can create a quiz using
-// public questions or personal questions
-// another user can play other user quiz but can not use it's questions
-// directly. They have to create their own questions that are similar
 public class Quiz {
 
     @Id
     @GeneratedValue
     private UUID id;
 
+    @Column(nullable = false)
+    private Boolean deleted = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 64, nullable = false)
+    @JsonIgnore
+    private Visibility visibility = Visibility.PRIVATE;
+
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
+    @JsonIgnore
     private AppUser creator;
 
     @Column(length = 128, nullable = false)
     private String title;
 
+    @Column(length = 512, nullable = false)
+    private String description = "";
+
     @Column(nullable = false)
     private LocalDateTime creationDate;
 
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<QuizQuestion> quizQuestions;
+    // @Column(nullable = false)
+    // private LocalDateTime lastModified;
+
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<QuizQuestion> questions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<GameSession> sessions = new ArrayList<>();
+
+    // public Integer getMaxPossibleScore() {
+    // return questions.size();
+    // }
 
 }

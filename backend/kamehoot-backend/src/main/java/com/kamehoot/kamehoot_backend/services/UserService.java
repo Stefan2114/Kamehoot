@@ -13,6 +13,8 @@ import com.kamehoot.kamehoot_backend.DTOs.AuthenticateRequest;
 import com.kamehoot.kamehoot_backend.models.AppUser;
 import com.kamehoot.kamehoot_backend.repos.IUserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class UserService implements IUserService {
 
@@ -28,11 +30,19 @@ public class UserService implements IUserService {
 
     @Override
     public void registerUser(AuthenticateRequest request) {
+
+        if (existsByUsername(request.username())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists");
+        }
         AppUser user = new AppUser();
         user.setUsername(request.username());
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setRoles(Set.of("USER"));
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to register user: " + e.getMessage());
+        }
     }
 
     @Override
@@ -60,6 +70,36 @@ public class UserService implements IUserService {
     @Override
     public List<AppUser> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public void setTwoFaSecret(String username, String secret) {
+
+        if (secret == null || secret.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Two-factor authentication secret cannot be empty");
+        }
+        AppUser user = getUserByUsername(username);
+        user.setTwoFaSecret(secret);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void enable2FA(String username) {
+        AppUser user = getUserByUsername(username);
+        user.setTwoFaEnabled(true);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void disable2FA(String username) {
+        AppUser user = getUserByUsername(username);
+        user.setTwoFaEnabled(false);
+        user.setTwoFaSecret(null);
+        userRepository.save(user);
     }
 
     // @Override
