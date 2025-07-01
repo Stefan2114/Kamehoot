@@ -44,30 +44,22 @@ public class AuthenticationController implements IAuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@Valid @RequestBody AuthenticateRequest userLogin) {
 
-        System.out.println("Login received");
-
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userLogin.username(), userLogin.password()));
-
-        System.out.println("Authenticated");
 
         AppUser user = this.userService.getUserByUsername(userLogin.username());
         if (user.isTwoFaEnabled()) {
             if (userLogin.totpCode() == null) {
-                System.out.println("requred 2fa");
 
                 return ResponseEntity.ok(new TokenResponse(null, 0L, true, "2FA code required"));
             }
 
             if (!twoFactorAuthService.verifyCode(user.getTwoFaSecret(), userLogin.totpCode())) {
-                System.out.println("invalid 2fa");
 
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid 2FA code");
 
             }
         }
-
-        System.out.println("good");
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtService.generateToken(authentication);
@@ -122,7 +114,6 @@ public class AuthenticationController implements IAuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<TokenResponse> register(@Valid @RequestBody AuthenticateRequest userRegister) {
 
-        System.out.println("Register received");
         if (userService.existsByUsername(userRegister.username())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is already taken");
         }

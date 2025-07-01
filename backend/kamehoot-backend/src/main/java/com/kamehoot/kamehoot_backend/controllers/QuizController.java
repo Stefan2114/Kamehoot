@@ -21,6 +21,9 @@ import com.kamehoot.kamehoot_backend.DTOs.QuizRequest;
 import com.kamehoot.kamehoot_backend.models.Quiz;
 import com.kamehoot.kamehoot_backend.services.IQuizService;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
 @RestController
 @RequestMapping("/quizzes")
 public class QuizController {
@@ -32,8 +35,8 @@ public class QuizController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> addQuiz(@RequestBody QuizRequest quiz) {
-        System.out.println(quiz);
+    public ResponseEntity<Void> addQuiz(@Valid @RequestBody QuizRequest quiz) {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
@@ -47,7 +50,7 @@ public class QuizController {
 
     @GetMapping
     public ResponseEntity<List<Quiz>> getQuizzes() {
-        System.out.println("I want to get the questions");
+
         return ResponseEntity.ok(this.quizService.getQuizzes());
     }
 
@@ -65,13 +68,13 @@ public class QuizController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<QuizDTO> getQuiz(@PathVariable UUID id) {
+    public ResponseEntity<QuizDTO> getQuiz(@NotNull @PathVariable UUID id) {
         return ResponseEntity.ok(mapQuizToDTO(this.quizService.getQuiz(id)));
 
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteQuiz(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteQuiz(@NotNull @PathVariable UUID id) {
         this.quizService.deleteQuiz(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

@@ -1,6 +1,6 @@
 package com.kamehoot.kamehoot_backend.models;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -60,7 +60,7 @@ public class Quiz {
     private String description = "";
 
     @Column(nullable = false)
-    private LocalDateTime creationDate;
+    private ZonedDateTime creationDate;
 
     // @Column(nullable = false)
     // private LocalDateTime lastModified;

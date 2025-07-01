@@ -1,6 +1,6 @@
 package com.kamehoot.kamehoot_backend.models;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -47,13 +47,13 @@ public class GameSession {
     private GameStatus status = GameStatus.WAITING;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private ZonedDateTime createdAt;
 
     @Column
-    private LocalDateTime startedAt;
+    private ZonedDateTime startedAt;
 
     @Column
-    private LocalDateTime endedAt;
+    private ZonedDateTime endedAt;
 
     @Column(nullable = false)
     private Integer questionTimeLimit = 15;

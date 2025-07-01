@@ -1,7 +1,7 @@
 package com.kamehoot.kamehoot_backend.services;
 
 import java.io.InputStream;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -63,12 +63,11 @@ public class DBService {
 
         Category mathCategory = this.categoryRepository.save(category1);
         this.categoryRepository.save(category2);
-        System.out.println("Categories saved");
 
         Question userQuestion = new Question();
         userQuestion.setCreator(user2);
         userQuestion.setVisibility(Visibility.PRIVATE);
-        userQuestion.setCreationDate(LocalDateTime.now());
+        userQuestion.setCreationDate(ZonedDateTime.now());
         userQuestion.setCategory(mathCategory);
         userQuestion.setCorrectAnswer("64");
         userQuestion.setDifficulty(1);
@@ -77,7 +76,7 @@ public class DBService {
         this.questionRepository.save(userQuestion);
 
         List<QuestionDTO> jsonQuestions = loadQuestionsFromJson();
-        System.out.println("JSON Questions got");
+
         for (QuestionDTO question : jsonQuestions) {
             Category category = this.categoryRepository.findByName(question.category());
             Question newQuestion = new Question();

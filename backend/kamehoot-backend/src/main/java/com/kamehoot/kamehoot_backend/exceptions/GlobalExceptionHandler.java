@@ -1,6 +1,6 @@
 package com.kamehoot.kamehoot_backend.exceptions;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
         ValidationErrorResponse errorResponse = new ValidationErrorResponse(
                 "Validation failed",
                 errors,
-                LocalDateTime.now());
+                ZonedDateTime.now());
 
         return ResponseEntity.badRequest().body(errorResponse);
     }
@@ -36,20 +36,20 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toList());
 
         ValidationErrorResponse errorResponse = new ValidationErrorResponse("Constraint violation", errors,
-                LocalDateTime.now());
+                ZonedDateTime.now());
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getReason(), LocalDateTime.now());
+        ErrorResponse errorResponse = new ErrorResponse(ex.getReason(), ZonedDateTime.now());
 
         return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
     }
 
-    public record ValidationErrorResponse(String message, List<String> errors, LocalDateTime timestamp) {
+    public record ValidationErrorResponse(String message, List<String> errors, ZonedDateTime timestamp) {
     }
 
-    public record ErrorResponse(String message, LocalDateTime timestamp) {
+    public record ErrorResponse(String message, ZonedDateTime timestamp) {
     }
 }

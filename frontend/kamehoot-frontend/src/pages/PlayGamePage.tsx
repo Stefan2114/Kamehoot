@@ -16,6 +16,9 @@ interface FloatingEmoji {
   y: number;
 }
 
+const serverAddress = import.meta.env.VITE_SERVER_ADDRESS;
+const serverPort = import.meta.env.VITE_SERVER_PORT;
+
 const PlayGamePage: React.FC = () => {
   const navigate = useNavigate();
   const { gameCode } = useParams<{ gameCode: string }>();
@@ -95,7 +98,7 @@ const PlayGamePage: React.FC = () => {
     console.log("Connecting to WebSocket for game:", gameSession.id);
 
     const webSocket = new WebSocket(
-      `wss://localhost:8443/game?gameSessionId=${gameSession.id}`
+      `wss://${serverAddress}:${serverPort}/game?gameSessionId=${gameSession.id}`
     );
 
     webSocket.onopen = () => {
@@ -115,13 +118,11 @@ const PlayGamePage: React.FC = () => {
       });
       console.log(gameSession.status);
 
-      if (data.type === "leaderboard" || data.type === "playersJoined") {
+      if (data.type === "leaderboard" || data.type === "players") {
         if (Array.isArray(data.info)) {
           const newPlayers: PlayerDTO[] = data.info;
+          console.log(newPlayers);
           setPlayers(newPlayers);
-          setPlayersAnswered(
-            newPlayers.filter((player) => player.hasAnswered).length
-          );
 
           if (data.type === "leaderboard") {
             setShowLeaderboard(true);
@@ -129,15 +130,19 @@ const PlayGamePage: React.FC = () => {
             setSelectedAnswer("");
           }
         }
+      } else if (data.type === "playersAnswered") {
+        const playersFinished = data.info as number;
+        setPlayersAnswered(playersFinished);
       } else if (data.type === "gameQuestion") {
         const newGameQuestion: GameQuestionDTO = data.info as GameQuestionDTO;
         setGameQuestion(newGameQuestion);
         setShowLeaderboard(false);
         setHasAnswered(false);
         setSelectedAnswer("");
+        setPlayersAnswered(0);
         setTimeLeft(newGameQuestion.timeLimit);
       } else if (data.type === "emoji") {
-        const emoji = data.info as string;
+        const emoji = JSON.parse(data.info as string);
         addFloatingEmoji(emoji);
       }
     };
@@ -190,7 +195,7 @@ const PlayGamePage: React.FC = () => {
 
   // Timer for questions
   useEffect(() => {
-    if (gameQuestion && timeLeft > 0 && !hasAnswered) {
+    if (gameQuestion && timeLeft > 0) {
       const timer = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
       }, 1000);
@@ -395,7 +400,7 @@ const PlayGamePage: React.FC = () => {
       <div className={styles["game-container"]}>
         <div className={styles["game-content"]}>
           <div className={styles["game-header"]}>
-            <h1>New {gameQuestion?.questionNumber} Leaderboard</h1>
+            <h1>Leaderboard</h1>
           </div>
 
           <div className={styles["players-section"]}>

@@ -66,7 +66,7 @@ const TopBar: React.FC = () => {
         <div className={styles["topbar-auth"]}>
           {isAuthenticated ? (
             <div className={styles["auth-section"]}>
-              <span className={styles["user-name"]}>Welcome, {""}</span>
+              <span className={styles["user-name"]}>Welcome {""}</span>
               <button
                 onClick={handleLogout}
                 className={styles["logout-button"]}

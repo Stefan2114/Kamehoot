@@ -39,7 +39,7 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
             <span className={styles["detail-item"]}>
               <span className={styles["detail-label"]}>Date:</span>
               <span className={styles["detail-value"]}>
-                {question.creationDate.toLocaleString()}
+                {question.creationDate}
               </span>
             </span>
           </div>

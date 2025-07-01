@@ -140,7 +140,6 @@ const router = createBrowserRouter([
           </ProtectedWrapper>
         ),
       },
-      // Game routes with GameProvider
       {
         path: "/games",
         element: (

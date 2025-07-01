@@ -1,6 +1,6 @@
 [
   {
-    "creationDate": "2024-04-01T12:30:00",
+    "creationDate": "2024-04-01T12:30:00+03:00",
     "questionText": "What is the derivative of x^2?",
     "category": "Math",
     "correctAnswer": "2x",
@@ -8,7 +8,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:01",
+    "creationDate": "2024-04-01T12:30:01+03:00",
     "questionText": "Who won the FIFA World Cup in 2018?",
     "category": "Football",
     "correctAnswer": "France",
@@ -16,7 +16,7 @@
     "difficulty": 3
   },
   {
-    "creationDate": "2024-04-01T12:30:02",
+    "creationDate": "2024-04-01T12:30:02+03:00",
     "questionText": "What is 5 + 7?",
     "category": "Math",
     "correctAnswer": "12",
@@ -24,7 +24,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:03",
+    "creationDate": "2024-04-01T12:30:03+03:00",
     "questionText": "Which team has won the most Champions League titles?",
     "category": "Football",
     "correctAnswer": "Real Madrid",
@@ -32,7 +32,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:04",
+    "creationDate": "2024-04-01T12:30:04+03:00",
     "questionText": "What is the area of a circle with radius 3?",
     "category": "Math",
     "correctAnswer": "9π",
@@ -40,7 +40,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:05",
+    "creationDate": "2024-04-01T12:30:05+03:00",
     "questionText": "Who is the all-time top scorer in men's international football?",
     "category": "Football",
     "correctAnswer": "Cristiano Ronaldo",
@@ -48,7 +48,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:06",
+    "creationDate": "2024-04-01T12:30:06+03:00",
     "questionText": "Solve for x: 2x + 5 = 11",
     "category": "Math",
     "correctAnswer": "3",
@@ -56,7 +56,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:07",
+    "creationDate": "2024-04-01T12:30:07+03:00",
     "questionText": "In which country was the first FIFA World Cup held?",
     "category": "Football",
     "correctAnswer": "Uruguay",
@@ -64,7 +64,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:08",
+    "creationDate": "2024-04-01T12:30:08+03:00",
     "questionText": "What is the value of pi (π) to two decimal places?",
     "category": "Math",
     "correctAnswer": "3.14",
@@ -72,7 +72,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:09",
+    "creationDate": "2024-04-01T12:30:09+03:00",
     "questionText": "Which club is known as 'The Red Devils'?",
     "category": "Football",
     "correctAnswer": "Manchester United",
@@ -80,7 +80,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:10",
+    "creationDate": "2024-04-01T12:30:10+03:00",
     "questionText": "What is 10 squared?",
     "category": "Math",
     "correctAnswer": "100",
@@ -88,7 +88,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:11",
+    "creationDate": "2024-04-01T12:30:11+03:00",
     "questionText": "Who won the Ballon d'Or in 2023?",
     "category": "Football",
     "correctAnswer": "Lionel Messi",
@@ -96,7 +96,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:12",
+    "creationDate": "2024-04-01T12:30:12+03:00",
     "questionText": "What is the formula for the volume of a cube?",
     "category": "Math",
     "correctAnswer": "s^3",
@@ -104,7 +104,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:13",
+    "creationDate": "2024-04-01T12:30:13+03:00",
     "questionText": "Which country won the UEFA European Championship in 2016?",
     "category": "Football",
     "correctAnswer": "Portugal",
@@ -112,7 +112,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:14",
+    "creationDate": "2024-04-01T12:30:14+03:00",
     "questionText": "What is the square root of 81?",
     "category": "Math",
     "correctAnswer": "9",
@@ -120,7 +120,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:15",
+    "creationDate": "2024-04-01T12:30:15+03:00",
     "questionText": "How many players are on a football team on the field?",
     "category": "Football",
     "correctAnswer": "11",
@@ -128,7 +128,7 @@
     "difficulty": 1
   },
     {
-    "creationDate": "2024-04-01T12:30:16",
+    "creationDate": "2024-04-01T12:30:16+03:00",
     "questionText": "What is the value of 7! (7 factorial)?",
     "category": "Math",
     "correctAnswer": "5040",
@@ -136,7 +136,7 @@
     "difficulty": 3
   },
   {
-    "creationDate": "2024-04-01T12:30:17",
+    "creationDate": "2024-04-01T12:30:17+03:00",
     "questionText": "Which city hosted the 1992 Summer Olympics?",
     "category": "Football",
     "correctAnswer": "Barcelona",
@@ -144,7 +144,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:18",
+    "creationDate": "2024-04-01T12:30:18+03:00",
     "questionText": "What is the sum of angles in a triangle?",
     "category": "Math",
     "correctAnswer": "180 degrees",
@@ -152,7 +152,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:19",
+    "creationDate": "2024-04-01T12:30:19+03:00",
     "questionText": "What is the nickname of Atlético Madrid?",
     "category": "Football",
     "correctAnswer": "Los Colchoneros",
@@ -160,7 +160,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:20",
+    "creationDate": "2024-04-01T12:30:20+03:00",
     "questionText": "What is the integral of 2x?",
     "category": "Math",
     "correctAnswer": "x^2 + C",
@@ -168,7 +168,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:21",
+    "creationDate": "2024-04-01T12:30:21+03:00",
     "questionText": "Which player is known as 'CR7'?",
     "category": "Football",
     "correctAnswer": "Cristiano Ronaldo",
@@ -176,7 +176,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:22",
+    "creationDate": "2024-04-01T12:30:22+03:00",
     "questionText": "What is the value of cos(0)?",
     "category": "Math",
     "correctAnswer": "1",
@@ -184,7 +184,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:23",
+    "creationDate": "2024-04-01T12:30:23+03:00",
     "questionText": "Which country hosted the 2014 FIFA World Cup?",
     "category": "Football",
     "correctAnswer": "Brazil",
@@ -192,7 +192,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:24",
+    "creationDate": "2024-04-01T12:30:24+03:00",
     "questionText": "What is the formula for the area of a triangle?",
     "category": "Math",
     "correctAnswer": "1/2 * base * height",
@@ -200,7 +200,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:25",
+    "creationDate": "2024-04-01T12:30:25+03:00",
     "questionText": "Which team plays their home games at Anfield?",
     "category": "Football",
     "correctAnswer": "Liverpool",
@@ -208,7 +208,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:26",
+    "creationDate": "2024-04-01T12:30:26+03:00",
     "questionText": "What is 15% of 200?",
     "category": "Math",
     "correctAnswer": "30",
@@ -216,7 +216,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:27",
+    "creationDate": "2024-04-01T12:30:27+03:00",
     "questionText": "Who is the manager of Manchester City as of 2024?",
     "category": "Football",
     "correctAnswer": "Pep Guardiola",
@@ -224,7 +224,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:28",
+    "creationDate": "2024-04-01T12:30:28+03:00",
     "questionText": "What is the Pythagorean theorem?",
     "category": "Math",
     "correctAnswer": "a^2 + b^2 = c^2",
@@ -232,7 +232,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:29",
+    "creationDate": "2024-04-01T12:30:29+03:00",
     "questionText": "Which country has won the most FIFA World Cups?",
     "category": "Football",
     "correctAnswer": "Brazil",
@@ -240,7 +240,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:30",
+    "creationDate": "2024-04-01T12:30:30+03:00",
     "questionText": "What is the value of e (Euler's number) to two decimal places?",
     "category": "Math",
     "correctAnswer": "2.72",
@@ -248,7 +248,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:31",
+    "creationDate": "2024-04-01T12:30:31+03:00",
     "questionText": "Which league is considered the top tier of English football?",
     "category": "Football",
     "correctAnswer": "Premier League",
@@ -256,7 +256,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:32",
+    "creationDate": "2024-04-01T12:30:32+03:00",
     "questionText": "What is the derivative of sin(x)?",
     "category": "Math",
     "correctAnswer": "cos(x)",
@@ -264,7 +264,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:33",
+    "creationDate": "2024-04-01T12:30:33+03:00",
     "questionText": "Who is the captain of the Argentina national football team as of 2024?",
     "category": "Football",
     "correctAnswer": "Lionel Messi",
@@ -272,7 +272,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:34",
+    "creationDate": "2024-04-01T12:30:34+03:00",
     "questionText": "What is the circumference of a circle with diameter 10?",
     "category": "Math",
     "correctAnswer": "10π",
@@ -280,7 +280,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:35",
+    "creationDate": "2024-04-01T12:30:35+03:00",
     "questionText": "Which club is known as 'The Blues'?",
     "category": "Football",
     "correctAnswer": "Chelsea",
@@ -288,7 +288,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:36",
+    "creationDate": "2024-04-01T12:30:36+03:00",
     "questionText": "What is 20 multiplied by 5?",
     "category": "Math",
     "correctAnswer": "100",
@@ -296,7 +296,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:37",
+    "creationDate": "2024-04-01T12:30:37+03:00",
     "questionText": "In which year did Brazil last win the FIFA World Cup?",
     "category": "Football",
     "correctAnswer": "2002",
@@ -304,7 +304,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:38",
+    "creationDate": "2024-04-01T12:30:38+03:00",
     "questionText": "What is the formula for simple interest?",
     "category": "Math",
     "correctAnswer": "P * R * T",
@@ -312,7 +312,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:39",
+    "creationDate": "2024-04-01T12:30:39+03:00",
     "questionText": "Which player is often referred to as 'King Leo'?",
     "category": "Football",
     "correctAnswer": "Lionel Messi",
@@ -320,7 +320,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:40",
+    "creationDate": "2024-04-01T12:30:40+03:00",
     "questionText": "What is 12 multiplied by 8?",
     "category": "Math",
     "correctAnswer": "96",
@@ -328,7 +328,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:41",
+    "creationDate": "2024-04-01T12:30:41+03:00",
     "questionText": "Which country won the 2010 FIFA World Cup?",
     "category": "Football",
     "correctAnswer": "Spain",
@@ -336,7 +336,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:42",
+    "creationDate": "2024-04-01T12:30:42+03:00",
     "questionText": "What is the area of a rectangle with length 10 and width 5?",
     "category": "Math",
     "correctAnswer": "50",
@@ -344,7 +344,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:43",
+    "creationDate": "2024-04-01T12:30:43+03:00",
     "questionText": "Which team is known as 'The Gunners'?",
     "category": "Football",
     "correctAnswer": "Arsenal",
@@ -352,7 +352,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:44",
+    "creationDate": "2024-04-01T12:30:44+03:00",
     "questionText": "What is the value of √144?",
     "category": "Math",
     "correctAnswer": "12",
@@ -360,7 +360,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:45",
+    "creationDate": "2024-04-01T12:30:45+03:00",
     "questionText": "Who is the all-time top scorer for Real Madrid?",
     "category": "Football",
     "correctAnswer": "Cristiano Ronaldo",
@@ -368,7 +368,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:46",
+    "creationDate": "2024-04-01T12:30:46+03:00",
     "questionText": "What is the formula for the area of a parallelogram?",
     "category": "Math",
     "correctAnswer": "base * height",
@@ -376,7 +376,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:47",
+    "creationDate": "2024-04-01T12:30:47+03:00",
     "questionText": "Which country hosted the UEFA Euro 2012?",
     "category": "Football",
     "correctAnswer": "Poland and Ukraine",
@@ -384,7 +384,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:48",
+    "creationDate": "2024-04-01T12:30:48+03:00",
     "questionText": "What is the result of 18 divided by 3?",
     "category": "Math",
     "correctAnswer": "6",
@@ -392,7 +392,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:49",
+    "creationDate": "2024-04-01T12:30:49+03:00",
     "questionText": "Which player is known as 'The Egyptian King'?",
     "category": "Football",
     "correctAnswer": "Mohamed Salah",
@@ -401,7 +401,7 @@
   },
   {
 
-    "creationDate": "2024-04-01T12:30:50",
+    "creationDate": "2024-04-01T12:30:50+03:00",
     "questionText": "What is the value of 4 cubed (4^3)?",
     "category": "Math",
     "correctAnswer": "64",
@@ -409,7 +409,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:51",
+    "creationDate": "2024-04-01T12:30:51+03:00",
     "questionText": "Which team plays their home games at the Camp Nou?",
     "category": "Football",
     "correctAnswer": "Barcelona",
@@ -417,7 +417,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:52",
+    "creationDate": "2024-04-01T12:30:52+03:00",
     "questionText": "What is 25% of 80?",
     "category": "Math",
     "correctAnswer": "20",
@@ -425,7 +425,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:53",
+    "creationDate": "2024-04-01T12:30:53+03:00",
     "questionText": "Who is the manager of Liverpool as of 2024?",
     "category": "Football",
     "correctAnswer": "Jurgen Klopp",
@@ -433,7 +433,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:54",
+    "creationDate": "2024-04-01T12:30:54+03:00",
     "questionText": "What is the formula for the volume of a cylinder?",
     "category": "Math",
     "correctAnswer": "πr^2h",
@@ -441,7 +441,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:55",
+    "creationDate": "2024-04-01T12:30:55+03:00",
     "questionText": "Which country won the FIFA Women's World Cup in 2019?",
     "category": "Football",
     "correctAnswer": "United States",
@@ -449,7 +449,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:56",
+    "creationDate": "2024-04-01T12:30:56+03:00",
     "questionText": "What is the value of 10! (10 factorial)?",
     "category": "Math",
     "correctAnswer": "3628800",
@@ -457,7 +457,7 @@
     "difficulty": 3
   },
   {
-    "creationDate": "2024-04-01T12:30:57",
+    "creationDate": "2024-04-01T12:30:57+03:00",
     "questionText": "Which city hosted the 2016 Summer Olympics?",
     "category": "Football",
     "correctAnswer": "Rio de Janeiro",
@@ -465,7 +465,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:30:58",
+    "creationDate": "2024-04-01T12:30:58+03:00",
     "questionText": "What is the sum of angles in a quadrilateral?",
     "category": "Math",
     "correctAnswer": "360 degrees",
@@ -473,7 +473,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:30:59",
+    "creationDate": "2024-04-01T12:30:59+03:00",
     "questionText": "What is the nickname of Inter Milan?",
     "category": "Football",
     "correctAnswer": "Nerazzurri",
@@ -482,7 +482,7 @@
   },
   {
 
-    "creationDate": "2024-04-01T12:31:00",
+    "creationDate": "2024-04-01T12:31:00+03:00",
     "questionText": "What is the derivative of e^x?",
     "category": "Math",
     "correctAnswer": "e^x",
@@ -490,7 +490,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:01",
+    "creationDate": "2024-04-01T12:31:01+03:00",
     "questionText": "Which player is known as 'King Eric'?",
     "category": "Football",
     "correctAnswer": "Eric Cantona",
@@ -498,7 +498,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:02",
+    "creationDate": "2024-04-01T12:31:02+03:00",
     "questionText": "What is the value of sin(90 degrees)?",
     "category": "Math",
     "correctAnswer": "1",
@@ -506,7 +506,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:03",
+    "creationDate": "2024-04-01T12:31:03+03:00",
     "questionText": "Which country hosted the UEFA Euro 2008?",
     "category": "Football",
     "correctAnswer": "Austria and Switzerland",
@@ -514,7 +514,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:04",
+    "creationDate": "2024-04-01T12:31:04+03:00",
     "questionText": "What is the formula for compound interest?",
     "category": "Math",
     "correctAnswer": "P(1 + r/n)^(nt)",
@@ -522,7 +522,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:05",
+    "creationDate": "2024-04-01T12:31:05+03:00",
     "questionText": "Which team is known as 'The Old Lady'?",
     "category": "Football",
     "correctAnswer": "Juventus",
@@ -530,7 +530,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:06",
+    "creationDate": "2024-04-01T12:31:06+03:00",
     "questionText": "What is 30% of 150?",
     "category": "Math",
     "correctAnswer": "45",
@@ -538,7 +538,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:07",
+    "creationDate": "2024-04-01T12:31:07+03:00",
     "questionText": "Who is the captain of the Portugal national football team as of 2024?",
     "category": "Football",
     "correctAnswer": "Cristiano Ronaldo",
@@ -546,7 +546,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:08",
+    "creationDate": "2024-04-01T12:31:08+03:00",
     "questionText": "What is the area of a trapezoid with bases 6 and 8 and height 4?",
     "category": "Math",
     "correctAnswer": "28",
@@ -554,7 +554,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:09",
+    "creationDate": "2024-04-01T12:31:09+03:00",
     "questionText": "Which player has won the most Ballon d'Or awards?",
     "category": "Football",
     "correctAnswer": "Lionel Messi",
@@ -563,7 +563,7 @@
   },
   {
 
-    "creationDate": "2024-04-01T12:31:10",
+    "creationDate": "2024-04-01T12:31:10+03:00",
     "questionText": "What is the value of log10(1000)?",
     "category": "Math",
     "correctAnswer": "3",
@@ -571,7 +571,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:11",
+    "creationDate": "2024-04-01T12:31:11+03:00",
     "questionText": "Which country hosted the 2006 FIFA World Cup?",
     "category": "Football",
     "correctAnswer": "Germany",
@@ -579,7 +579,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:12",
+    "creationDate": "2024-04-01T12:31:12+03:00",
     "questionText": "What is the formula for the perimeter of a rectangle?",
     "category": "Math",
     "correctAnswer": "2(length + width)",
@@ -587,7 +587,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:13",
+    "creationDate": "2024-04-01T12:31:13+03:00",
     "questionText": "Which club is known as 'Los Blancos'?",
     "category": "Football",
     "correctAnswer": "Real Madrid",
@@ -595,7 +595,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:14",
+    "creationDate": "2024-04-01T12:31:14+03:00",
     "questionText": "What is the result of 45 divided by 9?",
     "category": "Math",
     "correctAnswer": "5",
@@ -603,7 +603,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:15",
+    "creationDate": "2024-04-01T12:31:15+03:00",
     "questionText": "Which player is nicknamed 'Zizou'?",
     "category": "Football",
     "correctAnswer": "Zinedine Zidane",
@@ -611,7 +611,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:16",
+    "creationDate": "2024-04-01T12:31:16+03:00",
     "questionText": "What is the value of √225?",
     "category": "Math",
     "correctAnswer": "15",
@@ -619,7 +619,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:17",
+    "creationDate": "2024-04-01T12:31:17+03:00",
     "questionText": "Which team plays their home games at the Allianz Arena?",
     "category": "Football",
     "correctAnswer": "Bayern Munich",
@@ -627,7 +627,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:18",
+    "creationDate": "2024-04-01T12:31:18+03:00",
     "questionText": "What is 75% of 40?",
     "category": "Math",
     "correctAnswer": "30",
@@ -635,7 +635,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:20",
+    "creationDate": "2024-04-01T12:31:20+03:00",
     "questionText": "What is the formula for the area of a rhombus?",
     "category": "Math",
     "correctAnswer": "(diagonal 1 * diagonal 2) / 2",
@@ -643,7 +643,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:21",
+    "creationDate": "2024-04-01T12:31:21+03:00",
     "questionText": "Which country won the 2002 FIFA World Cup?",
     "category": "Football",
     "correctAnswer": "Brazil",
@@ -651,7 +651,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:22",
+    "creationDate": "2024-04-01T12:31:22+03:00",
     "questionText": "What is the value of 6 squared plus 8 squared?",
     "category": "Math",
     "correctAnswer": "100",
@@ -659,7 +659,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:23",
+    "creationDate": "2024-04-01T12:31:23+03:00",
     "questionText": "Which player is known as 'Il Fenomeno'?",
     "category": "Football",
     "correctAnswer": "Ronaldo Nazário",
@@ -667,7 +667,7 @@
     "difficulty": 2
   },
     {
-    "creationDate": "2024-04-01T12:31:24",
+    "creationDate": "2024-04-01T12:31:24+03:00",
     "questionText": "What is the value of log2(8)?",
     "category": "Math",
     "correctAnswer": "3",
@@ -675,7 +675,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:25",
+    "creationDate": "2024-04-01T12:31:25+03:00",
     "questionText": "Which country hosted the UEFA Euro 2004?",
     "category": "Football",
     "correctAnswer": "Portugal",
@@ -683,7 +683,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:26",
+    "creationDate": "2024-04-01T12:31:26+03:00",
     "questionText": "What is the formula for the volume of a sphere?",
     "category": "Math",
     "correctAnswer": "(4/3)πr^3",
@@ -691,7 +691,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:27",
+    "creationDate": "2024-04-01T12:31:27+03:00",
     "questionText": "Which club is known as 'The Toffees'?",
     "category": "Football",
     "correctAnswer": "Everton",
@@ -699,7 +699,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:28",
+    "creationDate": "2024-04-01T12:31:28+03:00",
     "questionText": "What is 60% of 90?",
     "category": "Math",
     "correctAnswer": "54",
@@ -708,7 +708,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:29",
+    "creationDate": "2024-04-01T12:31:29+03:00",
     "questionText": "Who is the manager of the Spain national football team as of 2024?",
     "category": "Football",
     "correctAnswer": "Luis de la Fuente",
@@ -717,7 +717,7 @@
   },
   {
 
-    "creationDate": "2024-04-01T12:31:30",
+    "creationDate": "2024-04-01T12:31:30+03:00",
     "questionText": "What is the value of cos(180 degrees)?",
     "category": "Math",
     "correctAnswer": "-1",
@@ -726,7 +726,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:31",
+    "creationDate": "2024-04-01T12:31:31+03:00",
     "questionText": "Which player is known as 'Kaka'?",
     "category": "Football",
     "correctAnswer": "Ricardo Izecson dos Santos Leite",
@@ -735,7 +735,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:32",
+    "creationDate": "2024-04-01T12:31:32+03:00",
     "questionText": "What is the result of 72 divided by 8?",
     "category": "Math",
     "correctAnswer": "9",
@@ -744,7 +744,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:33",
+    "creationDate": "2024-04-01T12:31:33+03:00",
     "questionText": "Which team plays their home games at Signal Iduna Park?",
     "category": "Football",
     "correctAnswer": "Borussia Dortmund",
@@ -753,7 +753,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:34",
+    "creationDate": "2024-04-01T12:31:34+03:00",
     "questionText": "What is the square root of 256?",
     "category": "Math",
     "correctAnswer": "16",
@@ -762,7 +762,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:35",
+    "creationDate": "2024-04-01T12:31:35+03:00",
     "questionText": "Who is the all-time top scorer for the England national team?",
     "category": "Football",
     "correctAnswer": "Harry Kane",
@@ -771,7 +771,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:36",
+    "creationDate": "2024-04-01T12:31:36+03:00",
     "questionText": "What is the area of a circle with a diameter of 14?",
     "category": "Math",
     "correctAnswer": "49π",
@@ -780,7 +780,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:37",
+    "creationDate": "2024-04-01T12:31:37+03:00",
     "questionText": "Which country won the FIFA Confederations Cup in 2017?",
     "category": "Football",
     "correctAnswer": "Germany",
@@ -789,7 +789,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:38",
+    "creationDate": "2024-04-01T12:31:38+03:00",
     "questionText": "What is 150 divided by 5?",
     "category": "Math",
     "correctAnswer": "30",
@@ -798,7 +798,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:39",
+    "creationDate": "2024-04-01T12:31:39+03:00",
     "questionText": "Which player is known as 'The Divine Ponytail'?",
     "category": "Football",
     "correctAnswer": "Roberto Baggio",
@@ -807,7 +807,7 @@
   },
   {
   
-    "creationDate": "2024-04-01T12:31:40",
+    "creationDate": "2024-04-01T12:31:40+03:00",
     "questionText": "What is the value of 3 cubed minus 2 squared?",
     "category": "Math",
     "correctAnswer": "23",
@@ -816,7 +816,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:41",
+    "creationDate": "2024-04-01T12:31:41+03:00",
     "questionText": "Which city hosted the 1994 FIFA World Cup Final?",
     "category": "Football",
     "correctAnswer": "Pasadena",
@@ -825,7 +825,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:42",
+    "creationDate": "2024-04-01T12:31:42+03:00",
     "questionText": "What is the value of tan(45 degrees)?",
     "category": "Math",
     "correctAnswer": "1",
@@ -834,7 +834,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:43",
+    "creationDate": "2024-04-01T12:31:43+03:00",
     "questionText": "Which player is known as 'The Little Magician'?",
     "category": "Football",
     "correctAnswer": "Lionel Messi",
@@ -843,7 +843,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:44",
+    "creationDate": "2024-04-01T12:31:44+03:00",
     "questionText": "What is 20% of 180?",
     "category": "Math",
     "correctAnswer": "36",
@@ -852,7 +852,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:45",
+    "creationDate": "2024-04-01T12:31:45+03:00",
     "questionText": "Which team plays their home games at the Stadio San Siro?",
     "category": "Football",
     "correctAnswer": "AC Milan and Inter Milan",
@@ -861,7 +861,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:46",
+    "creationDate": "2024-04-01T12:31:46+03:00",
     "questionText": "What is the derivative of x^3 + 2x?",
     "category": "Math",
     "correctAnswer": "3x^2 + 2",
@@ -870,7 +870,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:47",
+    "creationDate": "2024-04-01T12:31:47+03:00",
     "questionText": "Which country won the UEFA European Championship in 1996?",
     "category": "Football",
     "correctAnswer": "Germany",
@@ -879,7 +879,7 @@
   },
   {
     
-    "creationDate": "2024-04-01T12:31:48",
+    "creationDate": "2024-04-01T12:31:48+03:00",
     "questionText": "What is the perimeter of a square with side length 9?",
     "category": "Math",
     "correctAnswer": "36",
@@ -887,7 +887,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:49",
+    "creationDate": "2024-04-01T12:31:49+03:00",
     "questionText": "Who is the manager of the Netherlands national football team as of 2024?",
     "category": "Football",
     "correctAnswer": "Ronald Koeman",
@@ -896,7 +896,7 @@
   },
   {
   
-    "creationDate": "2024-04-01T12:31:50",
+    "creationDate": "2024-04-01T12:31:50+03:00",
     "questionText": "What is the value of 5! (5 factorial)?",
     "category": "Math",
     "correctAnswer": "120",
@@ -904,7 +904,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:51",
+    "creationDate": "2024-04-01T12:31:51+03:00",
     "questionText": "Which player is known as 'El Niño'?",
     "category": "Football",
     "correctAnswer": "Fernando Torres",
@@ -912,7 +912,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:52",
+    "creationDate": "2024-04-01T12:31:52+03:00",
     "questionText": "What is the result of 120 divided by 12?",
     "category": "Math",
     "correctAnswer": "10",
@@ -920,7 +920,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:53",
+    "creationDate": "2024-04-01T12:31:53+03:00",
     "questionText": "Which club is known as 'The Villans'?",
     "category": "Football",
     "correctAnswer": "Aston Villa",
@@ -928,7 +928,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:54",
+    "creationDate": "2024-04-01T12:31:54+03:00",
     "questionText": "What is the value of √169?",
     "category": "Math",
     "correctAnswer": "13",
@@ -936,7 +936,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:55",
+    "creationDate": "2024-04-01T12:31:55+03:00",
     "questionText": "Who is the all-time top scorer for the Germany national team?",
     "category": "Football",
     "correctAnswer": "Miroslav Klose",
@@ -944,7 +944,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:56",
+    "creationDate": "2024-04-01T12:31:56+03:00",
     "questionText": "What is the area of a triangle with base 12 and height 8?",
     "category": "Math",
     "correctAnswer": "48",
@@ -952,7 +952,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:57",
+    "creationDate": "2024-04-01T12:31:57+03:00",
     "questionText": "Which country won the FIFA U-20 World Cup in 2019?",
     "category": "Football",
     "correctAnswer": "Ukraine",
@@ -960,7 +960,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2024-04-01T12:31:58",
+    "creationDate": "2024-04-01T12:31:58+03:00",
     "questionText": "What is 40% of 120?",
     "category": "Math",
     "correctAnswer": "48",
@@ -968,7 +968,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2024-04-01T12:31:59",
+    "creationDate": "2024-04-01T12:31:59+03:00",
     "questionText": "Which player is known as 'The Iceman'?",
     "category": "Football",
     "correctAnswer": "Dennis Bergkamp",
@@ -977,7 +977,7 @@
   },
   {
   
-    "creationDate": "2025-04-08T00:21:00",
+    "creationDate": "2025-04-08T00:21:00+03:00",
     "questionText": "What is the formula for the area of a kite?",
     "category": "Math",
     "correctAnswer": "(diagonal 1 * diagonal 2) / 2",
@@ -985,7 +985,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:01",
+    "creationDate": "2025-04-08T00:21:01+03:00",
     "questionText": "Which country won the Copa América in 2021?",
     "category": "Football",
     "correctAnswer": "Argentina",
@@ -993,7 +993,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:02",
+    "creationDate": "2025-04-08T00:21:02+03:00",
     "questionText": "What is the value of 9 squared minus 5 squared?",
     "category": "Math",
     "correctAnswer": "56",
@@ -1001,7 +1001,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:03",
+    "creationDate": "2025-04-08T00:21:03+03:00",
     "questionText": "Which player is known as 'The Atomic Flea'?",
     "category": "Football",
     "correctAnswer": "Sebastian Giovinco",
@@ -1009,7 +1009,7 @@
     "difficulty": 3
   },
   {
-    "creationDate": "2025-04-08T00:21:04",
+    "creationDate": "2025-04-08T00:21:04+03:00",
     "questionText": "What is the value of log5(25)?",
     "category": "Math",
     "correctAnswer": "2",
@@ -1017,7 +1017,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:05",
+    "creationDate": "2025-04-08T00:21:05+03:00",
     "questionText": "Which country hosted the Africa Cup of Nations in 2021?",
     "category": "Football",
     "correctAnswer": "Cameroon",
@@ -1025,7 +1025,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:06",
+    "creationDate": "2025-04-08T00:21:06+03:00",
     "questionText": "What is the formula for the surface area of a cube?",
     "category": "Math",
     "correctAnswer": "6s^2",
@@ -1033,7 +1033,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:07",
+    "creationDate": "2025-04-08T00:21:07+03:00",
     "questionText": "Which club is known as 'The Hammers'?",
     "category": "Football",
     "correctAnswer": "West Ham United",
@@ -1041,7 +1041,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:08",
+    "creationDate": "2025-04-08T00:21:08+03:00",
     "questionText": "What is 80% of 70?",
     "category": "Math",
     "correctAnswer": "56",
@@ -1049,7 +1049,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:09",
+    "creationDate": "2025-04-08T00:21:09+03:00",
     "questionText": "Who is the manager of the Italy national football team as of 2024?",
     "category": "Football",
     "correctAnswer": "Luciano Spalletti",
@@ -1058,7 +1058,7 @@
   },
   {
   
-    "creationDate": "2025-04-08T00:21:10",
+    "creationDate": "2025-04-08T00:21:10+03:00",
     "questionText": "What is the value of sin(60 degrees)?",
     "category": "Math",
     "correctAnswer": "√3/2",
@@ -1066,7 +1066,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:11",
+    "creationDate": "2025-04-08T00:21:11+03:00",
     "questionText": "Which player is known as 'The Prince of Rome'?",
     "category": "Football",
     "correctAnswer": "Francesco Totti",
@@ -1074,7 +1074,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:12",
+    "creationDate": "2025-04-08T00:21:12+03:00",
     "questionText": "What is the result of 96 divided by 12?",
     "category": "Math",
     "correctAnswer": "8",
@@ -1082,7 +1082,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:13",
+    "creationDate": "2025-04-08T00:21:13+03:00",
     "questionText": "Which team plays their home games at the Estadio do Dragao?",
     "category": "Football",
     "correctAnswer": "FC Porto",
@@ -1090,7 +1090,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:14",
+    "creationDate": "2025-04-08T00:21:14+03:00",
     "questionText": "What is the square root of 289?",
     "category": "Math",
     "correctAnswer": "17",
@@ -1098,7 +1098,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:15",
+    "creationDate": "2025-04-08T00:21:15+03:00",
     "questionText": "Who is the all-time top scorer for the Spain national team?",
     "category": "Football",
     "correctAnswer": "David Villa",
@@ -1106,7 +1106,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:16",
+    "creationDate": "2025-04-08T00:21:16+03:00",
     "questionText": "What is the area of a parallelogram with base 15 and height 6?",
     "category": "Math",
     "correctAnswer": "90",
@@ -1114,7 +1114,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:17",
+    "creationDate": "2025-04-08T00:21:17+03:00",
     "questionText": "Which country won the FIFA Club World Cup in 2023?",
     "category": "Football",
     "correctAnswer": "Manchester City",
@@ -1122,7 +1122,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:18",
+    "creationDate": "2025-04-08T00:21:18+03:00",
     "questionText": "What is 65% of 80?",
     "category": "Math",
     "correctAnswer": "52",
@@ -1130,7 +1130,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:19",
+    "creationDate": "2025-04-08T00:21:19+03:00",
     "questionText": "Which player is known as 'Le Professeur'?",
     "category": "Football",
     "correctAnswer": "Arsène Wenger",
@@ -1139,7 +1139,7 @@
   },
   {
   
-    "creationDate": "2025-04-08T00:21:20",
+    "creationDate": "2025-04-08T00:21:20+03:00",
     "questionText": "What is the value of 4 cubed plus 3 squared?",
     "category": "Math",
     "correctAnswer": "73",
@@ -1147,7 +1147,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:21",
+    "creationDate": "2025-04-08T00:21:21+03:00",
     "questionText": "Which city hosted the 2002 FIFA World Cup Final?",
     "category": "Football",
     "correctAnswer": "Yokohama",
@@ -1155,7 +1155,7 @@
     "difficulty": 3
   },
   {
-    "creationDate": "2025-04-08T00:21:22",
+    "creationDate": "2025-04-08T00:21:22+03:00",
     "questionText": "What is the value of cot(45 degrees)?",
     "category": "Math",
     "correctAnswer": "1",
@@ -1163,7 +1163,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:23",
+    "creationDate": "2025-04-08T00:21:23+03:00",
     "questionText": "Which player is known as 'O Rei'?",
     "category": "Football",
     "correctAnswer": "Pelé",
@@ -1171,7 +1171,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:24",
+    "creationDate": "2025-04-08T00:21:24+03:00",
     "questionText": "What is 35% of 200?",
     "category": "Math",
     "correctAnswer": "70",
@@ -1179,7 +1179,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:25",
+    "creationDate": "2025-04-08T00:21:25+03:00",
     "questionText": "Which team plays their home games at the Ibrox Stadium?",
     "category": "Football",
     "correctAnswer": "Rangers FC",
@@ -1187,7 +1187,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:26",
+    "creationDate": "2025-04-08T00:21:26+03:00",
     "questionText": "What is the derivative of 4x^2 - 3x + 1?",
     "category": "Math",
     "correctAnswer": "8x - 3",
@@ -1195,7 +1195,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:27",
+    "creationDate": "2025-04-08T00:21:27+03:00",
     "questionText": "Which country won the UEFA European Championship in 2000?",
     "category": "Football",
     "correctAnswer": "France",
@@ -1203,7 +1203,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:28",
+    "creationDate": "2025-04-08T00:21:28+03:00",
     "questionText": "What is the perimeter of a rectangle with length 18 and width 7?",
     "category": "Math",
     "correctAnswer": "50",
@@ -1211,7 +1211,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:29",
+    "creationDate": "2025-04-08T00:21:29+03:00",
     "questionText": "Who is the manager of the Brazil national football team as of 2024?",
     "category": "Football",
     "correctAnswer": "Dorival Júnior",
@@ -1220,7 +1220,7 @@
   },
   {
   
-    "creationDate": "2025-04-08T00:21:30",
+    "creationDate": "2025-04-08T00:21:30+03:00",
     "questionText": "What is the value of 8! (8 factorial)?",
     "category": "Math",
     "correctAnswer": "40320",
@@ -1228,7 +1228,7 @@
     "difficulty": 3
   },
   {
-    "creationDate": "2025-04-08T00:21:31",
+    "creationDate": "2025-04-08T00:21:31+03:00",
     "questionText": "Which player is known as 'The Swedish Magician'?",
     "category": "Football",
     "correctAnswer": "Zlatan Ibrahimović",
@@ -1236,7 +1236,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:32",
+    "creationDate": "2025-04-08T00:21:32+03:00",
     "questionText": "What is the result of 144 divided by 16?",
     "category": "Math",
     "correctAnswer": "9",
@@ -1244,7 +1244,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:33",
+    "creationDate": "2025-04-08T00:21:33+03:00",
     "questionText": "Which club is known as 'The Baggies'?",
     "category": "Football",
     "correctAnswer": "West Bromwich Albion",
@@ -1252,7 +1252,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:34",
+    "creationDate": "2025-04-08T00:21:34+03:00",
     "questionText": "What is the value of √324?",
     "category": "Math",
     "correctAnswer": "18",
@@ -1260,7 +1260,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:35",
+    "creationDate": "2025-04-08T00:21:35+03:00",
     "questionText": "Who is the all-time top scorer for the Netherlands national team?",
     "category": "Football",
     "correctAnswer": "Robin van Persie",
@@ -1268,7 +1268,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:36",
+    "creationDate": "2025-04-08T00:21:36+03:00",
     "questionText": "What is the area of a trapezoid with bases 10 and 14 and height 5?",
     "category": "Math",
     "correctAnswer": "60",
@@ -1276,7 +1276,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:37",
+    "creationDate": "2025-04-08T00:21:37+03:00",
     "questionText": "Which country won the FIFA U-17 World Cup in 2019?",
     "category": "Football",
     "correctAnswer": "Brazil",
@@ -1284,7 +1284,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:38",
+    "creationDate": "2025-04-08T00:21:38+03:00",
     "questionText": "What is 70% of 110?",
     "category": "Math",
     "correctAnswer": "77",
@@ -1292,7 +1292,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:39",
+    "creationDate": "2025-04-08T00:21:39+03:00",
     "questionText": "Which country won the FIFA World Cup in 1998?",
     "category": "Football",
     "correctAnswer": "France",
@@ -1301,7 +1301,7 @@
   },
   {
   
-    "creationDate": "2025-04-08T00:21:40",
+    "creationDate": "2025-04-08T00:21:40+03:00",
     "questionText": "What is the value of 7 squared?",
     "category": "Math",
     "correctAnswer": "49",
@@ -1309,7 +1309,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:41",
+    "creationDate": "2025-04-08T00:21:41+03:00",
     "questionText": "Which player is known as 'The Pharaoh'?",
     "category": "Football",
     "correctAnswer": "Mohamed Salah",
@@ -1317,7 +1317,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:42",
+    "creationDate": "2025-04-08T00:21:42+03:00",
     "questionText": "What is the formula for the circumference of a circle?",
     "category": "Math",
     "correctAnswer": "2πr",
@@ -1325,7 +1325,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:43",
+    "creationDate": "2025-04-08T00:21:43+03:00",
     "questionText": "Which country hosted the FIFA World Cup in 2010?",
     "category": "Football",
     "correctAnswer": "South Africa",
@@ -1333,7 +1333,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:44",
+    "creationDate": "2025-04-08T00:21:44+03:00",
     "questionText": "What is the value of 2 to the power of 5?",
     "category": "Math",
     "correctAnswer": "32",
@@ -1341,7 +1341,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:45",
+    "creationDate": "2025-04-08T00:21:45+03:00",
     "questionText": "Which player is known as 'The Maestro'?",
     "category": "Football",
     "correctAnswer": "Andrea Pirlo",
@@ -1349,7 +1349,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:46",
+    "creationDate": "2025-04-08T00:21:46+03:00",
     "questionText": "What is the derivative of 3x^3?",
     "category": "Math",
     "correctAnswer": "9x^2",
@@ -1357,7 +1357,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:47",
+    "creationDate": "2025-04-08T00:21:47+03:00",
     "questionText": "Which country won the FIFA Women's World Cup in 2015?",
     "category": "Football",
     "correctAnswer": "United States",
@@ -1365,7 +1365,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:48",
+    "creationDate": "2025-04-08T00:21:48+03:00",
     "questionText": "What is the value of √400?",
     "category": "Math",
     "correctAnswer": "20",
@@ -1373,7 +1373,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:49",
+    "creationDate": "2025-04-08T00:21:49+03:00",
     "questionText": "Which team is known as 'The Foxes'?",
     "category": "Football",
     "correctAnswer": "Leicester City",
@@ -1382,7 +1382,7 @@
   },
   {
   
-    "creationDate": "2025-04-08T00:21:50",
+    "creationDate": "2025-04-08T00:21:50+03:00",
     "questionText": "What is the formula for the volume of a cone?",
     "category": "Math",
     "correctAnswer": "(1/3)πr^2h",
@@ -1390,7 +1390,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:51",
+    "creationDate": "2025-04-08T00:21:51+03:00",
     "questionText": "Which country won the UEFA European Championship in 1992?",
     "category": "Football",
     "correctAnswer": "Denmark",
@@ -1398,7 +1398,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:52",
+    "creationDate": "2025-04-08T00:21:52+03:00",
     "questionText": "What is the value of 3 factorial (3!)?",
     "category": "Math",
     "correctAnswer": "6",
@@ -1406,7 +1406,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:53",
+    "creationDate": "2025-04-08T00:21:53+03:00",
     "questionText": "Which player is known as 'The Pitbull'?",
     "category": "Football",
     "correctAnswer": "Gennaro Gattuso",
@@ -1414,7 +1414,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:54",
+    "creationDate": "2025-04-08T00:21:54+03:00",
     "questionText": "What is the sum of the first 10 natural numbers?",
     "category": "Math",
     "correctAnswer": "55",
@@ -1422,7 +1422,7 @@
     "difficulty": 1
   },
   {
-    "creationDate": "2025-04-08T00:21:55",
+    "creationDate": "2025-04-08T00:21:55+03:00",
     "questionText": "Which country hosted the FIFA World Cup in 1994?",
     "category": "Football",
     "correctAnswer": "United States",
@@ -1430,7 +1430,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:56",
+    "creationDate": "2025-04-08T00:21:56+03:00",
     "questionText": "What is the value of sin(30 degrees)?",
     "category": "Math",
     "correctAnswer": "1/2",
@@ -1438,7 +1438,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:57",
+    "creationDate": "2025-04-08T00:21:57+03:00",
     "questionText": "Which player is known as 'The Tank'?",
     "category": "Football",
     "correctAnswer": "Lothar Matthäus",
@@ -1446,7 +1446,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:58",
+    "creationDate": "2025-04-08T00:21:58+03:00",
     "questionText": "What is the value of cos(90 degrees)?",
     "category": "Math",
     "correctAnswer": "0",
@@ -1454,7 +1454,7 @@
     "difficulty": 2
   },
   {
-    "creationDate": "2025-04-08T00:21:59",
+    "creationDate": "2025-04-08T00:21:59+03:00",
     "questionText": "Which country won the FIFA World Cup in 1986?",
     "category": "Football",
     "correctAnswer": "Argentina",

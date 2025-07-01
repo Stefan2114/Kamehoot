@@ -17,4 +17,6 @@ public interface IGameAnswerRepository extends JpaRepository<GameAnswer, UUID> {
     List<GameAnswer> getAllByGameSessionIdAndQuestionId(@Param("gameSessionId") UUID gameSessionId,
             @Param("questionId") UUID questionId);
 
+    List<GameAnswer> findAllByGamePlayerId(UUID id);
+
 }
