@@ -7,38 +7,7 @@ import PlayableQuizItem from "../components/PlayableQuizItem";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
   const [gamePin, setGamePin] = useState("");
-
-  const fetchQuizzes = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      console.log("Trying to fetch quizzes");
-      const params = new URLSearchParams();
-      if (searchTerm) {
-        params.append("searchTerm", searchTerm);
-      }
-
-      const data = await ApiService.get<Quiz[]>(
-        `/quizzes?${params.toString()}`
-      );
-
-      setQuizzes(data);
-    } catch (error) {
-      console.error("Error fetching quizzes:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [searchTerm]);
-
-  useEffect(() => {
-    fetchQuizzes();
-  }, [fetchQuizzes]);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setSearchTerm(e.target.value);
 
   const handleNavigateToGames = () => {
     navigate("/games");
@@ -71,8 +40,10 @@ const HomePage = () => {
             {getWelcomeMessage()} Ready to test your knowledge?
           </h1>
           <p className={styles["welcome-subtitle"]}>
-            Explore our platform - manage your quizzes, create engaging games,
-            and build custom questions!
+            Dive into a fun and interactive quiz experience! Create and manage
+            your own quizzes, host engaging games, and customize your questions.
+            This is a personal project inspired by Kahoot! — I hope you enjoy
+            using it.
           </p>
         </div>
       </div>
@@ -146,25 +117,6 @@ const HomePage = () => {
             >
               🎯 Start New Game
             </button>
-
-            <div className={styles["join-game-section"]}>
-              <input
-                type="text"
-                placeholder="Enter Game PIN"
-                value={gamePin}
-                onChange={(e) => setGamePin(e.target.value)}
-                className={styles["join-game-input"]}
-              />
-              <button
-                className={styles["join-game-button"]}
-                onClick={() => {
-                  if (gamePin.trim()) navigate(`/game/${gamePin}/lobby`);
-                }}
-                disabled={!gamePin.trim()}
-              >
-                🔗 Join Game
-              </button>
-            </div>
           </div>
         </div>
       </div>

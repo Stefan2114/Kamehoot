@@ -22,7 +22,7 @@ const QuizItem: React.FC<QuizItemProps> = ({ quiz }) => {
             <span className={styles["detail-item"]}>
               <span className={styles["detail-label"]}>Date:</span>
               <span className={styles["detail-value"]}>
-                {quiz.creationDate.toLocaleString()}
+                {quiz.creationDate}
               </span>
             </span>
 

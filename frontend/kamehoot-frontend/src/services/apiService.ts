@@ -1,6 +1,10 @@
 import { AuthService } from './authService';
 
-const API_BASE_URL = 'https://localhost:8443';
+const serverAddress = import.meta.env.VITE_SERVER_ADDRESS;
+const serverPort = import.meta.env.VITE_SERVER_PORT;
+
+
+const API_BASE_URL = `https://${serverAddress}:${serverPort}`;
 
 export class ApiService {
   private static async makeRequest<T>(

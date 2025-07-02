@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Question } from "../types/question";
 import styles from "../styles/QuestionForm.module.css";
+import { ApiService } from "../services/apiService";
 
 interface QuestionFormProps {
   initialQuestion?: Question;
@@ -21,8 +22,8 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("https://localhost:8443/categories");
-        const data: string[] = await response.json();
+        const data = await ApiService.get<string[]>("/categories");
+
         setCategories(data);
       } catch (error) {
         console.error("Error fetching categories:", error);

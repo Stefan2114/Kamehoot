@@ -56,7 +56,7 @@ public class QuestionController implements IQuestionController {
                 authenticatedUserId = this.userService.getUserByUsername(username).getId();
             } catch (Exception e) {
                 // If user not found, continue with null (public questions only)
-                System.out.println("User not found: " + username);
+
             }
         }
 
@@ -108,13 +108,12 @@ public class QuestionController implements IQuestionController {
 
             } catch (Exception e) {
                 // If user not found, continue with null (public questions only)
-                System.out.println("User not found: " + username);
+
                 return ResponseEntity.badRequest().build();
             }
 
         }
         if (authenticatedUserId == null) {
-            System.out.println("userId null");
 
             return ResponseEntity.badRequest().build();
 
@@ -128,7 +127,6 @@ public class QuestionController implements IQuestionController {
     @Override
     @PostMapping
     public ResponseEntity<Void> addQuestion(@Valid @RequestBody QuestionDTO question) {
-        System.out.println(question);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
@@ -144,7 +142,6 @@ public class QuestionController implements IQuestionController {
     @Override
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteQuestion(@PathVariable("id") UUID questionId) {
-        System.out.println("I deleted the question with id: " + questionId);
         this.questionService.deleteQuestionById(questionId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -152,7 +149,6 @@ public class QuestionController implements IQuestionController {
     @Override
     @PutMapping
     public ResponseEntity<Void> updateQuestion(@Valid @RequestBody QuestionDTO question) {
-        System.out.println(question);
         this.questionService.updateQuestion(question);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -160,8 +156,6 @@ public class QuestionController implements IQuestionController {
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<QuestionDTO> getQuestion(@PathVariable UUID id) {
-        System.out.println(id);
-        System.out.println("I got here to get a question by id");
         return ResponseEntity.ok(mapQuestionToDTO(this.questionService.getQuestion(id)));
     }
 

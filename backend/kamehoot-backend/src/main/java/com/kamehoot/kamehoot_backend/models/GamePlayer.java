@@ -40,6 +40,18 @@ public class GamePlayer {
     private List<GameAnswer> answers = new ArrayList<>();
 
     public Integer getTotalScore() {
+
         return answers.stream().mapToInt(GameAnswer::getPointsEarned).sum();
+    }
+
+    @Override
+    public String toString() {
+        return "GamePlayer{" +
+                "id=" + id +
+                ", gameSession=" + gameSession.getId() +
+                ", user=" + user.getUsername() +
+                ", answers=" + answers +
+                ", totalScore=" + answers.stream().mapToInt(GameAnswer::getPointsEarned).sum() +
+                '}';
     }
 }

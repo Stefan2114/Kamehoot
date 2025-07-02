@@ -1,6 +1,6 @@
 package com.kamehoot.kamehoot_backend.models;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -51,7 +51,7 @@ public class Question {
     private Visibility visibility = Visibility.PRIVATE;
 
     @Column(nullable = false)
-    private LocalDateTime creationDate;
+    private ZonedDateTime creationDate;
 
     @Column(length = 512, nullable = false)
     private String questionText;

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -48,8 +49,28 @@ public class SecurityConfig {
 
     private final RsaKeyProperties rsaKeys;
 
-    public SecurityConfig(RsaKeyProperties rsaKeys) {
+    private final String frontendAddress;
+
+    private final Integer frontendPort;
+
+    private final Integer serverHttpsPort;
+
+    private final Integer serverHttpPort;
+
+    public SecurityConfig(RsaKeyProperties rsaKeys,
+
+            @Value("${frontend.address}") String frontendAddress,
+
+            @Value("${frontend.port}") Integer frontendPort,
+
+            @Value("${server.port}") Integer serverHttpsPort,
+
+            @Value("${server.http-port}") Integer serverHttpPort) {
         this.rsaKeys = rsaKeys;
+        this.frontendAddress = frontendAddress;
+        this.frontendPort = frontendPort;
+        this.serverHttpsPort = serverHttpsPort;
+        this.serverHttpPort = serverHttpPort;
 
     }
 
@@ -135,7 +156,7 @@ public class SecurityConfig {
     @Primary
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList("http://" + this.frontendAddress + ":" + this.frontendPort));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization",
                 "Content-Type", "Accept"));
@@ -154,9 +175,9 @@ public class SecurityConfig {
             // Add the HTTP connector (your existing code)
             Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
             connector.setScheme("http");
-            connector.setPort(8081);
+            connector.setPort(this.serverHttpPort);
             connector.setSecure(false);
-            connector.setRedirectPort(8443);
+            connector.setRedirectPort(this.serverHttpsPort);
             factory.addAdditionalTomcatConnectors(connector);
 
             // Add the missing security constraint

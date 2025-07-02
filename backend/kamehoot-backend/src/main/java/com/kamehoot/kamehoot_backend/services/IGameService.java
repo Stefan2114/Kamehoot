@@ -1,6 +1,6 @@
 package com.kamehoot.kamehoot_backend.services;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.springframework.web.socket.WebSocketSession;
@@ -20,7 +20,7 @@ public interface IGameService {
     void joinGame(UUID userId, UUID gameSessionId);
 
     void submitAnswer(UUID userId, UUID gameSessionId, UUID questionId, String answer,
-            LocalDateTime answerTime);
+            ZonedDateTime answerTime);
 
     void nextQuestion(UUID userId, UUID gameSessionId);
 

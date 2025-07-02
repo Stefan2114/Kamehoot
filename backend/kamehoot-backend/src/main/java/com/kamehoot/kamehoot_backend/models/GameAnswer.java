@@ -1,6 +1,6 @@
 package com.kamehoot.kamehoot_backend.models;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -40,7 +40,7 @@ public class GameAnswer {
     private Boolean isCorrect;
 
     @Column(nullable = false)
-    private LocalDateTime answeredAt;
+    private ZonedDateTime answeredAt;
 
     @Column(nullable = false)
     private Long responseTime;
