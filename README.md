@@ -81,3 +81,17 @@ docker compose up --build
   WebSocket is secured over WSS
 
   Two-Factor Authentication (2FA) via code
+
+
+#UI
+![Screenshot From 2025-07-03 11-11-23](https://github.com/user-attachments/assets/e177c6e2-70c5-4b4e-829a-2685b84f02dd)
+
+![Screenshot From 2025-07-03 11-11-55](https://github.com/user-attachments/assets/74cb545b-67aa-4fcc-8b42-0b9b62fa52ea)
+
+![Screenshot From 2025-07-03 11-12-23](https://github.com/user-attachments/assets/91b20c31-01bc-4a73-9f57-ef48dbb8c5ac)
+
+![Screenshot From 2025-07-03 11-14-31](https://github.com/user-attachments/assets/b435724d-b4c0-4c34-84ec-114fb271dbe8)
+
+![Screenshot From 2025-07-03 11-16-09](https://github.com/user-attachments/assets/87ebf897-8026-4fdb-9531-9c8bf1f21cc5)
+
+![Screenshot From 2025-07-03 11-15-58](https://github.com/user-attachments/assets/fa214dee-6683-48c1-9f00-4cc2ebc86dba)
