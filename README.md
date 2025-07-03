@@ -90,8 +90,8 @@ docker compose up --build
 
 ![Screenshot From 2025-07-03 11-12-23](https://github.com/user-attachments/assets/91b20c31-01bc-4a73-9f57-ef48dbb8c5ac)
 
-![Screenshot From 2025-07-03 11-14-31](https://github.com/user-attachments/assets/b435724d-b4c0-4c34-84ec-114fb271dbe8)
+![Screenshot From 2025-07-03 11-11-55](https://github.com/user-attachments/assets/43747122-60d0-48bb-b45e-a7f135953e71)
 
 ![Screenshot From 2025-07-03 11-16-09](https://github.com/user-attachments/assets/87ebf897-8026-4fdb-9531-9c8bf1f21cc5)
 
-![Screenshot From 2025-07-03 11-15-58](https://github.com/user-attachments/assets/fa214dee-6683-48c1-9f00-4cc2ebc86dba)
+![Screenshot From 2025-07-03 11-12-23](https://github.com/user-attachments/assets/6cf53493-4698-4b6a-a127-e64d207fae85)
