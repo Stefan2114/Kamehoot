@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kamehoot.kamehoot_backend.DTOs.QuestionDTO;
 import com.kamehoot.kamehoot_backend.models.Question;
 import com.kamehoot.kamehoot_backend.services.IQuestionService;
-import com.kamehoot.kamehoot_backend.services.IUserService;
+import com.kamehoot.kamehoot_backend.utils.AuthenticationUtil;
 
 import jakarta.validation.Valid;
 
@@ -30,11 +30,11 @@ import jakarta.validation.Valid;
 @RequestMapping("/questions")
 public class QuestionController implements IQuestionController {
     private final IQuestionService questionService;
-    private final IUserService userService;
+    private final AuthenticationUtil authenticationUtil;
 
-    public QuestionController(IQuestionService questionService, IUserService userService) {
+    public QuestionController(IQuestionService questionService, AuthenticationUtil authenticationUtil) {
         this.questionService = questionService;
-        this.userService = userService;
+        this.authenticationUtil = authenticationUtil;
     }
 
     @Override
@@ -46,19 +46,7 @@ public class QuestionController implements IQuestionController {
             @RequestParam(required = false, defaultValue = "creationDate") String orderBy,
             @RequestParam(required = false, defaultValue = "desc") String orderDirection) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID authenticatedUserId = null;
-
-        // Get authenticated user ID if available
-        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
-            String username = jwtAuth.getName();
-            try {
-                authenticatedUserId = this.userService.getUserByUsername(username).getId();
-            } catch (Exception e) {
-                // If user not found, continue with null (public questions only)
-
-            }
-        }
+        UUID userId = authenticationUtil.getCurrentUserId();
 
         // Check if any filter parameters are provided
         boolean hasFilters = (categories != null && !categories.isEmpty()) ||
@@ -68,10 +56,10 @@ public class QuestionController implements IQuestionController {
                 !orderDirection.equals("desc");
 
         List<Question> questions;
-        if (hasFilters || authenticatedUserId != null) {
+        if (hasFilters || userId != null) {
             // Use the filtered endpoint with authentication context
             questions = this.questionService.getQuestions(
-                    authenticatedUserId,
+                    userId,
                     categories,
                     difficulties,
                     searchTerm,
@@ -98,28 +86,9 @@ public class QuestionController implements IQuestionController {
     @GetMapping("/private")
     public ResponseEntity<List<QuestionDTO>> getPrivateQuestions() {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID authenticatedUserId = null;
-        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
+        UUID userId = authenticationUtil.getCurrentUserId();
 
-            String username = jwtAuth.getName();
-            try {
-                authenticatedUserId = this.userService.getUserByUsername(username).getId();
-
-            } catch (Exception e) {
-                // If user not found, continue with null (public questions only)
-
-                return ResponseEntity.badRequest().build();
-            }
-
-        }
-        if (authenticatedUserId == null) {
-
-            return ResponseEntity.badRequest().build();
-
-        }
-
-        List<Question> questions = this.questionService.getPrivateQuestions((authenticatedUserId));
+        List<Question> questions = this.questionService.getPrivateQuestions((userId));
         return ResponseEntity.ok(mapQuestionsToDTOs(questions));
 
     }

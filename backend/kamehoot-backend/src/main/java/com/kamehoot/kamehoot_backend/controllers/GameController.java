@@ -4,9 +4,6 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +15,7 @@ import com.kamehoot.kamehoot_backend.DTOs.CreateGameRequest;
 import com.kamehoot.kamehoot_backend.DTOs.GameSessionDTO;
 import com.kamehoot.kamehoot_backend.DTOs.SubmitAnswerRequest;
 import com.kamehoot.kamehoot_backend.services.IGameService;
-import com.kamehoot.kamehoot_backend.services.IUserService;
+import com.kamehoot.kamehoot_backend.utils.AuthenticationUtil;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,11 +27,11 @@ import jakarta.validation.Valid;
 public class GameController {
 
     private final IGameService gameService;
-    private final IUserService userService;
+    private final AuthenticationUtil authenticationUtil;
 
-    public GameController(IGameService gameService, IUserService userService) {
+    public GameController(IGameService gameService, AuthenticationUtil authenticationUtil) {
         this.gameService = gameService;
-        this.userService = userService;
+        this.authenticationUtil = authenticationUtil;
     }
 
     @GetMapping("/{gameCode}")
@@ -53,28 +50,11 @@ public class GameController {
     @PostMapping("/create")
     public ResponseEntity<String> createGame(@Valid @RequestBody CreateGameRequest request) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID authenticatedUserId = null;
-        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
-
-            String username = jwtAuth.getName();
-            try {
-                authenticatedUserId = this.userService.getUserByUsername(username).getId();
-
-            } catch (Exception e) {
-                // If user not found, continue with null (public questions only)
-                return ResponseEntity.badRequest().build();
-            }
-
-        }
-        if (authenticatedUserId == null) {
-
-            return ResponseEntity.badRequest().build();
-
-        }
         try {
+            UUID userId = authenticationUtil.getCurrentUserId();
+
             String gameCode = gameService.createGame(
-                    authenticatedUserId,
+                    userId,
                     request.quizId(),
                     request.questionTimeLimit());
             return ResponseEntity.ok(gameCode);
@@ -86,27 +66,9 @@ public class GameController {
     @PostMapping("/join/{id}")
     public ResponseEntity<Void> joinGame(@NotNull @PathVariable UUID id) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID authenticatedUserId = null;
-        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
-
-            String username = jwtAuth.getName();
-            try {
-                authenticatedUserId = this.userService.getUserByUsername(username).getId();
-
-            } catch (Exception e) {
-                // If user not found, continue with null (public questions only)
-                return ResponseEntity.badRequest().build();
-            }
-
-        }
-        if (authenticatedUserId == null) {
-
-            return ResponseEntity.badRequest().build();
-
-        }
         try {
-            gameService.joinGame(authenticatedUserId, id);
+            UUID userId = authenticationUtil.getCurrentUserId();
+            gameService.joinGame(userId, id);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -116,26 +78,10 @@ public class GameController {
     @PostMapping("/start/{id}")
     public ResponseEntity<Void> startGame(@NotNull @PathVariable UUID id) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID authenticatedUserId = null;
-        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
-
-            String username = jwtAuth.getName();
-            try {
-                authenticatedUserId = this.userService.getUserByUsername(username).getId();
-
-            } catch (Exception e) {
-                // If user not found, continue with null (public questions only)
-                return ResponseEntity.badRequest().build();
-            }
-
-        }
-        if (authenticatedUserId == null) {
-            return ResponseEntity.badRequest().build();
-
-        }
         try {
-            gameService.startGame(authenticatedUserId, id);
+            UUID userId = authenticationUtil.getCurrentUserId();
+
+            gameService.startGame(userId, id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -144,54 +90,19 @@ public class GameController {
 
     @GetMapping("/{gameSessionId}/is-host")
     public ResponseEntity<Boolean> isHost(@NotNull @PathVariable UUID gameSessionId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID authenticatedUserId = null;
-        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
+        UUID userId = authenticationUtil.getCurrentUserId();
 
-            String username = jwtAuth.getName();
-            try {
-                authenticatedUserId = this.userService.getUserByUsername(username).getId();
-
-            } catch (Exception e) {
-                return ResponseEntity.badRequest().build();
-            }
-
-        }
-        if (authenticatedUserId == null) {
-
-            return ResponseEntity.badRequest().build();
-
-        }
-
-        return ResponseEntity.ok(this.gameService.isHost(authenticatedUserId, gameSessionId));
+        return ResponseEntity.ok(this.gameService.isHost(userId, gameSessionId));
     }
 
     @PostMapping("/answer")
     public ResponseEntity<Void> submitAnswer(@Valid @RequestBody SubmitAnswerRequest request) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID authenticatedUserId = null;
-        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
-
-            String username = jwtAuth.getName();
-            try {
-                authenticatedUserId = this.userService.getUserByUsername(username).getId();
-
-            } catch (Exception e) {
-                // If user not found, continue with null (public questions only)
-                return ResponseEntity.badRequest().build();
-            }
-
-        }
-        if (authenticatedUserId == null) {
-
-            return ResponseEntity.badRequest().build();
-
-        }
+        UUID userId = authenticationUtil.getCurrentUserId();
 
         try {
             gameService.submitAnswer(
-                    authenticatedUserId,
+                    userId,
                     request.gameSessionId(),
                     request.questionId(),
                     request.answer(), request.answerTime());
@@ -205,27 +116,10 @@ public class GameController {
     @PostMapping("/next/{id}")
     public ResponseEntity<Void> nextQuestion(@NotNull @PathVariable UUID id) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID authenticatedUserId = null;
-        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
+        UUID userId = authenticationUtil.getCurrentUserId();
 
-            String username = jwtAuth.getName();
-            try {
-                authenticatedUserId = this.userService.getUserByUsername(username).getId();
-
-            } catch (Exception e) {
-                // If user not found, continue with null (public questions only)
-                return ResponseEntity.badRequest().build();
-            }
-
-        }
-        if (authenticatedUserId == null) {
-
-            return ResponseEntity.badRequest().build();
-
-        }
         try {
-            gameService.nextQuestion(authenticatedUserId, id);
+            gameService.nextQuestion(userId, id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -234,26 +128,6 @@ public class GameController {
 
     @PostMapping("/{id}/emoji")
     public ResponseEntity<Void> sendEmoji(@NotNull @PathVariable UUID id, @NotBlank @RequestBody String emoji) {
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        UUID authenticatedUserId = null;
-        if (auth instanceof UsernamePasswordAuthenticationToken jwtAuth) {
-
-            String username = jwtAuth.getName();
-            try {
-                authenticatedUserId = this.userService.getUserByUsername(username).getId();
-
-            } catch (Exception e) {
-                // If user not found, continue with null (public questions only)
-                return ResponseEntity.badRequest().build();
-            }
-
-        }
-        if (authenticatedUserId == null) {
-
-            return ResponseEntity.badRequest().build();
-
-        }
         try {
             gameService.sendEmoji(id, emoji);
             return ResponseEntity.ok().build();
